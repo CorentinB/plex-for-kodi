@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PM4K Kodi UI Preview</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="workspace">
+      <section class="preview-panel" aria-label="Kodi UI preview">
+        <div class="preview-toolbar">
+          <div>
+            <h1>PM4K Home Preview</h1>
+            <p>HTML approximation of <code>script-plex-home.xml.tpl</code></p>
+          </div>
+          <div class="toolbar-controls" aria-label="Preview controls">
+            <button class="tool-button is-active" data-scale="fit" type="button">Fit</button>
+            <button class="tool-button" data-scale="100" type="button">100%</button>
+            <button class="tool-button" data-scale="75" type="button">75%</button>
+            <button class="tool-button" id="toggle-lines" type="button">Lines</button>
+            <button class="tool-button is-active" id="toggle-bg" type="button">Art</button>
+          </div>
+        </div>
+
+        <div class="stage-shell" id="stage-shell">
+          <div class="kodi-stage" id="kodi-stage" data-lines="false" data-art="true">
+            <div class="backdrop" aria-hidden="true"></div>
+            <header class="kodi-header">
+              <button class="icon-button search is-focusable" type="button" aria-label="Search"></button>
+              <div class="brand-label">Plex</div>
+              <div class="now-playing">
+                <img src="/skin-media/script.plex/buttons/player/modern/play.png" alt="">
+                <div>
+                  <span>Massive Attack</span>
+                  <strong>Teardrop</strong>
+                </div>
+              </div>
+              <button class="server-button is-focusable" type="button">
+                <span class="server-dot"></span>
+                <span>Living Room Server</span>
+                <span class="dropdown-mark"></span>
+              </button>
+              <button class="user-button is-focusable" type="button">
+                <span>CB</span>
+                <span class="dropdown-mark"></span>
+              </button>
+            </header>
+
+            <nav class="section-strip" aria-label="Library sections"></nav>
+            <section class="hub-stack" aria-label="Home hubs"></section>
+          </div>
+        </div>
+      </section>
+
+      <aside class="source-panel" aria-label="Source templates">
+        <div class="source-header">
+          <h2>Source Map</h2>
+          <p>Kodi XML concepts represented by this preview.</p>
+        </div>
+        <div class="source-list" id="source-list"></div>
+        <pre class="source-excerpt" id="source-excerpt">Loading templates...</pre>
+      </aside>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
