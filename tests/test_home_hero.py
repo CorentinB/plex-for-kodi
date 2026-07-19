@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import unittest
 import importlib.util
 import os
+import xml.etree.ElementTree as ElementTree
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -13,6 +14,8 @@ SPEC.loader.exec_module(home_hero)
 _short_text = home_hero._short_text
 normalize_content_rating = home_hero.normalize_content_rating
 build_hero_properties = home_hero.build_hero_properties
+nav_label_width = home_hero.nav_label_width
+nav_visual_offsets = home_hero.nav_visual_offsets
 
 
 class FakeMedia(object):
@@ -40,7 +43,28 @@ class FakeImage(object):
         )
 
 
+class FakeServer(object):
+    def buildUrl(self, path, includeToken=False):
+        suffix = "?token=1" if includeToken else ""
+        return "https://plex.invalid{}{}".format(path, suffix)
+
+
 class HomeHeroTests(unittest.TestCase):
+    def test_navigation_label_widths_fit_common_localized_sections(self):
+        self.assertEqual(nav_label_width("Accueil"), 80)
+        self.assertEqual(nav_label_width("Films"), 60)
+        self.assertEqual(nav_label_width("Séries TV"), 100)
+        self.assertEqual(nav_label_width("Livres audio"), 140)
+        self.assertEqual(nav_label_width("Listes de lecture"), 180)
+
+    def test_navigation_offsets_follow_adaptive_plate_widths(self):
+        offsets = nav_visual_offsets(
+            [80, 100, 180, 60],
+            [True, False, False, False],
+        )
+
+        self.assertEqual(offsets, [0, -24, -28, 48])
+
     def test_builds_movie_hero_properties_from_common_media_fields(self):
         media = FakeMedia(
             defaultTitle="The Conners",
@@ -56,6 +80,7 @@ class HomeHeroTests(unittest.TestCase):
         props = build_hero_properties(media)
 
         self.assertEqual(props["title"], "The Conners")
+        self.assertEqual(props["logo"], "")
         self.assertEqual(props["content_rating"], "TV-PG")
         self.assertEqual(props["content_rating_wide"], "")
         self.assertEqual(props["meta"], "2018    30m    Comedy, Sitcom")
@@ -64,7 +89,11 @@ class HomeHeroTests(unittest.TestCase):
         self.assertEqual(props["cast"], "John Goodman, Laurie Metcalf")
         self.assertEqual(
             props["art"],
-            "https://example.invalid/art.jpg?width=1920&height=1080&blur=18&opacity=70&background=000000",
+            "https://example.invalid/art.jpg?width=1920&height=1080&blur=&opacity=&background=",
+        )
+        self.assertEqual(
+            props["art_blurred"],
+            "https://example.invalid/art.jpg?width=320&height=180&blur=64&opacity=100&background=000000",
         )
         self.assertEqual(props["visible"], "1")
 
@@ -72,6 +101,7 @@ class HomeHeroTests(unittest.TestCase):
         props = build_hero_properties(FakeMedia())
 
         self.assertEqual(props["title"], "")
+        self.assertEqual(props["logo"], "")
         self.assertEqual(props["content_rating"], "")
         self.assertEqual(props["content_rating_wide"], "")
         self.assertEqual(props["meta"], "")
@@ -79,7 +109,29 @@ class HomeHeroTests(unittest.TestCase):
         self.assertEqual(props["short_summary"], "")
         self.assertEqual(props["cast"], "")
         self.assertEqual(props["art"], "")
+        self.assertEqual(props["art_blurred"], "")
         self.assertEqual(props["visible"], "")
+
+    def test_uses_plex_clear_logo_image_when_hub_metadata_provides_one(self):
+        data = ElementTree.fromstring(
+            '<Video title="Malcolm"><Image type="background" url="/art" />'
+            '<Image type="clearLogo" url="/logo/123" /></Video>'
+        )
+        media = FakeMedia(title="Malcolm", data=data, server=FakeServer())
+
+        props = build_hero_properties(media)
+
+        self.assertEqual(props["logo"], "https://plex.invalid/logo/123?token=1")
+
+    def test_text_title_remains_when_plex_has_no_clear_logo(self):
+        data = ElementTree.fromstring(
+            '<Video title="Movie"><Image type="background" url="/art" /></Video>'
+        )
+
+        props = build_hero_properties(FakeMedia(title="Movie", data=data))
+
+        self.assertEqual(props["logo"], "")
+        self.assertEqual(props["title"], "Movie")
 
     def test_numeric_critic_rating_is_not_presented_as_content_rating(self):
         props = build_hero_properties(FakeMedia(title="Movie", rating=0.0, year=2025))

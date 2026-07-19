@@ -2,16 +2,35 @@
 {% block background %}
 {% include "includes/default_background.xml.tpl" %}
 <control type="image">
-    <visible>!String.IsEmpty(Window.Property(home.hero.art))</visible>
+    <visible>!String.IsEmpty(Window.Property(home.hero.art_blurred))</visible>
     <posx>0</posx>
     <posy>0</posy>
     <width>1920</width>
     <height>1080</height>
     <fadetime>450</fadetime>
-    <texture background="true">$INFO[Window.Property(home.hero.art)]</texture>
+    <texture background="true">$INFO[Window.Property(home.hero.art_blurred)]</texture>
     {% include "includes/scale_background.xml.tpl" %}
 </control>
 <control type="image">
+    <visible>!String.IsEmpty(Window.Property(home.hero.art)) + String.IsEmpty(Window.Property(hub.scrolled))</visible>
+    <posx>640</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+    <fadetime>450</fadetime>
+    <texture background="true" diffuse="script.plex/home/tvos-first-row-art-mask.png">$INFO[Window.Property(home.hero.art)]</texture>
+    <aspectratio align="right" aligny="top">keep</aspectratio>
+</control>
+<control type="image">
+    <visible>String.IsEmpty(Window.Property(hub.scrolled))</visible>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+    <texture colordiffuse="D8FFFFFF">script.plex/home/tvos-background-wash.png</texture>
+</control>
+<control type="image">
+    <visible>!String.IsEmpty(Window.Property(hub.scrolled))</visible>
     <posx>0</posx>
     <posy>0</posy>
     <width>1920</width>
@@ -148,8 +167,6 @@
             </control>
         </control>
         <control type="fixedlist" id="101">
-            <animation effect="slide" end="-92,0" time="200" tween="sine" easing="inout" condition="Integer.IsGreater(Container(101).Position,3)">Conditional</animation>
-            <animation effect="slide" end="-92,0" time="200" tween="sine" easing="inout" condition="Integer.IsGreater(Container(101).Position,4)">Conditional</animation>
             <posx>160</posx>
             <posy>{{ vscale(6) }}</posy>
             <width>1500</width>
@@ -162,139 +179,41 @@
             <movement>3</movement>
             <pagecontrol>102</pagecontrol>
             <!-- ITEM LAYOUT ########################################## -->
-            <itemlayout width="250">
+            <itemlayout width="192">
                 <control type="group">
                     <visible>!String.IsEmpty(ListItem.Property(item))</visible>
+                    {% include "includes/home_nav_shift.xml.tpl" %}
                     <posx>0</posx>
                     <posy>{{ vscale(16) }}</posy>
-                    <width>250</width>
+                    <width>270</width>
                     <height>{{ vscale(60) }}</height>
-                    <control type="image">
-                        <visible>String.IsEmpty(ListItem.Property(is.home))</visible>
-                        <posx>6</posx>
-                        <posy>{{ vscale(16) }}</posy>
-                        <width>28</width>
-                        <height>{{ vscale(28) }}</height>
-                        <texture colordiffuse="BBFFFFFF">$INFO[ListItem.Thumb]</texture>
-                        <aspectratio>keep</aspectratio>
-                    </control>
-                    <control type="image">
-                        <visible>!String.IsEmpty(ListItem.Property(is.home))</visible>
-                        <posx>56</posx>
-                        <posy>{{ vscale(16) }}</posy>
-                        <width>28</width>
-                        <height>{{ vscale(28) }}</height>
-                        <texture colordiffuse="BBFFFFFF">script.plex/home/type/home.png</texture>
-                        <aspectratio>keep</aspectratio>
-                    </control>
-                    <control type="label">
-                        <visible>String.IsEmpty(ListItem.Property(is.home))</visible>
-                        <scroll>false</scroll>
-                        <posx>44</posx>
-                        <posy>0</posy>
-                        <width>195</width>
-                        <height>{{ vscale(60) }}</height>
-                        <font>font10</font>
-                        <align>left</align>
-                        <aligny>center</aligny>
-                        <textcolor>DDFFFFFF</textcolor>
-                        <label>$INFO[ListItem.Label]</label>
-                    </control>
-                    <control type="label">
-                        <visible>!String.IsEmpty(ListItem.Property(is.home))</visible>
-                        <scroll>false</scroll>
-                        <posx>94</posx>
-                        <posy>0</posy>
-                        <width>126</width>
-                        <height>{{ vscale(60) }}</height>
-                        <font>font10</font>
-                        <align>left</align>
-                        <aligny>center</aligny>
-                        <textcolor>DDFFFFFF</textcolor>
-                        <label>$INFO[ListItem.Label]</label>
-                    </control>
+                    {% with nav_color = "DDFFFFFF" & nav_icon_color = "BBFFFFFF" & nav_scroll = "false" %}
+                    {% include "includes/home_nav_content.xml.tpl" %}
+                    {% endwith %}
                 </control>
             </itemlayout>
 
             <!-- FOCUSED LAYOUT ####################################### -->
-            <focusedlayout width="250">
+            <focusedlayout width="192">
                 <control type="group">
                     <visible>!String.IsEmpty(ListItem.Property(item))</visible>
+                    {% include "includes/home_nav_shift.xml.tpl" %}
                     <posx>0</posx>
                     <posy>{{ vscale(16) }}</posy>
                     <control type="group">
-                        <animation effect="zoom" start="100" end="106" time="110" center="120,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101)">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="0,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="70,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.60)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="80,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.80)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="90,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.100)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="100,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.120)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="110,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.140)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="130,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.180)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
                         <posx>0</posx>
                         <posy>0</posy>
-                        <control type="image">
-                            <visible>Control.HasFocus(101)</visible>
-                            <posx>-14</posx>
-                            <posy>{{ vscale(-12) }}</posy>
-                            <width>255</width>
-                            <height>{{ vscale(84) }}</height>
-                            <texture border="42">script.plex/drop-shadow.png</texture>
-                        </control>
-                        <control type="image">
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <width>230</width>
-                            <height>{{ vscale(60) }}</height>
-                            <texture border="24">script.plex/white-square-rounded.png</texture>
-                            <colordiffuse>EEFFFFFF</colordiffuse>
-                        </control>
-                        <control type="image">
-                            <visible>String.IsEmpty(ListItem.Property(is.home))</visible>
-                            <posx>6</posx>
-                            <posy>{{ vscale(16) }}</posy>
-                            <width>28</width>
-                            <height>{{ vscale(28) }}</height>
-                            <texture colordiffuse="FF111111">$INFO[ListItem.Thumb]</texture>
-                            <aspectratio>keep</aspectratio>
-                        </control>
-                        <control type="image">
-                            <visible>!String.IsEmpty(ListItem.Property(is.home))</visible>
-                            <posx>56</posx>
-                            <posy>{{ vscale(16) }}</posy>
-                            <width>28</width>
-                            <height>{{ vscale(28) }}</height>
-                            <texture colordiffuse="FF111111">script.plex/home/type/home.png</texture>
-                            <aspectratio>keep</aspectratio>
-                        </control>
-                        <control type="image">
-                            <visible>!String.IsEmpty(ListItem.Property(is.mapped))</visible>
-                            <posx>220</posx>
-                            <posy>{{ vscale(10) }}</posy>
-                            <width>8</width>
-                            <height>{{ vscale(8) }}</height>
-                            <texture>script.plex/white-square-rounded-4r.png</texture>
-                            <colordiffuse>CC111111</colordiffuse>
-                        </control>
-                        <control type="label">
-                            <visible>String.IsEmpty(ListItem.Property(is.home))</visible>
-                            <scroll>Control.HasFocus(101)</scroll>
-                            <posx>44</posx>
-                            <posy>0</posy>
-                            <width>175</width>
-                            <height>{{ vscale(60) }}</height>
-                            <font>font10</font>
-                            <align>left</align>
-                            <aligny>center</aligny>
-                            <textcolor>FF111111</textcolor>
-                            <label>$INFO[ListItem.Label]</label>
-                        </control>
-                        <control type="label">
-                            <visible>!String.IsEmpty(ListItem.Property(is.home))</visible>
-                            <scroll>false</scroll>
-                            <posx>94</posx>
-                            <posy>0</posy>
-                            <width>126</width>
-                            <height>{{ vscale(60) }}</height>
-                            <font>font10</font>
-                            <align>left</align>
-                            <aligny>center</aligny>
-                            <textcolor>FF111111</textcolor>
-                            <label>$INFO[ListItem.Label]</label>
-                        </control>
+                        {% include "includes/home_nav_focus_plate.xml.tpl" %}
+                        {% with nav_color = "FF111111" & nav_icon_color = "FF111111" & nav_scroll = "Control.HasFocus(101)" %}
+                        {% include "includes/home_nav_content.xml.tpl" %}
+                        {% endwith %}
                     </control>
                 </control>
             </focusedlayout>
@@ -306,26 +225,36 @@
             <width>1120</width>
             <height>{{ vscale(240) }}</height>
             <control type="label">
+                <visible>String.IsEmpty(Window.Property(home.hero.logo))</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1120</width>
-                <height>{{ vscale(68) }}</height>
+                <height>{{ vscale(88) }}</height>
                 <font>font_title</font>
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
                 <label>$INFO[Window.Property(home.hero.title)]</label>
             </control>
-            {% with hero_meta_y = 76 & hero_meta_height = 34 %}
+            <control type="image">
+                <visible>!String.IsEmpty(Window.Property(home.hero.logo))</visible>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>560</width>
+                <height>{{ vscale(88) }}</height>
+                <texture background="true">$INFO[Window.Property(home.hero.logo)]</texture>
+                <aspectratio align="left" aligny="center">keep</aspectratio>
+            </control>
+            {% with hero_meta_y = 96 & hero_meta_height = 30 %}
             {% include "includes/home_hero_metadata.xml.tpl" %}
             {% endwith %}
             <control type="textbox">
                 <autoscroll>false</autoscroll>
                 <visible>!String.IsEmpty(Window.Property(home.hero.short_summary))</visible>
                 <posx>0</posx>
-                <posy>{{ vscale(112) }}</posy>
+                <posy>{{ vscale(132) }}</posy>
                 <width>720</width>
-                <height>{{ vscale(118) }}</height>
+                <height>{{ vscale(98) }}</height>
                 <font>font10</font>
                 <textcolor>F0FFFFFF</textcolor>
                 <label>$INFO[Window.Property(home.hero.short_summary)]</label>
@@ -401,15 +330,6 @@
         <label> </label>
     </control>
 </control>
-<control type="image">
-    <visible>!String.IsEmpty(Window.Property(hub.scrolled))</visible>
-    <posx>0</posx>
-    <posy>0</posy>
-    <width>1920</width>
-    <height>{{ vscale(320) }}</height>
-    <texture>script.plex/home/tvos-row-top-scrim.png</texture>
-    <colordiffuse>78000000</colordiffuse>
-</control>
 <control type="group">
     <visible>!String.IsEmpty(Window.Property(home.hero.visible)) + !String.IsEmpty(Window.Property(hub.scrolled))</visible>
     <posx>160</posx>
@@ -417,24 +337,34 @@
     <width>1120</width>
     <height>{{ vscale(235) }}</height>
     <control type="label">
+        <visible>String.IsEmpty(Window.Property(home.hero.logo))</visible>
         <posx>0</posx>
         <posy>0</posy>
         <width>1120</width>
-        <height>{{ vscale(62) }}</height>
+        <height>{{ vscale(72) }}</height>
         <font>font_title</font>
         <align>left</align>
         <aligny>center</aligny>
         <textcolor>FFFFFFFF</textcolor>
         <label>$INFO[Window.Property(home.hero.title)]</label>
     </control>
-    {% with hero_meta_y = 65 & hero_meta_height = 32 %}
+    <control type="image">
+        <visible>!String.IsEmpty(Window.Property(home.hero.logo))</visible>
+        <posx>0</posx>
+        <posy>0</posy>
+        <width>500</width>
+        <height>{{ vscale(72) }}</height>
+        <texture background="true">$INFO[Window.Property(home.hero.logo)]</texture>
+        <aspectratio align="left" aligny="center">keep</aspectratio>
+    </control>
+    {% with hero_meta_y = 78 & hero_meta_height = 30 %}
     {% include "includes/home_hero_metadata.xml.tpl" %}
     {% endwith %}
     <control type="textbox">
         <autoscroll>false</autoscroll>
         <visible>!String.IsEmpty(Window.Property(home.hero.short_summary))</visible>
         <posx>0</posx>
-        <posy>{{ vscale(106) }}</posy>
+        <posy>{{ vscale(118) }}</posy>
         <width>1120</width>
         <height>{{ vscale(90) }}</height>
         <font>font10</font>

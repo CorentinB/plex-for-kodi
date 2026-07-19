@@ -4,6 +4,7 @@ from __future__ import absolute_import
 HERO_KEYS = (
     "visible",
     "title",
+    "logo",
     "content_rating",
     "content_rating_wide",
     "meta",
@@ -11,7 +12,23 @@ HERO_KEYS = (
     "short_summary",
     "cast",
     "art",
+    "art_blurred",
 )
+
+NAV_LABEL_WIDTHS = (60, 80, 100, 120, 140, 180)
+NAV_PLATE_WIDTHS = {
+    60: 140,
+    80: 160,
+    100: 180,
+    120: 200,
+    140: 220,
+    180: 260,
+}
+NAV_HOME_PLATE_WIDTH = 160
+NAV_SLOT_WIDTH = 192
+NAV_PLATE_GAP = 8
+NAV_SHIFT_MIN = -512
+NAV_SHIFT_MAX = 640
 
 COUNTRY_RATING_PREFIXES = frozenset((
     "au",
@@ -56,6 +73,46 @@ def _text(value):
         pass
     text = str(value).strip()
     return "" if text in ("()", "[]", "{}", "None", "none") else text
+
+
+def nav_label_width(value):
+    """Return the nearest skin width for a localized Home navigation label."""
+    label = _text(value)
+    if not label:
+        return 80
+
+    estimated = 0
+    for char in label:
+        if char in " ilIjtfr.,:;!|'`":
+            estimated += 6
+        elif char in "MW@%&QO":
+            estimated += 17
+        elif char.isupper():
+            estimated += 14
+        else:
+            estimated += 12
+    estimated += max(4, len(label) // 2)
+
+    for width in NAV_LABEL_WIDTHS:
+        if estimated <= width:
+            return width
+    return 180
+
+
+def nav_visual_offsets(label_widths, home_flags=None):
+    """Place navigation plates by content width over Kodi's fixed item slots."""
+    if home_flags is None:
+        home_flags = [False] * len(label_widths)
+
+    offsets = []
+    visual_x = 0
+    for index, (label_width, is_home) in enumerate(zip(label_widths, home_flags)):
+        offset = visual_x - (index * NAV_SLOT_WIDTH)
+        offset = max(NAV_SHIFT_MIN, min(NAV_SHIFT_MAX, offset))
+        offsets.append(offset)
+        plate_width = NAV_HOME_PLATE_WIDTH if is_home else NAV_PLATE_WIDTHS[label_width]
+        visual_x += plate_width + NAV_PLATE_GAP
+    return offsets
 
 
 def _first_text(obj, keys):
@@ -143,19 +200,60 @@ def _short_text(value, limit=190):
     return shortened + "…"
 
 
-def _art_url(obj):
+def _art_urls(obj):
     art = _get(obj, "art", "") or _get(obj, "thumb", "")
     if not art:
-        return ""
+        return "", ""
     if hasattr(art, "asTranscodedImageURL"):
-        return art.asTranscodedImageURL(
-            1920,
-            1080,
-            blur=18,
-            opacity=70,
+        clear_art = art.asTranscodedImageURL(1920, 1080)
+        # The Home underlay is a palette field, not a second readable copy of
+        # the fanart. Transcoding it at a deliberately small size before a
+        # strong blur preserves the artwork's colors while removing its
+        # composition when Kodi expands it to the viewport.
+        blurred_art = art.asTranscodedImageURL(
+            320,
+            180,
+            blur=64,
+            opacity=100,
             background="000000",
         )
-    return _text(art)
+        return clear_art, blurred_art
+    text = _text(art)
+    return text, text
+
+
+def _resolved_image_url(obj, value):
+    if not value:
+        return ""
+    if hasattr(value, "asURL"):
+        try:
+            return value.asURL(includeToken=True)
+        except (AttributeError, TypeError):
+            pass
+
+    path = _text(value)
+    if not path:
+        return ""
+    server = getattr(obj, "server", None)
+    if server and hasattr(server, "buildUrl"):
+        return server.buildUrl(path, includeToken=True)
+    return path
+
+
+def _logo_url(obj):
+    for key in ("clearLogo", "logo"):
+        logo = _get(obj, key, "")
+        if logo:
+            return _resolved_image_url(obj, logo)
+
+    data = getattr(obj, "data", None)
+    if data is None or not hasattr(data, "findall"):
+        return ""
+
+    for image in data.findall("Image"):
+        if image.attrib.get("type", "").lower() == "clearlogo":
+            return _resolved_image_url(obj, image.attrib.get("url", ""))
+    return ""
 
 
 def empty_hero_properties():
@@ -164,18 +262,20 @@ def empty_hero_properties():
 
 def build_hero_properties(obj):
     title = _first_text(obj, ("defaultTitle", "title", "grandparentTitle", "parentTitle"))
+    logo = _logo_url(obj)
     content_rating = normalize_content_rating(_first_text(obj, ("contentRating", "mpaaRating")))
     year = _text(_get(obj, "year", ""))
     duration = _duration_text(_get(obj, "duration", ""))
     genres = _joined_tags(_get(obj, "genres", ()), 2)
     summary = _first_text(obj, ("summary", "tagline"))
     cast = _joined_tags(_get(obj, "roles", ()), 4)
-    art = _art_url(obj)
+    art, art_blurred = _art_urls(obj)
 
     meta_parts = [part for part in (year, duration, genres) if part]
     props = empty_hero_properties()
     props.update({
         "title": title,
+        "logo": logo,
         "content_rating": content_rating,
         "content_rating_wide": "1" if len(content_rating) > 5 else "",
         "meta": "    ".join(meta_parts),
@@ -183,6 +283,7 @@ def build_hero_properties(obj):
         "short_summary": _short_text(summary),
         "cast": cast,
         "art": art,
+        "art_blurred": art_blurred,
     })
     if title or summary or art:
         props["visible"] = "1"

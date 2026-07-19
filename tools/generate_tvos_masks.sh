@@ -17,23 +17,19 @@ magick -size 520x776 xc:none \
   -depth 8 \
   "$MEDIA_DIR/poster-rounded-mask.png"
 
-# Home posters are rendered at 244x361, which is a subtly different aspect
-# ratio from the generic 260x388 poster mask above. Give that surface an exact
-# mask and composite it over a solid rounded focus plate. A transparent outline
-# drawn over the artwork lets two separately filtered alpha edges meet at the
-# inner corner, producing the dark, bracket-like seam visible on focused cards.
-# With the plate behind the art, the antialiased image edge resolves into white
-# and the five-pixel focus frame stays continuous around the entire curve.
+# Home posters are rendered at 244x361. Their 11 px radius matches the square
+# and landscape Home cards, while the focus plate keeps the exact five-pixel
+# concentric inset. The smaller curve avoids a bulbous corner on pale artwork.
 magick -size 488x722 xc:none \
   -fill white -stroke none \
-  -draw "roundrectangle 0,0 487,721 34,34" \
+  -draw "roundrectangle 0,0 487,721 22,22" \
   -define png:color-type=6 \
   -depth 8 \
   "$MEDIA_DIR/poster-home-rounded-mask.png"
 
 magick -size 508x742 xc:none \
   -fill white -stroke none \
-  -draw "roundrectangle 0,0 507,741 44,44" \
+  -draw "roundrectangle 0,0 507,741 32,32" \
   -define png:color-type=6 \
   -depth 8 \
   "$MEDIA_DIR/poster-home-rounded-focus.png"
@@ -404,3 +400,19 @@ magick -size 512x512 xc:'#282A2F' \
   -define png:color-type=6 \
   -depth 8 \
   "$MEDIA_DIR/thumb_fallbacks/role.png"
+
+# Home keeps a full-screen blurred canvas, then places a sharp 1280x720 copy
+# against the upper-right edge while the first hub is focused. This diffuse
+# mask dissolves that copy into the blur before it reaches the left-side hero
+# text or the card rows, avoiding a visible rectangular artwork boundary.
+magick \
+  \( -size 1280x720 xc:black \
+     -sparse-color Barycentric '100,0 black 420,0 white 100,719 black 420,719 white' \) \
+  \( -size 1280x720 xc:black \
+     -sparse-color Barycentric '0,230 white 1279,230 white 0,430 black 1279,430 black' \) \
+  -compose Multiply -composite \
+  -alpha copy \
+  -channel RGB -evaluate set 100% +channel \
+  -define png:color-type=6 \
+  -depth 8 \
+  "$MEDIA_DIR/home/tvos-first-row-art-mask.png"

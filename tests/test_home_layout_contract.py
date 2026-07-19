@@ -66,14 +66,106 @@ class HomeLayoutContractTests(unittest.TestCase):
 
     def test_home_tab_content_is_optically_centered(self):
         home = _read("script-plex-home.xml.tpl")
+        nav_content = _read("includes", "home_nav_content.xml.tpl")
+        nav_size = _read("includes", "home_nav_content_size.xml.tpl")
+        nav_plate = _read("includes", "home_nav_focus_plate.xml.tpl")
+        nav_plate_size = _read("includes", "home_nav_focus_plate_size.xml.tpl")
+        nav_shift = _read("includes", "home_nav_shift.xml.tpl")
+        start = home.index('<control type="fixedlist" id="101">')
+        end = home.index(
+            '<control type="group">\n'
+            '            <visible>!String.IsEmpty(Window.Property(home.hero.visible))',
+            start,
+        )
+        nav = home[start:end]
 
-        # The icon and localized label use a dedicated Home layout so the
-        # short label is not stranded at the left of the 230 px focus pill.
-        self.assertEqual(home.count("<posx>56</posx>"), 2)
-        self.assertEqual(home.count("<posx>94</posx>"), 2)
+        # Kodi's container keeps a stable slot width while each complete visual
+        # item is shifted onto a cumulative, content-width-aware navigation row.
         self.assertEqual(
-            home.count("!String.IsEmpty(ListItem.Property(is.home))"),
+            nav.count('{% include "includes/home_nav_content.xml.tpl" %}'),
+            2,
+        )
+        self.assertEqual(
+            nav.count('{% include "includes/home_nav_focus_plate.xml.tpl" %}'),
+            1,
+        )
+        self.assertIn('<itemlayout width="192">', nav)
+        self.assertIn('<focusedlayout width="192">', nav)
+        self.assertEqual(
+            nav.count('{% include "includes/home_nav_shift.xml.tpl" %}'),
+            2,
+        )
+        self.assertIn("range(-512, 644, 4)", nav_shift)
+        self.assertIn(
+            "!String.IsEmpty(ListItem.Property(nav.offset.{{ nav_shift }}))",
+            nav_shift,
+        )
+        self.assertIn(
+            'center="0,{{ vscale(30) }}" reversible="true" '
+            'condition="Control.HasFocus(101) + '
+            '!String.IsEmpty(ListItem.Property(is.home))"',
+            nav,
+        )
+        self.assertIn(
+            'center="130,{{ vscale(30) }}" reversible="true" '
+            'condition="Control.HasFocus(101) + '
+            '!String.IsEmpty(ListItem.Property(nav.width.180)) + '
+            'String.IsEmpty(ListItem.Property(is.home))"',
+            nav,
+        )
+        self.assertNotIn('end="-92,0"', nav)
+        self.assertNotIn("<posx>56</posx>", nav)
+        self.assertNotIn("<posx>94</posx>", nav)
+        self.assertNotIn("<width>auto</width>", nav)
+        self.assertIn("nav.width.60", nav_content)
+        for width in (80, 100, 120, 140, 180):
+            self.assertIn("nav_label_width = {}".format(width), nav_content)
+        self.assertIn("nav.width.{{ nav_label_width }}", nav_size)
+        self.assertIn("nav_label_control_width = 194", nav_content)
+        self.assertIn("<align>left</align>", nav_content)
+        self.assertIn("<align>left</align>", nav_size)
+        self.assertIn("<posx>20</posx>", nav_content)
+        self.assertIn("<posx>60</posx>", nav_content)
+        self.assertIn("nav_label_width", _read_file(HOME_WINDOW))
+
+        plate_contracts = (
+            (60, 140, 166, 129),
+            (80, 160, 186, 149),
+            (100, 180, 206, 169),
+            (120, 200, 226, 189),
+            (140, 220, 246, 209),
+            (180, 260, 286, 249),
+        )
+        for values in plate_contracts:
+            self.assertIn(
+                "nav_label_width = {} & nav_plate_width = {} & "
+                "nav_shadow_width = {} & nav_dot_x = {}".format(
+                    *values
+                ),
+                nav_plate,
+            )
+            self.assertEqual(-13 + (values[2] / 2.0), values[1] / 2.0)
+        self.assertIn("<posx>0</posx>", nav_plate)
+        self.assertIn("<width>160</width>", nav_plate)
+        self.assertIn("nav.width.{{ nav_label_width }}", nav_plate_size)
+        self.assertIn("<width>{{ nav_plate_width }}</width>", nav_plate_size)
+
+    def test_home_hero_prefers_plex_logo_with_title_fallback(self):
+        home = _read("script-plex-home.xml.tpl")
+
+        self.assertEqual(
+            home.count("$INFO[Window.Property(home.hero.logo)]"),
+            2,
+        )
+        self.assertEqual(
+            home.count("String.IsEmpty(Window.Property(home.hero.logo))"),
             4,
+        )
+        self.assertIn("<width>560</width>", home)
+        self.assertIn("<width>500</width>", home)
+        self.assertEqual(
+            home.count('<aspectratio align="left" aligny="center">keep</aspectratio>'),
+            2,
         )
 
     def test_home_hero_uses_a_compact_certification_badge_with_metadata_fallback(self):
@@ -105,6 +197,82 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertEqual(
             metadata.count('<label>$INFO[Window.Property(home.hero.meta)]</label>'),
             3,
+        )
+
+    def test_home_hero_places_clear_art_at_top_right_until_rows_scroll(self):
+        home = _read("script-plex-home.xml.tpl")
+        mask_path = os.path.join(
+            ROOT,
+            "resources",
+            "skins",
+            "Main",
+            "media",
+            "script.plex",
+            "home",
+            "tvos-first-row-art-mask.png",
+        )
+        generator_path = os.path.join(ROOT, "tools", "generate_tvos_masks.sh")
+
+        blurred_texture = (
+            '<texture background="true">'
+            '$INFO[Window.Property(home.hero.art_blurred)]</texture>'
+        )
+        clear_texture = (
+            '<texture background="true" diffuse="script.plex/home/tvos-first-row-art-mask.png">'
+            '$INFO[Window.Property(home.hero.art)]</texture>'
+        )
+
+        self.assertIn(
+            '<visible>!String.IsEmpty(Window.Property(home.hero.art)) + '
+            'String.IsEmpty(Window.Property(hub.scrolled))</visible>',
+            home,
+        )
+        self.assertIn(
+            '<visible>!String.IsEmpty(Window.Property(home.hero.art_blurred))</visible>',
+            home,
+        )
+        self.assertIn(
+            '<posx>640</posx>\n'
+            '    <posy>0</posy>\n'
+            '    <width>1280</width>\n'
+            '    <height>720</height>',
+            home,
+        )
+        self.assertIn(
+            '<aspectratio align="right" aligny="top">keep</aspectratio>',
+            home,
+        )
+        self.assertIn(blurred_texture, home)
+        self.assertIn(clear_texture, home)
+        self.assertLess(home.index(blurred_texture), home.index(clear_texture))
+        self.assertEqual(
+            home.count("$INFO[Window.Property(home.hero.art_blurred)]"),
+            1,
+        )
+        self.assertIn(
+            '<visible>String.IsEmpty(Window.Property(hub.scrolled))</visible>\n'
+            '    <posx>0</posx>\n'
+            '    <posy>0</posy>\n'
+            '    <width>1920</width>\n'
+            '    <height>1080</height>\n'
+            '    <texture colordiffuse="D8FFFFFF">'
+            'script.plex/home/tvos-background-wash.png</texture>',
+            home,
+        )
+        self.assertIn(
+            '<visible>!String.IsEmpty(Window.Property(hub.scrolled))</visible>\n'
+            '    <posx>0</posx>\n'
+            '    <posy>0</posy>\n'
+            '    <width>1920</width>\n'
+            '    <height>1080</height>\n'
+            '    <texture>script.plex/home/tvos-background-wash.png</texture>',
+            home,
+        )
+        self.assertNotIn("tvos-first-row-blur-mask.png", home)
+        self.assertTrue(os.path.exists(mask_path))
+        self.assertIn(
+            '"$MEDIA_DIR/home/tvos-first-row-art-mask.png"',
+            _read_file(generator_path),
         )
 
     def test_poster_and_square_rows_end_on_full_cards(self):
@@ -196,8 +364,8 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertNotIn("-strokewidth 18", generator)
         self.assertEqual(generator.count("-strokewidth 10"), 1)
         self.assertIn('roundrectangle 0,0 519,775 36,36', generator)
-        self.assertIn('roundrectangle 0,0 487,721 34,34', generator)
-        self.assertIn('roundrectangle 0,0 507,741 44,44', generator)
+        self.assertIn('roundrectangle 0,0 487,721 22,22', generator)
+        self.assertIn('roundrectangle 0,0 507,741 32,32', generator)
         self.assertIn('roundrectangle 0,0 539,795 46,46', generator)
         for focus_asset in (
             "poster-rounded-focus.png",
@@ -253,7 +421,7 @@ class HomeLayoutContractTests(unittest.TestCase):
             self.assertIn('<control type="textbox">', layout)
             self.assertNotIn("<scroll>Control.HasFocus", layout)
 
-    def test_scrolled_header_preserves_art_while_preceding_rows_fade(self):
+    def test_scrolled_header_preserves_ambient_art_without_a_separate_black_bar(self):
         home = _read("script-plex-home.xml.tpl")
 
         self.assertIn(
@@ -263,11 +431,8 @@ class HomeLayoutContractTests(unittest.TestCase):
             home,
         )
         self.assertNotIn("<colordiffuse>FF000000</colordiffuse>", home)
-        self.assertIn(
-            "<texture>script.plex/home/tvos-row-top-scrim.png</texture>\n"
-            "    <colordiffuse>78000000</colordiffuse>",
-            home,
-        )
+        self.assertNotIn("tvos-row-top-scrim.png", home)
+        self.assertNotIn("<colordiffuse>78000000</colordiffuse>", home)
 
     def test_home_chrome_uses_neutral_focus_and_real_transparent_textures(self):
         home = _read("script-plex-home.xml.tpl")
@@ -297,14 +462,18 @@ class HomeLayoutContractTests(unittest.TestCase):
     def test_home_header_uses_one_subtle_reversible_focus_lift(self):
         home = _read("script-plex-home.xml.tpl")
 
-        self.assertEqual(home.count('end="106" time="110"'), 3)
-        for control_id in (101, 202, 203):
+        self.assertEqual(home.count('end="106" time="110"'), 9)
+        for control_id in (202, 203):
             self.assertIn(
                 'reversible="true" condition="Control.HasFocus({})">Conditional'.format(
                     control_id
                 ),
                 home,
             )
+        self.assertEqual(
+            home.count('reversible="true" condition="Control.HasFocus(101) + '),
+            7,
+        )
         for oversized in ('end="108"', 'start="108"', 'end="118"', 'start="118"'):
             self.assertNotIn(oversized, home)
         self.assertNotIn('reversible="false">Focus</animation>', home)

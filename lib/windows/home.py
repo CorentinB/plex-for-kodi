@@ -14,7 +14,13 @@ from six.moves import range
 from lib import backgroundthread
 from lib import player
 from lib import util
-from lib.home_hero import build_hero_properties, empty_hero_properties
+from lib.home_hero import (
+    NAV_LABEL_WIDTHS,
+    build_hero_properties,
+    empty_hero_properties,
+    nav_label_width,
+    nav_visual_offsets,
+)
 from lib.path_mapping import pmm
 from lib.plex_hosts import pdm
 from lib.util import T
@@ -3359,14 +3365,17 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             self.movingSection = False
             self.setBoolProperty("moving", False)
             item.setBoolProperty("moving", False)
-            homemli = kodigui.ManagedListItem(T(32332, 'Home'), data_source=home_section)
+            home_title = T(32332, 'Home')
+            homemli = kodigui.ManagedListItem(home_title, data_source=home_section)
             homemli.setProperty('is.home', '1')
             homemli.setProperty('item', '1')
+            homemli.setProperty('nav.width.{}'.format(nav_label_width(home_title)), '1')
             if reset:
                 if self._initialMovingSectionPos is not None:
                     self.sectionList.moveItem(item, self._initialMovingSectionPos)
                 self._initialMovingSectionPos = None
             self.sectionList.insertItem(0, homemli)
+            self._applySectionNavOffsets(self.sectionList.items)
             if reset:
                 self.sectionList.selectItem(0)
             self.sectionChanged()
@@ -3378,6 +3387,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
             # remove home item
             self.sectionList.removeItem(0)
+            self._applySectionNavOffsets(self.sectionList.items)
             self.sectionList.setSelectedItem(item)
 
             item.setBoolProperty("moving", True)
@@ -3398,6 +3408,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 self.sectionList.selectItem(0)
 
             self.sectionList.moveItem(item, next_index)
+            self._applySectionNavOffsets(self.sectionList.items)
             self.sectionList.selectItem(next_index)
 
         elif action == xbmcgui.ACTION_SELECT_ITEM:
@@ -3719,14 +3730,36 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                                                                             reselect_pos))
         self.updateHubCallback(hub, items, reselect_pos=reselect_pos)
 
+    @staticmethod
+    def _sectionNavLabelWidth(item):
+        for width in NAV_LABEL_WIDTHS:
+            if item.getProperty('nav.width.{}'.format(width)):
+                return width
+        return 80
+
+    def _applySectionNavOffsets(self, items):
+        visible_items = [item for item in items if item.getProperty('item')]
+        widths = [self._sectionNavLabelWidth(item) for item in visible_items]
+        home_flags = [bool(item.getProperty('is.home')) for item in visible_items]
+        offsets = nav_visual_offsets(widths, home_flags)
+        for item, offset in zip(visible_items, offsets):
+            previous_offset = item.getProperty('nav.shift')
+            if previous_offset:
+                item.setProperty('nav.offset.{}'.format(previous_offset), '')
+            offset_key = str(offset)
+            item.setProperty('nav.shift', offset_key)
+            item.setProperty('nav.offset.{}'.format(offset_key), '1')
+
     def showSections(self, focus_section=None):
         global watchlist_section
         self.sectionHubs = {}
         items = []
 
-        homemli = kodigui.ManagedListItem(T(32332, 'Home'), data_source=home_section)
+        home_title = T(32332, 'Home')
+        homemli = kodigui.ManagedListItem(home_title, data_source=home_section)
         homemli.setProperty('is.home', '1')
         homemli.setProperty('item', '1')
+        homemli.setProperty('nav.width.{}'.format(nav_label_width(home_title)), '1')
         items.append(homemli)
 
         sections = []
@@ -3795,6 +3828,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                                           thumbnailImage='script.plex/home/type/{0}.png'.format(section.type),
                                           data_source=section)
             mli.setProperty('item', '1')
+            mli.setProperty('nav.width.{}'.format(nav_label_width(section.title)), '1')
             if section == playlists_section:
                 mli.setProperty('is.playlists', '1')
                 mli.setThumbnailImage('script.plex/home/type/playlists.png')
@@ -3805,6 +3839,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             items.append(mli)
 
         self.bottomItem = len(items) - 1
+        self._applySectionNavOffsets(items)
 
         for x in range(len(items), 8):
             mli = kodigui.ManagedListItem()
