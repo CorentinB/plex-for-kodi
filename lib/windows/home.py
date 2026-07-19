@@ -14,6 +14,7 @@ from six.moves import range
 from lib import backgroundthread
 from lib import player
 from lib import util
+from lib.home_hero import build_hero_properties, empty_hero_properties
 from lib.path_mapping import pmm
 from lib.plex_hosts import pdm
 from lib.util import T
@@ -675,7 +676,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             return
 
         if self.go_root:
-            self.setProperty('hub.focus', '')
+            self._setHubFocus()
             # cancel any pending async section change so the focus call below doesn't trigger a redundant reload
             self.sectionChangeTimeout = None
             # decide whether we need to switch the displayed hubs before overwriting state
@@ -2455,14 +2456,15 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             if controlID == self.SERVER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.USER_BUTTON_ID)
             elif controlID == self.USER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
-                self.setFocusId(self.SERVER_BUTTON_ID)
+                self.setFocusId(self.SEARCH_BUTTON_ID)
             elif controlID == self.SEARCH_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
-                if xbmc.getCondVisibility('Player.HasMedia + Control.IsVisible({0})'.format(self.PLAYER_STATUS_BUTTON_ID)):
+                if xbmc.getCondVisibility(
+                        'Player.HasAudio + Control.IsVisible({0})'.format(self.PLAYER_STATUS_BUTTON_ID)):
                     self.setFocusId(self.PLAYER_STATUS_BUTTON_ID)
                 else:
-                    self.setFocusId(self.SERVER_BUTTON_ID)
+                    self.setFocusId(self.SECTION_LIST_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
-                self.setFocusId(self.SERVER_BUTTON_ID)
+                self.setFocusId(self.SECTION_LIST_ID)
             elif 399 < controlID < 500:
                 if action.getId() in MOVE_SET or action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                     _continue = self.checkHubItem(controlID, action=action)
@@ -2504,7 +2506,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                     if util.addonSettings.fastBack and not optionsFocused and offSections \
                             and self.lastFocusID not in (self.USER_BUTTON_ID, self.SERVER_BUTTON_ID,
                                                          self.SEARCH_BUTTON_ID, self.SECTION_LIST_ID):
-                        self.setProperty('hub.focus', '0')
+                        self._setHubFocus(0)
                         self.setFocusId(self.SECTION_LIST_ID)
                         return
 
@@ -2602,7 +2604,13 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             self.lastFocusID = controlID
 
         if 399 < controlID < 500:
-            self.setProperty('hub.focus', str(self.hubFocusIndexes[controlID - 400]))
+            self._setHubFocus(self.hubFocusIndexes[controlID - 400])
+        elif controlID in (self.SECTION_LIST_ID, self.SEARCH_BUTTON_ID,
+                           self.SERVER_BUTTON_ID, self.USER_BUTTON_ID,
+                           self.PLAYER_STATUS_BUTTON_ID):
+            # Hub focus controls the deterministic row viewport. Top-level
+            # controls always restore the complete hero/navigation composition.
+            self._setHubFocus()
 
         if self.movingSection:
             return
@@ -2617,7 +2625,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             util.setGlobalBoolProperty('off.sections', '1')
 
     def goHome(self, **kwargs):
-        self.setProperty('hub.focus', '')
+        self._setHubFocus()
         self.setFocusId(self.SECTION_LIST_ID)
         self.sectionList.setSelectedItemByPos(0)
         # set lastSection here already, otherwise tick() might interfere
@@ -2835,7 +2843,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 task.cancel()
 
         with self.lock:
-            self.setProperty('hub.focus', '')
+            self._setHubFocus()
             self.displayServerAndUser()
             if plexapp.SERVERMANAGER.selectedServer:
                 self.loadLibrarySettings()
@@ -2933,7 +2941,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 if mli.dataSource and mli.dataSource.key == sectionID:
                     self.sectionList.selectItem(mli.pos())
                     self.lastSection = mli.dataSource
-                    self.setProperty('hub.focus', '')
+                    self._setHubFocus()
                     self.setFocusId(self.SECTION_LIST_ID)
                     self._sectionReallyChanged(self.lastSection)
 
@@ -3431,11 +3439,14 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             if pos is not None and pos > 0:
                 control.selectItem(0)
                 self.updateBackgroundFrom(control[0].dataSource)
+                self.setHomeHeroFromDataSource(control[0].dataSource)
                 return
             return True
 
-        if util.addonSettings.dynamicBackgrounds and is_valid_mli:
-            self.updateBackgroundFrom(mli.dataSource)
+        if is_valid_mli:
+            if util.addonSettings.dynamicBackgrounds:
+                self.updateBackgroundFrom(mli.dataSource)
+            self.setHomeHeroFromDataSource(mli.dataSource)
 
         if not mli or not mli.getProperty('is.end') or mli.getProperty('is.updating') == '1':
             # round robining
@@ -3450,6 +3461,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                         control.selectItem(0)
                         self._lastSelectedItem = (controlID, 0)
                         self.updateBackgroundFrom(control[0].dataSource)
+                        self.setHomeHeroFromDataSource(control[0].dataSource)
                         return
                 elif (action == xbmcgui.ACTION_MOVE_LEFT and mlipos == 0
                       and ((controlID, mlipos) == self._lastSelectedItem)):
@@ -3465,6 +3477,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                             
                         self._lastSelectedItem = (controlID, last_item_index)
                         self.updateBackgroundFrom(control[last_item_index].dataSource)
+                        self.setHomeHeroFromDataSource(control[last_item_index].dataSource)
                     else:
                         task = ExtendHubTask().setup(control.dataSource, self.extendHubCallback,
                                                      canceledCallback=lambda hub: mli.setBoolProperty('is.updating',
@@ -3482,6 +3495,21 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                                      canceledCallback=lambda hub: mli.setBoolProperty('is.updating', False))
         self.tasks.append(task)
         backgroundthread.BGThreader.addTask(task)
+
+    def setHomeHeroFromDataSource(self, data_source):
+        try:
+            props = build_hero_properties(data_source)
+        except Exception:
+            util.ERROR("Home: failed to build hero properties")
+            props = empty_hero_properties()
+
+        for key, value in props.items():
+            self.setProperty('home.hero.{}'.format(key), value)
+
+    def _setHubFocus(self, index=None):
+        """Keep raw hub focus and lower-row viewport state in sync."""
+        self.setProperty('hub.focus', '' if index is None else str(index))
+        self.setProperty('hub.scrolled', '1' if index is not None and index > 0 else '')
 
     def displayServerAndUser(self, **kwargs):
         title = plexapp.ACCOUNT.title or plexapp.ACCOUNT.username or ' '
@@ -3557,7 +3585,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             while self.block_section_change:
                 util.MONITOR.waitFor()
 
-            self.setProperty('hub.focus', '')
+            self._setHubFocus()
             if util.addonSettings.dynamicBackgrounds:
                 self.backgroundSet = False
 
@@ -3722,7 +3750,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         try:
             _sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
         except plexnet.exceptions.BadRequest:
-            self.setFocusId(self.SERVER_BUTTON_ID)
+            self.setFocusId(self.USER_BUTTON_ID)
             util.messageDialog("Error", "Bad request")
             return
 
@@ -3790,7 +3818,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             if items:
                 self.setFocusId(self.SECTION_LIST_ID)
             else:
-                self.setFocusId(self.SERVER_BUTTON_ID)
+                self.setFocusId(self.USER_BUTTON_ID)
         else:
             self.setFocusId(self.SECTION_LIST_ID)
 
@@ -4194,6 +4222,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
     def clearHubs(self):
         self.updateHubs = {}
+        for key, value in empty_hero_properties().items():
+            self.setProperty('home.hero.{}'.format(key), value)
         for i, control in enumerate(self.hubControls):
             control.reset()
             # Clear display type property for this hub slot
@@ -4249,6 +4279,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             if not self.backgroundSet and not use_reselect_pos:
                 if self.updateBackgroundFrom(obj):
                     self.backgroundSet = True
+                self.setHomeHeroFromDataSource(obj)
 
             wide = with_art
             no_spoilers = False
@@ -4333,6 +4364,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 self._lastSelectedItem = (index + 400, last_pos)
                 if last_pos < control.size() and self.updateBackgroundFrom(control[last_pos].dataSource):
                     self.backgroundSet = True
+                if last_pos < control.size():
+                    self.setHomeHeroFromDataSource(control[last_pos].dataSource)
                 return
 
             # during hub updates, if the user manually selects a different item, do nothing
@@ -4358,6 +4391,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 if rk_found:
                     if pos < control.size() and self.updateBackgroundFrom(control[pos].dataSource):
                         self.backgroundSet = True
+                    if pos < control.size():
+                        self.setHomeHeroFromDataSource(control[pos].dataSource)
                     return
 
             if cur_pos == pos:
@@ -4371,6 +4406,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 control.selectItem(pos)
                 if pos < control.size() and self.updateBackgroundFrom(control[pos].dataSource):
                     self.backgroundSet = True
+                if pos < control.size():
+                    self.setHomeHeroFromDataSource(control[pos].dataSource)
             else:
                 if more:
                     # re-extend the hub to its original size so we can reselect the ratingKey/position
@@ -4489,6 +4526,44 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             if not from_refresh:
                 plexapp.refreshResources()
 
+    def chooseServer(self):
+        servers = sorted(
+            plexapp.SERVERMANAGER.getServers(),
+            key=lambda server: (server.owned and '0' or '1') + server.name.lower(),
+        )
+        if not servers:
+            return
+
+        selected = plexapp.SERVERMANAGER.selectedServer
+        selected_index = 0
+        options = []
+        for index, server in enumerate(servers):
+            if selected and server.uuid == selected.uuid:
+                selected_index = index
+            display = server.name
+            if not server.owned and server.owner:
+                display = u'{0} ({1})'.format(display, server.owner)
+            options.append({
+                'key': server.uuid,
+                'display': display,
+                'indicator': (
+                    'script.plex/home/device/check.png'
+                    if selected and server.uuid == selected.uuid else ''
+                ),
+            })
+
+        choice = dropdown.showDropdown(
+            options,
+            header=T(34004, 'Choose server'),
+            with_indicator=True,
+            select_index=selected_index,
+            set_dropdown_prop=False,
+            align_items='left',
+            dialog_props=self.carriedProps,
+        )
+        if choice:
+            self.selectServer(choice['key'])
+
     def selectServer(self, uuid=None):
         if self._shuttingDown:
             return
@@ -4504,7 +4579,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 return
 
         # store last used server
-        prevUUID = plexapp.SERVERMANAGER.selectedServer.uuid
+        selected = plexapp.SERVERMANAGER.selectedServer
+        prevUUID = selected and selected.uuid or ''
 
         self.changingServer = True
 
@@ -4531,7 +4607,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 bc.ignoreSignal = True
                 self.changingServer = False
             else:
-                util.setSetting('previous_server.{}'.format(plexapp.ACCOUNT.ID), prevUUID)
+                if prevUUID:
+                    util.setSetting('previous_server.{}'.format(plexapp.ACCOUNT.ID), prevUUID)
 
     def showUserMenu(self, mouse=False):
         items = []
@@ -4545,6 +4622,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 items.append(kodigui.ManagedListItem(T(32342, 'Switch User'), data_source='switch'))
             else:
                 items.append(kodigui.ManagedListItem(T(32980, 'Refresh Users'), data_source='refresh_users'))
+        if plexapp.SERVERMANAGER.getServers():
+            items.append(kodigui.ManagedListItem(T(34004, 'Choose server'), data_source='server'))
         items.append(kodigui.ManagedListItem(T(32343, 'Settings'), data_source='settings'))
         if plexapp.ACCOUNT.isSignedIn:
             items.append(kodigui.ManagedListItem(T(32344, 'Sign Out'), data_source='signout'))
@@ -4594,6 +4673,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         if option == 'settings':
             from . import settings
             settings.openWindow()
+        elif option == 'server':
+            self.setBoolProperty('show.options', False)
+            self.chooseServer()
         elif option == 'update':
             self.setBoolProperty('show.options', False)
             self.showBusy()

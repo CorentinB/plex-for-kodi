@@ -335,8 +335,26 @@ class BaseWindow(XMLBase, xbmcgui.WindowXML, BaseFunctions):
             self.setFocusId(focus)
 
     def updateBackgroundFrom(self, ds):
-        if util.addonSettings.dynamicBackgrounds and ds:
-            return self.windowSetBackground(util.backgroundFromArt(ds.get('art', ds.get('parentArt', ds.get('grandparentArt', None))), width=self.width, height=self.height))
+        if not util.addonSettings.dynamicBackgrounds or not ds:
+            return
+
+        # Music and audiobook artists frequently have a portrait but no fanart.
+        # Keep the normal wide-art preference, then let the existing Plex
+        # transcoder turn the best available thumbnail into a blurred backdrop.
+        for art_name in ('defaultArt', 'art', 'parentArt', 'grandparentArt'):
+            background = util.backgroundFromArt(
+                getattr(ds, art_name, None), width=self.width, height=self.height
+            )
+            if background:
+                return self.windowSetBackground(background)
+
+        for art_name in ('defaultThumb', 'thumb', 'parentThumb', 'grandparentThumb'):
+            background = util.backgroundFromArt(
+                getattr(ds, art_name, None), width=self.width, height=self.height,
+                minimum_blur=32
+            )
+            if background:
+                return self.windowSetBackground(background)
 
     def windowSetBackground(self, value):
         if not util.addonSettings.dbgCrossfade:

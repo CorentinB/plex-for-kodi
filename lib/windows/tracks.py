@@ -322,9 +322,22 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             'background',
             util.backgroundFromArt(self.album.art, width=self.width, height=self.height)
         )
+        background_art = self.album.defaultArt or self.album.thumb
+        try:
+            blurred_background = background_art and background_art.asTranscodedImageURL(
+                self.width,
+                self.height,
+                blur=18,
+                opacity=100,
+                background='000000',
+            ) or ''
+        except (AttributeError, TypeError, ValueError):
+            blurred_background = ''
+        self.setProperty('album.background.blurred', blurred_background)
         self.setProperty('album.thumb', self.album.thumb.asTranscodedImageURL(*self.THUMB_SQUARE_DIM))
         self.setProperty('artist.title', self.album.parentTitle or '')
         self.setProperty('album.title', self.album.title)
+        self.setProperty('album.year', str(self.album.year or ''))
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(obj.title, data_source=obj)

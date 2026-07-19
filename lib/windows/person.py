@@ -20,6 +20,12 @@ from . import windowutils
 FILMOGRAPHY_PAGE_SIZE = 10
 DISCOVER_HUB_SLOTS = 6
 NOT_IN_LIBRARY_BATCH_SIZE = 10
+MOVE_ACTIONS = (
+    xbmcgui.ACTION_MOVE_LEFT,
+    xbmcgui.ACTION_MOVE_RIGHT,
+    xbmcgui.ACTION_MOVE_UP,
+    xbmcgui.ACTION_MOVE_DOWN,
+)
 
 
 class PersonDetailsTask(backgroundthread.Task):
@@ -82,7 +88,11 @@ class ExtendFilmographyTask(backgroundthread.Task):
 
 class DiscoverItem(object):
     def __init__(self, credit_data):
+        if not isinstance(credit_data, dict):
+            credit_data = {}
         meta = credit_data.get('Metadata', {})
+        if not isinstance(meta, dict):
+            meta = {}
         self.title = meta.get('title', '')
         self.year = str(meta.get('year', ''))
         self.type = meta.get('type', 'movie')
@@ -117,6 +127,10 @@ class DiscoverCreditsTask(backgroundthread.Task):
 
         for group_type, credits in credit_groups:
             group_items = []
+            if isinstance(credits, dict):
+                credits = [credits]
+            elif not isinstance(credits, (list, tuple)):
+                credits = []
             for credit in credits:
                 item = DiscoverItem(credit)
                 if item.ratingKey:
@@ -178,6 +192,7 @@ class PersonWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.tasks = backgroundthread.Tasks()
         self.exitCommand = None
         self.initialized = False
+        self.initialFocusPending = True
 
     def onFirstInit(self):
         self.setProperty('loading', '1')
@@ -214,7 +229,13 @@ class PersonWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def onAction(self, action):
         try:
+            if action in MOVE_ACTIONS:
+                self.initialFocusPending = False
             controlID = self.getFocusId()
+            if (action in MOVE_ACTIONS
+                    and self.FILMOGRAPHY_LIST_ID <= controlID
+                    < self.DISCOVER_LIST_BASE_ID + DISCOVER_HUB_SLOTS):
+                self.updateBackgroundForControl(controlID)
             if action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                 self.doClose()
                 return
@@ -253,13 +274,30 @@ class PersonWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.openDiscoverItem(controlID)
 
     def onFocus(self, controlID):
-        if self.FILMOGRAPHY_LIST_ID <= controlID <= self.DISCOVER_LIST_BASE_ID + DISCOVER_HUB_SLOTS:
+        if self.FILMOGRAPHY_LIST_ID <= controlID < self.DISCOVER_LIST_BASE_ID + DISCOVER_HUB_SLOTS:
             self.setProperty('hub.focus', str(controlID - self.FILMOGRAPHY_LIST_ID))
+            self.updateBackgroundForControl(controlID)
 
         if controlID > self.FILMOGRAPHY_LIST_ID:
             self.setProperty('on.extras', '1')
         else:
             self.setProperty('on.extras', '')
+
+    def updateBackgroundForControl(self, controlID):
+        if controlID == self.FILMOGRAPHY_LIST_ID:
+            control = self.filmographyListControl
+        else:
+            slot = controlID - self.DISCOVER_LIST_BASE_ID
+            if slot < 0 or slot >= len(self.discoverListControls):
+                return
+            control = self.discoverListControls[slot]
+
+        item = control.getSelectedItem()
+        if not item:
+            return
+        background = item.getProperty('background')
+        if background:
+            self.windowSetBackground(background)
 
     def doClose(self, **kw):
         self.tasks.kill()
@@ -387,8 +425,9 @@ class PersonWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                        len(discover_hubs), len(library_guids), slot)
 
         # Avoid focus trap: if filmography is empty but Discover hubs filled, move focus there
-        if slot > 0 and self.filmographyListControl.size() == 0:
+        if slot > 0 and self.filmographyListControl.size() == 0 and self.initialFocusPending:
             self.setFocusId(self.DISCOVER_LIST_BASE_ID)
+            self.initialFocusPending = False
 
     def fillDiscoverHub(self, slot, items, label):
         if slot >= len(self.discoverListControls):
@@ -481,6 +520,14 @@ class PersonWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(
             item_type in ('show', 'season', 'episode') and 'show' or 'movie'))
 
+        for art_name in ('defaultArt', 'art', 'parentArt'):
+            background = util.backgroundFromArt(
+                getattr(item, art_name, None), width=self.width, height=self.height
+            )
+            if background:
+                mli.setProperty('background', background)
+                break
+
         return mli
 
     def fillFilmography(self):
@@ -497,6 +544,11 @@ class PersonWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.filmographyListControl.reset()
         self.filmographyListControl.addItems(listItems)
         self.setProperty('filmography.count', str(len(self.filmographyItems)))
+        if listItems:
+            self.updateBackgroundForControl(self.FILMOGRAPHY_LIST_ID)
+            if self.initialFocusPending:
+                self.setFocusId(self.FILMOGRAPHY_LIST_ID)
+                self.initialFocusPending = False
 
     def filterButtonClicked(self):
         options = [

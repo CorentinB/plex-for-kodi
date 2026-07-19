@@ -41,7 +41,6 @@ class PhotoWindow(kodigui.BaseWindow):
     PQUEUE_BUTTON_ID = 412
 
     PQUEUE_LIST_ID = 500
-    PQUEUE_LIST_OVERLAY_BUTTON_ID = 501
 
     SLIDESHOW_INTERVAL = util.slideshowInterval
 
@@ -80,7 +79,7 @@ class PhotoWindow(kodigui.BaseWindow):
                 if not os.path.isdir(self.tempFolder):
                     util.ERROR()
 
-        self.pqueueList = kodigui.ManagedControlList(self, self.PQUEUE_LIST_ID, 14)
+        self.pqueueList = kodigui.ManagedControlList(self, self.PQUEUE_LIST_ID, 11)
         #self.setProperty('photo', 'script.plex/indicators/busy-photo.gif')
         try:
             self.getPlayQueue()
@@ -104,10 +103,10 @@ class PhotoWindow(kodigui.BaseWindow):
         try:
             # controlID = self.getFocusId()
             if action == xbmcgui.ACTION_MOVE_LEFT:
-                if not self.osdVisible() or self.getFocusId() == self.PQUEUE_LIST_OVERLAY_BUTTON_ID:
+                if not self.osdVisible() and not self.pqueueVisible():
                     self.prev()
             elif action == xbmcgui.ACTION_MOVE_RIGHT:
-                if not self.osdVisible() or self.getFocusId() == self.PQUEUE_LIST_OVERLAY_BUTTON_ID:
+                if not self.osdVisible() and not self.pqueueVisible():
                     self.next()
             elif action == xbmcgui.ACTION_MOVE_UP:
                 if self.osdVisible():
@@ -160,7 +159,12 @@ class PhotoWindow(kodigui.BaseWindow):
         if controlID == self.PREV_BUTTON_ID:
             self.prev()
         elif controlID == self.NEXT_BUTTON_ID:
-            next(self)
+            self.next()
+        elif controlID == self.PQUEUE_LIST_ID:
+            item = self.pqueueList.getSelectedItem()
+            if item and item.dataSource != self.playQueue.current():
+                self.playQueue.setCurrentItem(item.dataSource)
+                self.showPhoto()
         elif controlID == self.PLAY_PAUSE_BUTTON_ID:
             if self.isPlaying():
                 self.pause()
@@ -241,7 +245,12 @@ class PhotoWindow(kodigui.BaseWindow):
     def fillPqueueList(self, **kwargs):
         items = []
         for qi in self.playQueue.items():
-            mli = kodigui.ManagedListItem(thumbnailImage=qi.thumb.asTranscodedImageURL(123, 123), data_source=qi)
+            try:
+                thumbnail = qi.thumb.asTranscodedImageURL(132, 132)
+            except (AttributeError, TypeError):
+                thumbnail = ''
+            mli = kodigui.ManagedListItem(thumbnailImage=thumbnail, data_source=qi)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
             items.append(mli)
 
         self.pqueueList.replaceItems(items)
@@ -249,7 +258,7 @@ class PhotoWindow(kodigui.BaseWindow):
 
     def updatePqueueListSelection(self, current=None):
         selected = self.pqueueList.getListItemByDataSource(current or self.playQueue.current())
-        if not selected or not selected.pos():
+        if not selected:
             return
 
         self.pqueueList.selectItem(selected.pos())
@@ -397,13 +406,13 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setProperty('camera.model', photo.media[0].model)
         self.setProperty('camera.lens', photo.media[0].lens)
 
+        attributes = []
         if photo.media[0].height:
-            dims = u'{0} x {1}{2}'.format(
-                photo.media[0].width,
-                photo.media[0].height,
-                photo.media[0].parts[0].orientation and u' \u2022 {0} Mo'.format(photo.media[0].parts[0].orientation) or ''
-            )
-            self.setProperty('photo.dims', dims)
+            attributes.append(u'{0} x {1}'.format(photo.media[0].width, photo.media[0].height))
+        part_size = photo.media[0].parts[0].size.asInt()
+        if part_size:
+            attributes.append(util.simpleSize(part_size))
+        self.setProperty('photo.dims', u' \u2022 '.join(attributes))
         settings = []
         if photo.media[0].iso:
             settings.append('ISO {0}'.format(photo.media[0].iso))

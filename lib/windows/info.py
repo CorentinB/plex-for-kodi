@@ -5,8 +5,11 @@ import datetime
 
 from plexnet.video import Episode, Movie, Clip
 
+from lib import artwork
 from lib import util
+from lib.util import T
 from . import kodigui
+from . import search
 from . import windowutils
 from lib import seamless_branching
 
@@ -27,6 +30,9 @@ class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     width = 1920
     height = 1080
 
+    CLOSE_BUTTON_ID = 150
+    HOME_BUTTON_ID = 201
+    SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
     THUMB_DIM_POSTER = util.scaleResolution(519, 469)
@@ -54,7 +60,7 @@ class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if not isinstance(self.video, (Episode, Movie, Clip)):
             return self.info
 
-        summary = [self.info]
+        summary = [self.info or '']
         medias = self.video.media()
         if not medias:
             return self.info
@@ -64,24 +70,27 @@ class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         partCount = sum(len(m.parts) for m in medias)
         pcInfo = []
         if not onlyOneMedia:
-            pcInfo.append("Files: {}".format(mediaCount))
+            pcInfo.append("{}: {}".format(T(35045, 'Files'), mediaCount))
         if partCount > 1:
-            pcInfo.append("Parts: {}".format(partCount))
-        pcInfoStr = ", ".join(pcInfo)
+            pcInfo.append("{}: {}".format(T(35046, 'Parts'), partCount))
+        pcInfoStr = " • ".join(pcInfo)
 
-        addMedia = ["\n\n\n\nMedia{}\n".format(" ({})".format(pcInfoStr) if pcInfoStr else "")]
+        addMedia = ["\n\n{}\n".format(pcInfoStr) if pcInfoStr else "\n\n"]
         for media_ in medias:
             if not media_.isAccessible():
-                addMedia.append("Unavailable: {}\n\n".format(", ".join(os.path.basename(pf.file) for pf in media_.parts)))
+                addMedia.append("{}: {}\n\n".format(
+                    T(32312, 'Unavailable'),
+                    ", ".join(os.path.basename(pf.file) for pf in media_.parts),
+                ))
                 continue
 
             for part in media_.parts:
                 if not part:
-                    addMedia.append("Unavailable: {}".format(os.path.basename(part.file)))
+                    addMedia.append("{}\n".format(T(32312, 'Unavailable')))
                     continue
 
                 pmFolder = part.getPathMappedUrl(return_only_folder=True)
-                addMedia.append("File: ")
+                addMedia.append("{}: ".format(T(35041, 'File')))
                 splitFnAt = 74
                 fnLen = len(os.path.basename(part.file))
                 appended = False
@@ -92,11 +101,15 @@ class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                         continue
                     addMedia.append("{}\n".format(s))
                 if pmFolder:
-                    addMedia.append("Mapped via: {}\n".format(pmFolder))
-                addMedia.append("Added: {}\n".format(datetime.datetime.fromtimestamp(
+                    addMedia.append("{}: {}\n".format(T(35044, 'Mapped via'), pmFolder))
+                addMedia.append("{}: {}\n".format(T(35042, 'Added'), datetime.datetime.fromtimestamp(
                     self.video.addedAt.asFloat()).strftime("{} {}".format(util.shortDF, util.timeFormat))))
-                addMedia.append("Duration: {}, Size: {}\n".format(util.durationToShortText(int(part.duration)),
-                                                                  util.simpleSize(int(part.size))))
+                addMedia.append("{}: {}, {}: {}\n".format(
+                    T(32364, 'Duration'),
+                    util.durationToShortText(int(part.duration)),
+                    T(35043, 'Size'),
+                    util.simpleSize(int(part.size)),
+                ))
 
                 subs = []
                 subsOver = 0
@@ -116,21 +129,38 @@ class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                                                                       or "",
                                                                       stream.DOVIELPresent,
                                                                       stream.DOVIRPUPresent)
-                        addMedia.append("Video: {}x{}, {} {}/{}bit/{}/{}@{} kBit, {} fps{}\n".format(
-                            stream.width, stream.height, stream.videoCodecRendering, stream.codec.upper(),
-                            stream.bitDepth, stream.chromaSubsampling, stream.colorPrimaries, stream.bitrate,
-                            stream.frameRate, dovi and "\nDoVi: {}\n".format(dovi) or ""))
+                        videoParts = [
+                            "{} × {}".format(stream.width, stream.height),
+                            stream.videoCodecRendering,
+                            stream.codec.upper(),
+                            "{}-bit".format(stream.bitDepth) if stream.bitDepth else '',
+                            stream.chromaSubsampling,
+                            stream.colorPrimaries,
+                            "{} kbit/s".format(stream.bitrate) if stream.bitrate else '',
+                            "{} fps".format(stream.frameRate) if stream.frameRate else '',
+                        ]
+                        addMedia.append("{}: {}{}\n".format(
+                            T(32053, 'Video'),
+                            " • ".join(str(value) for value in videoParts if value),
+                            dovi and "\nDoVi: {}\n".format(dovi) or ""))
                     # audio
                     elif streamtype == 2:
                         imdb_id = seamless_branching.sbm.get_imdb_id(self.video)
                         is_sb = (seamless_branching.sbm.is_seamless_branching_movie(imdb_id, stream, force_detection=True)
                                  and " (SB!)" or "")
-                        addMedia.append("Audio: {}{}, {}/{}ch@{} kBit, {} Hz{}\n".format(
-                            stream.language,
-                            " (default)" if stream.default else "",
+                        audioParts = [
+                            "{}{}".format(
+                                stream.language,
+                                " ({})".format(T(35047, 'Default').lower()) if stream.default else "",
+                            ),
                             stream.codec.upper(),
-                            stream.channels, stream.bitrate,
-                            stream.samplingRate,
+                            "{} ch".format(stream.channels) if stream.channels else '',
+                            "{} kbit/s".format(stream.bitrate) if stream.bitrate else '',
+                            "{} Hz".format(stream.samplingRate) if stream.samplingRate else '',
+                        ]
+                        addMedia.append("{}: {}{}\n".format(
+                            T(32048, 'Audio'),
+                            " • ".join(str(value) for value in audioParts if value),
                             is_sb))
                     # subtitle
                     elif streamtype == 3:
@@ -140,8 +170,11 @@ class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                         subs.append("{} ({})".format(stream.language, stream.codec.upper()))
 
                 if subs:
-                    addMedia.append("Subtitles: {}{}\n".format(", ".join(subs),
-                                                               subsOver and " (+{})".format(subsOver) or ''))
+                    addMedia.append("{}: {}{}\n".format(
+                        T(32396, 'Subtitles'),
+                        ", ".join(subs),
+                        subsOver and " (+{})".format(subsOver) or '',
+                    ))
             if not onlyOneMedia:
                 addMedia.append("--------------\n")
 
@@ -154,11 +187,18 @@ class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             chapters.append(chapter.tag or "Chapter #{}".format(str(index+1)))
 
         if chapters:
-            addMedia.append("Chapters: {}{}\n".format(", ".join(chapters), chOver and " (+{})".format(chOver) or ''))
+            addMedia.append("{}: {}{}\n".format(
+                T(33611, 'Chapters'),
+                ", ".join(chapters),
+                chOver and " (+{})".format(chOver) or '',
+            ))
 
         if self.video.markers:
-            addMedia.append("Markers: {}".format(", ".join(name for off, name in sorted(
-                (int(marker.startTimeOffset), marker.type) for marker in self.video.markers))))
+            addMedia.append("{}: {}".format(
+                T(33612, 'Markers'),
+                ", ".join(name for off, name in sorted(
+                    (int(marker.startTimeOffset), marker.type) for marker in self.video.markers)),
+            ))
 
         return "".join(summary + addMedia)
 
@@ -166,13 +206,38 @@ class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('is.poster', self.isPoster and '1' or '')
         self.setProperty('is.square', self.isSquare and '1' or '')
         self.setProperty('is.16x9', self.is16x9 and '1' or '')
-        self.setProperty('title.main', self.title)
-        self.setProperty('title.sub', self.subTitle)
-        self.setProperty('thumb.fallback', self.thumbFallback)
-        self.setProperty('thumb', self.thumb.asTranscodedImageURL(*self.thumbDim, **self.thumb_opts))
-        self.setProperty('info', self.getVideoInfo())
-        self.setProperty('background', self.background)
+        self.setProperty('title.main', self.title or '')
+        self.setProperty('title.sub', self.subTitle or '')
+        self.setProperty('thumb.fallback', self.thumbFallback or '')
+
+        thumb = ''
+        if artwork.is_usable_art(self.thumb):
+            try:
+                thumb = self.thumb.asTranscodedImageURL(*self.thumbDim, **self.thumb_opts)
+            except (AttributeError, TypeError):
+                thumb = str(self.thumb)
+        self.setProperty('thumb', thumb)
+
+        summary = self.info or ''
+        combinedInfo = self.getVideoInfo() or ''
+        mediaInfo = ''
+        if combinedInfo.startswith(summary):
+            mediaInfo = combinedInfo[len(summary):].strip()
+        elif not summary:
+            mediaInfo = combinedInfo.strip()
+        self.setProperty('info.summary', summary)
+        self.setProperty('info.media', mediaInfo)
+        self.setProperty('info', combinedInfo)
+        self.setProperty('background', self.background or '')
+        self.setFocusId(self.CLOSE_BUTTON_ID)
 
     def onClick(self, controlID):
-        if controlID == self.PLAYER_STATUS_BUTTON_ID:
+        if controlID == self.CLOSE_BUTTON_ID:
+            self.doClose()
+        elif controlID == self.HOME_BUTTON_ID:
+            self.goHome()
+        elif controlID == self.SEARCH_BUTTON_ID:
+            sectionID = self.video and self.video.getLibrarySectionId() or None
+            self.processCommand(search.dialog(self, section_id=sectionID))
+        elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()

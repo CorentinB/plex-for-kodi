@@ -21,6 +21,12 @@ from . import videoplayer
 from . import windowutils
 
 PLAYLIST_PAGE_SIZE = 500
+MOVE_ACTIONS = (
+    xbmcgui.ACTION_MOVE_LEFT,
+    xbmcgui.ACTION_MOVE_RIGHT,
+    xbmcgui.ACTION_MOVE_UP,
+    xbmcgui.ACTION_MOVE_DOWN,
+)
 
 class ChunkRequestTask(backgroundthread.Task):
     WINDOW = None
@@ -133,6 +139,8 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin, signalsmix
                 self.doClose()
             elif self.playlist.playlistType == 'video' and action == xbmcgui.ACTION_CONTEXT_MENU:
                 return self.plItemPlaybackMenu()
+            elif action in MOVE_ACTIONS and self.getFocusId() == self.PLAYLIST_LIST_ID:
+                self.updateSelectedBackground()
         except:
             util.ERROR()
 
@@ -153,6 +161,19 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin, signalsmix
             self.optionsButtonClicked()
         elif controlID == self.SEARCH_BUTTON_ID:
             self.searchButtonClicked()
+
+    def onFocus(self, controlID):
+        if controlID != self.PLAYLIST_LIST_ID:
+            return
+        self.updateSelectedBackground()
+
+    def updateSelectedBackground(self):
+        item = self.playlistListControl.getSelectedItem()
+        if not item:
+            return
+        background = item.getProperty('background')
+        if background:
+            self.windowSetBackground(background)
 
     def doClose(self, **kw):
         player.PLAYER.off('new.video', self.onNewVideo)
@@ -301,13 +322,15 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin, signalsmix
             xbmc.executebuiltin('PlayerControl(Next)')
 
     def setProperties(self):
-        self.setProperty(
-            'background',
-            util.backgroundFromArt(self.playlist.composite, width=self.width, height=self.height)
-        )
-        self.setProperty('playlist.thumb', self.playlist.composite.asTranscodedImageURL(*self.ALBUM_THUMB_DIM))
+        composite = getattr(self.playlist, 'composite', None)
+        background = util.backgroundFromArt(composite, width=self.width, height=self.height)
+        if background:
+            self.setProperty('background', background)
+        if composite and hasattr(composite, 'asTranscodedImageURL'):
+            self.setProperty('playlist.thumb', composite.asTranscodedImageURL(*self.ALBUM_THUMB_DIM))
         self.setProperty('playlist.title', self.playlist.title)
         self.setProperty('playlist.duration', util.durationToText(self.playlist.duration.asInt()))
+        self.setProperty('playlist.type', self.playlist.playlistType or '')
 
     def updateListItem(self, idx, pi, mli=None):
         mli = mli or self.playlistListControl.getListItem(idx)
@@ -323,6 +346,14 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin, signalsmix
         elif pi.type in ('movie', 'clip'):
             self.createMovieListItem(mli, pi)
 
+        for art_name in ('defaultArt', 'art', 'parentArt', 'defaultThumb', 'thumb'):
+            background = util.backgroundFromArt(
+                getattr(pi, art_name, None), width=self.width, height=self.height
+            )
+            if background:
+                mli.setProperty('background', background)
+                break
+
         if pi.type in ('episode', 'movie', 'clip'):
             mli.setProperty('progress', util.getProgressImage(mli.dataSource))
 
@@ -331,6 +362,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin, signalsmix
     def createTrackListItem(self, mli, track):
         mli.setLabel2(u'{0} / {1}'.format(track.grandparentTitle, track.parentTitle))
         mli.setThumbnailImage(track.defaultThumb.asTranscodedImageURL(*self.LI_SQUARE_THUMB_DIM))
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
         mli.setProperty('track.duration', util.simplifiedTimeDisplay(track.duration.asInt()))
 
     def createEpisodeListItem(self, mli, episode):
@@ -340,6 +372,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin, signalsmix
         )
         mli.setLabel2(label2)
         mli.setThumbnailImage(episode.thumb.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM))
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
         mli.setProperty('track.duration', util.durationToShortText(episode.duration.asInt()))
         mli.setProperty('video', '1')
         mli.setProperty('watched', episode.isFullyWatched and '1' or '')
@@ -349,6 +382,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin, signalsmix
         mli.setLabel(movie.defaultTitle)
         mli.setLabel2(movie.year)
         mli.setThumbnailImage(movie.art.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM))
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
         mli.setProperty('track.duration', util.durationToShortText(movie.duration.asInt()))
         mli.setProperty('video', '1')
         mli.setProperty('watched', movie.isWatched and '1' or '')

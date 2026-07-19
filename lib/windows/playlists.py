@@ -11,6 +11,13 @@ from . import playlist
 from . import search
 from . import windowutils
 
+MOVE_ACTIONS = (
+    xbmcgui.ACTION_MOVE_LEFT,
+    xbmcgui.ACTION_MOVE_RIGHT,
+    xbmcgui.ACTION_MOVE_UP,
+    xbmcgui.ACTION_MOVE_DOWN,
+)
+
 
 class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-playlists.xml'
@@ -58,6 +65,8 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
+            elif action in MOVE_ACTIONS:
+                self.updateSelectedBackground(self.getFocusId())
             # elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
             #     if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
             #         self.setFocusId(self.OPTIONS_GROUP_ID)
@@ -79,6 +88,23 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.showAudioPlayer()
         elif controlID == self.SEARCH_BUTTON_ID:
             self.searchButtonClicked()
+
+    def onFocus(self, controlID):
+        self.updateSelectedBackground(controlID)
+
+    def updateSelectedBackground(self, controlID):
+        if controlID == self.AUDIO_PL_LIST_ID:
+            control = self.audioPLListControl
+        elif controlID == self.VIDEO_PL_LIST_ID:
+            control = self.videoPLListControl
+        else:
+            return
+
+        item = control.getSelectedItem()
+        if item:
+            background = item.getProperty('background')
+            if background:
+                self.windowSetBackground(background)
 
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self))
@@ -112,6 +138,12 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         )
         mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(obj.playlistType == 'audio' and 'music' or 'movie'))
 
+        background = util.backgroundFromArt(
+            getattr(obj, 'composite', None), width=self.width, height=self.height
+        )
+        if background:
+            mli.setProperty('background', background)
+
         return mli
 
     @busy.dialog()
@@ -121,11 +153,6 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             'video': []
         }
         playlists = plexapp.SERVERMANAGER.selectedServer.playlists()
-
-        self.setProperty(
-            'background',
-            util.backgroundFromArt(playlists[0].composite, width=self.width, height=self.height)
-        )
 
         for pl in playlists:
             mli = self.createListItem(pl)

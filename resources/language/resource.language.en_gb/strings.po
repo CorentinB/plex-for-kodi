@@ -3233,3 +3233,179 @@ msgstr ""
 msgctxt "#35018"
 msgid "Shuffle All"
 msgstr ""
+
+msgctxt "#35019"
+msgid "Cast & Crew"
+msgstr ""
+
+msgctxt "#35020"
+msgid "Your library, beautifully at home."
+msgstr ""
+
+msgctxt "#35021"
+msgid "Stream your movies, shows, music, and photos from every Plex server you call home."
+msgstr ""
+
+msgctxt "#35022"
+msgid "Already have a Plex account?"
+msgstr ""
+
+msgctxt "#35023"
+msgid "Link your Plex account"
+msgstr ""
+
+msgctxt "#35024"
+msgid "On another device, open [B]plex.tv/link[/B] and enter this code."
+msgstr ""
+
+msgctxt "#35025"
+msgid "This code expires automatically. Press Back to cancel."
+msgstr ""
+
+msgctxt "#35026"
+msgid "Preparing your sign-in code..."
+msgstr ""
+
+msgctxt "#35027"
+msgid "Connecting your account..."
+msgstr ""
+
+msgctxt "#35028"
+msgid "This code has expired"
+msgstr ""
+
+msgctxt "#35029"
+msgid "Generate a new code to continue signing in."
+msgstr ""
+
+msgctxt "#35030"
+msgid "Unable to continue"
+msgstr ""
+
+msgctxt "#35031"
+msgid "New code"
+msgstr ""
+
+msgctxt "#35032"
+msgid "Who's watching?"
+msgstr ""
+
+msgctxt "#35033"
+msgid "Refresh profiles"
+msgstr ""
+
+msgctxt "#35034"
+msgid "Tracks"
+msgstr ""
+
+msgctxt "#35035"
+msgid "Seasons"
+msgstr ""
+
+msgctxt "#35036"
+msgid "Queue"
+msgstr ""
+
+msgctxt "#35037"
+msgid "Now Playing"
+msgstr ""
+
+msgctxt "#35038"
+msgid "Items"
+msgstr ""
+
+msgctxt "#35039"
+msgid "Media Details"
+msgstr ""
+
+msgctxt "#35040"
+msgid "Done"
+msgstr ""
+
+msgctxt "#35041"
+msgid "File"
+msgstr ""
+
+msgctxt "#35042"
+msgid "Added"
+msgstr ""
+
+msgctxt "#35043"
+msgid "Size"
+msgstr ""
+
+msgctxt "#35044"
+msgid "Mapped via"
+msgstr ""
+
+msgctxt "#35045"
+msgid "Files"
+msgstr ""
+
+msgctxt "#35046"
+msgid "Parts"
+msgstr ""
+
+msgctxt "#35047"
+msgid "Default"
+msgstr ""
+
+msgctxt "#35048"
+msgid "{0} day"
+msgstr ""
+
+msgctxt "#35049"
+msgid "{0} days"
+msgstr ""
+
+msgctxt "#35050"
+msgid "{0} hr"
+msgstr ""
+
+msgctxt "#35051"
+msgid "{0} hrs"
+msgstr ""
+
+msgctxt "#35052"
+msgid "{0} min"
+msgstr ""
+
+msgctxt "#35053"
+msgid "{0} mins"
+msgstr ""
+
+msgctxt "#35054"
+msgid "{0} sec"
+msgstr ""
+
+msgctxt "#35055"
+msgid "{0} secs"
+msgstr ""
+
+msgctxt "#35056"
+msgid "0 seconds"
+msgstr ""
+
+msgctxt "#35057"
+msgid "Photo information"
+msgstr ""
+
+msgctxt "#35058"
+msgid "Camera"
+msgstr ""
+
+msgctxt "#35059"
+msgid "Lens"
+msgstr ""
+
+msgctxt "#35060"
+msgid "File"
+msgstr ""
+
+msgctxt "#35061"
+msgid "No photos available"
+msgstr ""
+
+msgctxt "#35062"
+msgid "Photos"
+msgstr ""

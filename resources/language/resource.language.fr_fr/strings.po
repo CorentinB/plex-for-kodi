@@ -1233,7 +1233,7 @@ msgstr "Temps d'attente du bouton 'Passer l'intro'"
 #: 
 msgctxt "#32522"
 msgid "Automatically Skip Intro"
-msgstr "Passer automatiquement l'intro"
+msgstr "Saut auto de l'intro"
 
 #: 
 msgctxt "#32524"
@@ -1248,7 +1248,7 @@ msgstr "Temps d'attente du bouton 'Passer les crédits'"
 #: 
 msgctxt "#32526"
 msgid "Automatically Skip Credits"
-msgstr "Passer automatiquement le générique"
+msgstr "Saut auto du générique"
 
 #: 
 msgctxt "#32528"
@@ -1422,7 +1422,7 @@ msgstr "Ré-actualiser tous les hubs pour toutes les bibliothèques après que l
 #: 
 msgctxt "#33505"
 msgid "Show intro skip button early"
-msgstr ""
+msgstr "« Passer l'intro » dès le début"
 
 #: 
 msgctxt "#33507"
@@ -1531,7 +1531,6 @@ msgid "Userdata/Profile Path"
 msgstr "Chemin Userdata/Profile"
 
 #: 
-#, fuzzy
 msgctxt "#33618"
 msgid "TV binge-viewing mode"
 msgstr "Mode binge-watching"
@@ -1588,7 +1587,7 @@ msgstr ""
 #: 
 msgctxt "#32631"
 msgid "Playback (user-specific)"
-msgstr ""
+msgstr "Lecture (par profil)"
 
 #: 
 msgctxt "#33632"
@@ -1743,8 +1742,7 @@ msgstr "Lorsque le mode connexion lente est activé dans l'add-on attendre cette
 #: 
 msgctxt "#32920"
 msgid "Insufficient buffer wait (seconds)"
-msgstr "\n"
-""
+msgstr ""
 
 #: 
 msgctxt "#32921"
@@ -1968,11 +1966,6 @@ msgstr ""
 #: 
 msgctxt "#32972"
 msgid "Request this amount of media items per chunk request in library view (+6-30 depending on view mode; less can be less straining for the UI at first, but puts more strain on the server)"
-msgstr ""
-
-#: 
-msgctxt "#32973"
-msgid "Episodes: Skip Post Play screen"
 msgstr ""
 
 #: 
@@ -3216,14 +3209,16 @@ msgstr ""
 #: 
 msgctxt "#33667"
 msgid "Use alternate seek"
-msgstr ""
+msgstr "Utiliser la recherche alternative"
 
 #: 
 msgctxt "#33668"
 msgid "ATTENTION: Only enable this if you have reproducible audio issues after seeking/resuming.\n"
 "\n"
 "Use an alternative seek method in videos, which can help in problematic scenarios; brings its own issues/quirks. Disabled by default (enabled by default for CoreELEC and LG WebOS)"
-msgstr ""
+msgstr "ATTENTION : activez cette option uniquement si vous rencontrez des problèmes audio reproductibles après une recherche ou une reprise.\n"
+"\n"
+"Utilise une méthode de recherche alternative dans les vidéos. Elle peut aider dans certains cas difficiles, mais possède ses propres limitations. Désactivée par défaut (activée par défaut sous CoreELEC et LG webOS)."
 
 #: 
 msgctxt "#33720"
@@ -3313,7 +3308,7 @@ msgstr ""
 #: 
 msgctxt "#33737"
 msgid "Loop theme music"
-msgstr ""
+msgstr "Lire le thème musical en boucle"
 
 #: 
 msgctxt "#33671"
@@ -3367,7 +3362,7 @@ msgstr ""
 #: 
 msgctxt "#34004"
 msgid "Choose server"
-msgstr ""
+msgstr "Choisir le serveur"
 
 #: 
 msgctxt "#34005"
@@ -3487,7 +3482,7 @@ msgstr ""
 #: 
 msgctxt "#32973"
 msgid "Episodes: Continuous playback"
-msgstr ""
+msgstr "Lecture continue des épisodes"
 
 #: 
 msgctxt "#34028"
@@ -3569,3 +3564,251 @@ msgctxt "#34043"
 msgid "Album"
 msgstr ""
 
+#:
+msgctxt "#34062"
+msgid "Ensure Kodi Addon position"
+msgstr "Conserver la position dans Kodi"
+
+#:
+msgctxt "#34063"
+msgid "When not run from the Program addons section, our lastused value will not be updated. Make sure it does when the addon exits."
+msgstr "Conserve la position de Plex dans Kodi même lorsque l’extension n’est pas lancée depuis la section « Extensions de programmes »."
+
+#:
+msgctxt "#35004"
+msgid "History"
+msgstr "Historique"
+
+#:
+msgctxt "#35005"
+msgid "Clear search history"
+msgstr "Effacer l’historique de recherche"
+
+#:
+msgctxt "#35006"
+msgid "Clear all search history?"
+msgstr "Effacer tout l’historique de recherche ?"
+
+#:
+msgctxt "#35019"
+msgid "Cast & Crew"
+msgstr "Distribution et équipe"
+
+#:
+msgctxt "#35020"
+msgid "Your library, beautifully at home."
+msgstr "Votre médiathèque, sublimée à la maison."
+
+#:
+msgctxt "#35021"
+msgid "Stream your movies, shows, music, and photos from every Plex server you call home."
+msgstr "Retrouvez les films, séries, musiques et photos de tous vos serveurs Plex."
+
+#:
+msgctxt "#35022"
+msgid "Already have a Plex account?"
+msgstr "Vous avez déjà un compte Plex ?"
+
+#:
+msgctxt "#35023"
+msgid "Link your Plex account"
+msgstr "Associez votre compte Plex"
+
+#:
+msgctxt "#35024"
+msgid "On another device, open [B]plex.tv/link[/B] and enter this code."
+msgstr "Sur un autre appareil, ouvrez [B]plex.tv/link[/B] et saisissez ce code."
+
+#:
+msgctxt "#35025"
+msgid "This code expires automatically. Press Back to cancel."
+msgstr "Ce code expire automatiquement. Appuyez sur Retour pour annuler."
+
+#:
+msgctxt "#35026"
+msgid "Preparing your sign-in code..."
+msgstr "Préparation de votre code de connexion..."
+
+#:
+msgctxt "#35027"
+msgid "Connecting your account..."
+msgstr "Connexion de votre compte..."
+
+#:
+msgctxt "#35028"
+msgid "This code has expired"
+msgstr "Ce code a expiré"
+
+#:
+msgctxt "#35029"
+msgid "Generate a new code to continue signing in."
+msgstr "Générez un nouveau code pour poursuivre la connexion."
+
+#:
+msgctxt "#35030"
+msgid "Unable to continue"
+msgstr "Impossible de continuer"
+
+#:
+msgctxt "#35031"
+msgid "New code"
+msgstr "Nouveau code"
+
+#:
+msgctxt "#35032"
+msgid "Who's watching?"
+msgstr "Qui regarde ?"
+
+#:
+msgctxt "#35033"
+msgid "Refresh profiles"
+msgstr "Actualiser les profils"
+
+#:
+msgctxt "#35034"
+msgid "Tracks"
+msgstr "Pistes"
+
+#:
+msgctxt "#35035"
+msgid "Seasons"
+msgstr "Saisons"
+
+#:
+msgctxt "#35036"
+msgid "Queue"
+msgstr "File d’attente"
+
+#:
+msgctxt "#35037"
+msgid "Now Playing"
+msgstr "Lecture en cours"
+
+#:
+msgctxt "#35038"
+msgid "Items"
+msgstr "Éléments"
+
+#:
+msgctxt "#35039"
+msgid "Media Details"
+msgstr "Détails du média"
+
+#:
+msgctxt "#35040"
+msgid "Done"
+msgstr "Terminé"
+
+#:
+msgctxt "#35041"
+msgid "File"
+msgstr "Fichier"
+
+#:
+msgctxt "#35042"
+msgid "Added"
+msgstr "Ajouté le"
+
+#:
+msgctxt "#35043"
+msgid "Size"
+msgstr "Taille"
+
+#:
+msgctxt "#35044"
+msgid "Mapped via"
+msgstr "Chemin mappé via"
+
+#:
+msgctxt "#35045"
+msgid "Files"
+msgstr "Fichiers"
+
+#:
+msgctxt "#35046"
+msgid "Parts"
+msgstr "Segments"
+
+#:
+msgctxt "#35047"
+msgid "Default"
+msgstr "Par défaut"
+
+#:
+msgctxt "#35048"
+msgid "{0} day"
+msgstr "{0} jour"
+
+#:
+msgctxt "#35049"
+msgid "{0} days"
+msgstr "{0} jours"
+
+#:
+msgctxt "#35050"
+msgid "{0} hr"
+msgstr "{0} h"
+
+#:
+msgctxt "#35051"
+msgid "{0} hrs"
+msgstr "{0} h"
+
+#:
+msgctxt "#35052"
+msgid "{0} min"
+msgstr "{0} min"
+
+#:
+msgctxt "#35053"
+msgid "{0} mins"
+msgstr "{0} min"
+
+#:
+msgctxt "#35054"
+msgid "{0} sec"
+msgstr "{0} s"
+
+#:
+msgctxt "#35055"
+msgid "{0} secs"
+msgstr "{0} s"
+
+#:
+msgctxt "#35056"
+msgid "0 seconds"
+msgstr "0 s"
+
+#:
+msgctxt "#35057"
+msgid "Photo information"
+msgstr "Informations sur la photo"
+
+#:
+msgctxt "#35058"
+msgid "Camera"
+msgstr "Appareil"
+
+#:
+msgctxt "#35059"
+msgid "Lens"
+msgstr "Objectif"
+
+#:
+msgctxt "#35060"
+msgid "File"
+msgstr "Fichier"
+
+#:
+msgctxt "#35061"
+msgid "No photos available"
+msgstr "Aucune photo disponible"
+
+#:
+msgctxt "#35062"
+msgid "Photos"
+msgstr "Photos"
+
+msgctxt "#34102"
+msgid "Categories"
+msgstr "Catégories"

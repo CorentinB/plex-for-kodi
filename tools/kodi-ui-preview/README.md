@@ -16,9 +16,13 @@ Then open the printed local URL.
 ## Scope
 
 - Uses real skin PNG/GIF assets through `/skin-media/...`.
-- Models the home header, section rail, hub rows, poster/square/16:9 cards, focus
-  states, progress bars, and basic source-template inspection.
+- Mirrors the native top composition, compact lower-row hero, deterministic
+  row viewport, and poster/square/16:9 focus treatment.
+- Supports keyboard focus (`Arrow` keys and `Escape`) so row transitions and
+  metadata changes can be inspected without Kodi.
+- Includes basic read-only source-template inspection.
 - Keeps all preview code isolated under `tools/kodi-ui-preview`.
 
-Use Kodi itself for final verification because Kodi-only XML controls, `$INFO[...]`
-bindings, focus routing, and animation semantics are only approximated here.
+The native Kodi XML and Python remain authoritative. Use Kodi itself for final
+verification because `$INFO[...]` bindings, focus routing, media data, and
+animation semantics are only approximated here.

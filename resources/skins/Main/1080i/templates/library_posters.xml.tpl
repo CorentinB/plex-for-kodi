@@ -30,11 +30,11 @@
         <disabledcolor>A0FFFFFF</disabledcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus>-</texturefocus>
-        <texturenofocus>-</texturenofocus>
+        <texturefocus>script.plex/transparent-6px.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>0</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(filter2.display)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(filter2.display)]</label>
     </control>
     <control type="button" id="211">
         <visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
@@ -45,11 +45,11 @@
         <focusedcolor>FF000000</focusedcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
+        <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>20</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(filter1.display)]</label>
     </control>
     <control type="button" id="310">
         <visible>String.IsEqual(Window.Property(subDir),1) | ![String.IsEqual(Window.Property(media),show) | String.IsEqual(Window.Property(media),movie) | String.IsEqual(Window.Property(media),movies_shows)]</visible>
@@ -62,11 +62,10 @@
         <disabledcolor>FFFFFFFF</disabledcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus>-</texturenofocus>
-        <texturenofocus>-</texturenofocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>20</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(media.type)]</label>
     </control>
     <control type="button" id="312">
         <visible>!String.IsEqual(Window.Property(subDir),1) + [String.IsEqual(Window.Property(media),show) | String.IsEqual(Window.Property(media),movie) | String.IsEqual(Window.Property(media),movies_shows)]</visible>
@@ -78,11 +77,11 @@
         <disabledcolor>FFFFFFFF</disabledcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
+        <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>20</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(media.type)]</label>
     </control>
     <control type="button" id="210">
         <visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
@@ -93,11 +92,11 @@
         <focusedcolor>FF000000</focusedcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
+        <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>20</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(sort.display)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(sort.display)]</label>
     </control>
 </control>
 {% endblock filteropts_grouplist %}

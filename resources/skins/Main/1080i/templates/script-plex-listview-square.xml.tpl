@@ -6,7 +6,7 @@
 
 {% block content %}
     <control type="group">
-        <posx>60</posx>
+        <posx>100</posx>
         <posy>{{ vscale(248) }}</posy>
         <control type="group">
             <visible>String.IsEqual(Window.Property(media),photo) | String.IsEqual(Window.Property(media),photodirectory)</visible>
@@ -15,7 +15,7 @@
                 <posy>0</posy>
                 <width>630</width>
                 <height>{{ vscale(355) }}</height>
-                <texture colordiffuse="A0000000">script.plex/white-square.png</texture>
+                <texture colordiffuse="A0000000" diffuse="script.plex/landscape-rounded-mask.png">script.plex/white-square.png</texture>
             </control>
             <control type="image">
                 <posx>0</posx>
@@ -23,7 +23,7 @@
                 <width>630</width>
                 <height>{{ vscale(355) }}</height>
                 <fadetime>500</fadetime>
-                <texture background="true" fallback="script.plex/thumb_fallbacks/photo.png">$INFO[Container(101).ListItem.Thumb]</texture>
+                <texture background="true" fallback="script.plex/thumb_fallbacks/photo.png" diffuse="script.plex/landscape-rounded-mask.png">$INFO[Container(101).ListItem.Thumb]</texture>
                 <aspectratio>keep</aspectratio>
             </control>
         </control>
@@ -34,26 +34,27 @@
             <width>355</width>
             <height>{{ vscale(355) }}</height>
             <fadetime>500</fadetime>
-            <texture background="true" fallback="script.plex/thumb_fallbacks/music.png">$INFO[Container(101).ListItem.Thumb]</texture>
+            <texture background="true" fallback="script.plex/thumb_fallbacks/music.png" diffuse="script.plex/square-rounded-mask.png">$INFO[Container(101).ListItem.Thumb]</texture>
             <aspectratio>scale</aspectratio>
         </control>
         <control type="group">
             <visible>!String.IsEmpty(Container(101).ListItem.Label2)</visible>
-            <control type="label">
+            <control type="textbox">
                 <posx>0</posx>
                 <posy>{{ vscale(355) }}</posy>
-                <width>310</width>
+                <width>400</width>
                 <height>{{ vscale(80) }}</height>
                 <font>font12</font>
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
                 <label>[B]$INFO[Container(101).ListItem.Label][/B]</label>
+                <autoscroll>false</autoscroll>
             </control>
             <control type="label">
-                <posx>630</posx>
+                <posx>430</posx>
                 <posy>{{ vscale(355) }}</posy>
-                <width>310</width>
+                <width>200</width>
                 <height>{{ vscale(80) }}</height>
                 <font>font12</font>
                 <align>right</align>
@@ -64,7 +65,7 @@
         </control>
         <control type="group">
             <visible>String.IsEmpty(Container(101).ListItem.Label2)</visible>
-            <control type="label">
+            <control type="textbox">
                 <posx>0</posx>
                 <posy>{{ vscale(355) }}</posy>
                 <width>630</width>
@@ -74,6 +75,7 @@
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
                 <label>[B]$INFO[Container(101).ListItem.Label][/B]</label>
+                <autoscroll>false</autoscroll>
             </control>
         </control>
         <control type="image">
@@ -93,7 +95,7 @@
             <align>left</align>
             <textcolor>FFDDDDDD</textcolor>
             <label>$INFO[Container(101).ListItem.Property(camera.model),,[CR]]$INFO[Container(101).ListItem.Property(camera.lens),,[CR]]$INFO[Container(101).ListItem.Property(photo.dims),,[CR]]$INFO[Container(101).ListItem.Property(camera.settings),,[CR]]$INFO[Container(101).ListItem.Property(photo.summary),[CR],[CR]]$INFO[Container(101).ListItem.Property(summary)]</label>
-            <autoscroll delay="2000" time="2000" repeat="10000"></autoscroll>
+            <autoscroll>false</autoscroll>
         </control>
     </control>
 
@@ -105,7 +107,7 @@
         {% block buttons %}
             <control type="grouplist" id="300">
                 <defaultcontrol>301</defaultcontrol>
-                <posx>30</posx>
+                <posx>155</posx>
                 <posy>{{ vscale(-25) }}</posy>
                 <width>1000</width>
                 <height>{{ vscale(145) }}</height>
@@ -113,18 +115,20 @@
                 <ondown>101</ondown>
                 <onleft>210</onleft>
                 <onright>600</onright>
-                <itemgap>-20</itemgap>
+                <itemgap>14</itemgap>
                 <orientation>horizontal</orientation>
                 <scrolltime tween="quadratic" easing="out">200</scrolltime>
                 <usecontrolcoords>true</usecontrolcoords>
                 <visible>!String.IsEmpty(Window.Property(initialized))</visible>
 
-                {% with attr = {"width": 126, "height": 100} & template = "includes/themed_button.xml.tpl" & hitrect = {"x": 20, "y": 20, "w": 86, "h": 60} %}
+                {% with attr = {"width": 126, "height": 100} & template = "includes/themed_button.xml.tpl" & hitrect = {"x": 20, "y": 20, "w": 86, "h": 60} & library_style = True %}
                     {% include template with name="play" & id=301 & visible="String.IsEmpty(Window.Property(disable_playback)) + [!String.IsEqual(Window(10000).Property(script.plex.item.type),collection) | String.IsEqual(Window.Property(media),collection)]" %}
                     {% include template with name="shuffle" & id=302 & visible="String.IsEmpty(Window.Property(disable_playback)) + [!String.IsEqual(Window(10000).Property(script.plex.item.type),collection) | String.IsEqual(Window.Property(media),collection)]" %}
                     {% include template with name="more" & id=303 & visible="String.IsEmpty(Window.Property(disable_playback)) + [String.IsEmpty(Window.Property(no.options)) | Player.HasAudio]" %}
                     {% include template with name="chapters" & id=304 & visible="String.IsEmpty(Window.Property(hide.filteroptions))" %}
                 {% endwith %}
+
+                {% include "includes/library_button_navigation.xml.tpl" %}
 
             </control>
         {% endblock %}
@@ -190,7 +194,7 @@
                                     <align>left</align>
                                     <aligny>center</aligny>
                                     <textcolor>FFFFFFFF</textcolor>
-                                    <label>[B]$INFO[ListItem.Label][COLOR FFE5A00D]/[/COLOR][/B]</label>
+                                    <label>[B]$INFO[ListItem.Label][COLOR 88FFFFFF]/[/COLOR][/B]</label>
                                 </control>
                             </control>
                         </control>
@@ -243,7 +247,7 @@
                                             <align>left</align>
                                             <aligny>center</aligny>
                                             <textcolor>FFFFFFFF</textcolor>
-                                            <label>[B]$INFO[ListItem.Label][COLOR FFE5A00D]/[/COLOR][/B]</label>
+                                            <label>[B]$INFO[ListItem.Label][COLOR 88FFFFFF]/[/COLOR][/B]</label>
                                         </control>
                                     </control>
                                 </control>
@@ -276,7 +280,7 @@
                                 <width>1005</width>
                                 <height>{{ vscale(76) }}</height>
                                 <texture border="12">script.plex/white-square-rounded.png</texture>
-                                <colordiffuse>FFE5A00D</colordiffuse>
+                                <colordiffuse>F2F5F5F5</colordiffuse>
                             </control>
 
                             <control type="group">
@@ -290,7 +294,7 @@
                                         <posy>0</posy>
                                         <width>885</width>
                                         <height>{{ vscale(72) }}</height>
-                                        <font>font12</font>
+                                        <font>font10</font>
                                         <align>left</align>
                                         <aligny>center</aligny>
                                         <textcolor>DF000000</textcolor>
@@ -325,9 +329,9 @@
             <visible>true</visible>
             <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texturesliderbackground>
             <texturesliderbar colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texturesliderbar>
-            <texturesliderbarfocus colordiffuse="FFE5A00D" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
-            <textureslidernib>-</textureslidernib>
-            <textureslidernibfocus>-</textureslidernibfocus>
+            <texturesliderbarfocus colordiffuse="FFF5F5F5" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
+            <textureslidernib>script.plex/transparent-6px.png</textureslidernib>
+            <textureslidernibfocus>script.plex/transparent-6px.png</textureslidernibfocus>
             <pulseonselect>false</pulseonselect>
             <orientation>vertical</orientation>
             <showonepage>false</showonepage>
@@ -346,7 +350,7 @@
             <posy>0</posy>
             <width>34</width>
             <height>1050</height>
-            <onleft>600</onleft>
+            <onleft>101</onleft>
             <onright>152</onright>
             <scrolltime>200</scrolltime>
             <orientation>vertical</orientation>
@@ -379,7 +383,7 @@
                             <font>font10</font>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <textcolor>FFE5A00D</textcolor>
+                            <textcolor>FFFFFFFF</textcolor>
                             <label>$INFO[ListItem.Label]</label>
                         </control>
                     </control>
@@ -415,7 +419,7 @@
                             <font>font10</font>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <textcolor>FFE5A00D</textcolor>
+                            <textcolor>FFFFFFFF</textcolor>
                             <label>$INFO[ListItem.Label]</label>
                         </control>
                     </control>
@@ -430,7 +434,7 @@
                             <posy>0</posy>
                             <width>34</width>
                             <height>{{ vscale(34) }}</height>
-                            <colordiffuse>FFE5A00D</colordiffuse>
+                            <colordiffuse>FFF5F5F5</colordiffuse>
                             <texture border="12">script.plex/white-outline-rounded.png</texture>
                         </control>
                     </control>

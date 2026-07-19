@@ -18,17 +18,31 @@
             <texture background="true">$INFO[Window.Property(post.play.background)]</texture>
             {% include "includes/scale_background.xml.tpl" %}
         </control>
+        <control type="image">
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>1080</height>
+            <texture>script.plex/home/tvos-background-wash.png</texture>
+        </control>
+        <control type="image">
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="44000000">script.plex/white-square.png</texture>
+        </control>
     </control>
 
     <control type="group" id="50">
         <animation effect="slide" end="0,{{ vscale(-300) }}" time="200" tween="quadratic" easing="out" condition="!String.IsEmpty(Window.Property(on.extras))">Conditional</animation>
 
         <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
-            <effect type="slide" end="0,{{ vscale(-500) }}" time="200" tween="quadratic" easing="out"/>
+            <effect type="slide" end="0,{{ vscale(-360) }}" time="200" tween="quadratic" easing="out"/>
         </animation>
 
         <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
-            <effect type="slide" end="0,{{ vscale(-500) }}" time="200" tween="quadratic" easing="out"/>
+            <effect type="slide" end="0,{{ vscale(-520) }}" time="200" tween="quadratic" easing="out"/>
         </animation>
 
         <posx>0</posx>
@@ -37,7 +51,7 @@
 
         <control type="label">
             <scroll>false</scroll>
-            <posx>60</posx>
+            <posx>160</posx>
             <posy>{{ vscale(57) }}</posy>
             <width>462</width>
             <height>{{ vscale(40) }}</height>
@@ -45,7 +59,7 @@
             <align>left</align>
             <aligny>center</aligny>
             <textcolor>A0FFFFFF</textcolor>
-            <label>[UPPERCASE]$ADDON[script.plexmod 32438][/UPPERCASE]</label>
+            <label>$ADDON[script.plexmod 32438]</label>
         </control>
 
         <control type="group" id="100">
@@ -56,10 +70,10 @@
                 <width>1920</width>
                 <height>{{ vscale(580) }}</height>
                 <control type="group">
-                    <posx>60</posx>
+                    <posx>160</posx>
                     <posy>{{ vscale(131) }}</posy>
                     <control type="group">
-                        <animation effect="zoom" start="100" end="110" time="100" center="231,{{ vscale(129.5) }}" reversible="true" condition="Control.HasFocus(101)">Conditional</animation>
+                        <animation effect="zoom" start="100" end="105" time="110" center="231,{{ vscale(129.5) }}" reversible="true" condition="Control.HasFocus(101)">Conditional</animation>
                         <posx>0</posx>
                         <posy>0</posy>
                         <control type="image">
@@ -70,6 +84,14 @@
                             <height>{{ vscale(349) }}</height>
                             <texture border="42">script.plex/drop-shadow.png</texture>
                         </control>
+                        <control type="image">
+                            <visible>Control.HasFocus(101)</visible>
+                            <posx>-5</posx>
+                            <posy>{{ vscale(-5) }}</posy>
+                            <width>472</width>
+                            <height>{{ vscale(269) }}</height>
+                            <texture>script.plex/postplay-previous-rounded-focus.png</texture>
+                        </control>
                         <control type="group">
                             <posx>0</posx>
                             <posy>0</posy>
@@ -78,7 +100,7 @@
                                 <posy>0</posy>
                                 <width>462</width>
                                 <height>{{ vscale(259) }}</height>
-                                <texture>$INFO[Window.Property(thumb.fallback)]</texture>
+                                <texture diffuse="script.plex/postplay-previous-rounded-mask.png">$INFO[Window.Property(thumb.fallback)]</texture>
                                 <aspectratio>scale</aspectratio>
                             </control>
                             <control type="image">
@@ -86,7 +108,7 @@
                                 <posy>0</posy>
                                 <width>462</width>
                                 <height>{{ vscale(259) }}</height>
-                                <texture background="true">$INFO[Window.Property(prev.thumb)]</texture>
+                                <texture background="true" diffuse="script.plex/postplay-previous-rounded-mask.png">$INFO[Window.Property(prev.thumb)]</texture>
                                 <aspectratio>scale</aspectratio>
                             </control>
                             <control type="group">
@@ -108,7 +130,7 @@
                                 </control>
                             </control>
                             <control type="label">
-                                <scroll>true</scroll>
+                                <scroll>false</scroll>
                                 <posx>0</posx>
                                 <posy>{{ vscale(269) }}</posy>
                                 <width>462</width>
@@ -119,7 +141,7 @@
                                 <label>$INFO[Window.Property(prev.title)]</label>
                             </control>
                             <control type="label">
-                                <scroll>true</scroll>
+                                <scroll>false</scroll>
                                 <posx>0</posx>
                                 <posy>{{ vscale(301) }}</posy>
                                 <width>462</width>
@@ -138,8 +160,8 @@
                             <onup>200</onup>
                             <ondown>400</ondown>
                             <onright>102</onright>
-                            <texturefocus border="10">script.plex/home/selected.png</texturefocus>
-                            <texturenofocus>-</texturenofocus>
+                            <texturefocus>script.plex/transparent-6px.png</texturefocus>
+                            <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                         </control>
                     </control>
                 </control>
@@ -148,7 +170,7 @@
                     <visible>!String.IsEmpty(Window.Property(has.next))</visible>
                     <control type="label">
                         <scroll>false</scroll>
-                        <posx>572</posx>
+                        <posx>682</posx>
                         <posy>{{ vscale(57) }}</posy>
                         <width>462</width>
                         <height>{{ vscale(40) }}</height>
@@ -156,13 +178,13 @@
                         <align>left</align>
                         <aligny>center</aligny>
                         <textcolor>FFFFFFFF</textcolor>
-                        <label>[UPPERCASE]$ADDON[script.plexmod 32439][/UPPERCASE]</label>
+                        <label>$ADDON[script.plexmod 32439]</label>
                     </control>
                     <control type="group">
-                        <posx>582</posx>
+                        <posx>682</posx>
                         <posy>{{ vscale(131) }}</posy>
                         <control type="group">
-                            <animation effect="zoom" start="100" end="110" time="100" center="268.5,{{ vscale(151.5) }}" reversible="true" condition="Control.HasFocus(102)">Conditional</animation>
+                            <animation effect="zoom" start="100" end="105" time="110" center="268.5,{{ vscale(151.5) }}" reversible="true" condition="Control.HasFocus(102)">Conditional</animation>
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="image">
@@ -173,6 +195,14 @@
                                 <height>{{ vscale(393) }}</height>
                                 <texture border="42">script.plex/drop-shadow.png</texture>
                             </control>
+                            <control type="image">
+                                <visible>Control.HasFocus(102)</visible>
+                                <posx>-5</posx>
+                                <posy>{{ vscale(-5) }}</posy>
+                                <width>547</width>
+                                <height>{{ vscale(313) }}</height>
+                                <texture>script.plex/postplay-next-rounded-focus.png</texture>
+                            </control>
                             <control type="group">
                                 <posx>0</posx>
                                 <posy>0</posy>
@@ -181,7 +211,7 @@
                                     <posy>0</posy>
                                     <width>537</width>
                                     <height>{{ vscale(303) }}</height>
-                                    <texture>$INFO[Window.Property(thumb.fallback)]</texture>
+                                    <texture diffuse="script.plex/postplay-next-rounded-mask.png">$INFO[Window.Property(thumb.fallback)]</texture>
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="image">
@@ -189,7 +219,7 @@
                                     <posy>0</posy>
                                     <width>537</width>
                                     <height>{{ vscale(303) }}</height>
-                                    <texture background="true">$INFO[Window.Property(next.thumb)]</texture>
+                                    <texture background="true" diffuse="script.plex/postplay-next-rounded-mask.png">$INFO[Window.Property(next.thumb)]</texture>
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="group">
@@ -208,7 +238,7 @@
                                         <posy>8</posy>
                                         <width>136</width>
                                         <height>{{ vscale(136) }}</height>
-                                        <texture colordiffuse="FFCC7B19">script.plex/circle-progress/$INFO[Window.Property(countdown)].png</texture>
+                                        <texture colordiffuse="FFFFFFFF">script.plex/circle-progress/$INFO[Window.Property(countdown)].png</texture>
                                     </control>
                                     <control type="image">
                                         <posx>59.5</posx>
@@ -219,7 +249,7 @@
                                     </control>
                                 </control>
                                 <control type="label">
-                                    <scroll>true</scroll>
+                                    <scroll>false</scroll>
                                     <posx>0</posx>
                                     <posy>{{ vscale(313) }}</posy>
                                     <width>537</width>
@@ -230,7 +260,7 @@
                                     <label>$INFO[Window.Property(next.title)]</label>
                                 </control>
                                 <control type="label">
-                                    <scroll>true</scroll>
+                                    <scroll>false</scroll>
                                     <posx>0</posx>
                                     <posy>{{ vscale(345) }}</posy>
                                     <width>537</width>
@@ -249,8 +279,8 @@
                                 <onup>200</onup>
                                 <ondown>400</ondown>
                                 <onleft>101</onleft>
-                                <texturefocus border="10">script.plex/home/selected.png</texturefocus>
-                                <texturenofocus>-</texturenofocus>
+                                <texturefocus>script.plex/transparent-6px.png</texturefocus>
+                                <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                             </control>
                         </control>
                     </control>
@@ -260,10 +290,10 @@
             <control type="group">
                 <visible>!String.IsEmpty(Window.Property(has.next))</visible>
                 <control type="label">
-                    <scroll>true</scroll>
-                    <posx>1177</posx>
+                    <scroll>false</scroll>
+                    <posx>1280</posx>
                     <posy>{{ vscale(131) }}</posy>
-                    <width>683</width>
+                    <width>543</width>
                     <height>{{ vscale(43) }}</height>
                     <font>font13</font>
                     <align>left</align>
@@ -273,9 +303,9 @@
                 </control>
                 <control type="label">
                     <scroll>false</scroll>
-                    <posx>1177</posx>
+                    <posx>1280</posx>
                     <posy>{{ vscale(189) }}</posy>
-                    <width>683</width>
+                    <width>543</width>
                     <height>{{ vscale(32) }}</height>
                     <font>font12</font>
                     <align>left</align>
@@ -284,10 +314,9 @@
                     <label>$INFO[Window.Property(info.date)]$INFO[Window.Property(info.duration), &#8226; ]</label>
                 </control>
                 <control type="textbox">
-                    <autoscroll delay="2000" time="2000" repeat="10000"></autoscroll>
-                    <posx>1177</posx>
+                    <posx>1280</posx>
                     <posy>{{ vscale(240) }}</posy>
-                    <width>683</width>
+                    <width>543</width>
                     <height>{{ vscale(215) }}</height>
                     <font>font12</font>
                     <align>left</align>
@@ -299,10 +328,10 @@
             <control type="group">
                 <visible>String.IsEmpty(Window.Property(has.next))</visible>
                 <control type="label">
-                    <scroll>true</scroll>
-                    <posx>580</posx>
+                    <scroll>false</scroll>
+                    <posx>680</posx>
                     <posy>{{ vscale(131) }}</posy>
-                    <width>1280</width>
+                    <width>1180</width>
                     <height>{{ vscale(43) }}</height>
                     <font>font13</font>
                     <align>left</align>
@@ -312,9 +341,9 @@
                 </control>
                 <control type="label">
                     <scroll>false</scroll>
-                    <posx>580</posx>
+                    <posx>680</posx>
                     <posy>{{ vscale(189) }}</posy>
-                    <width>1280</width>
+                    <width>1180</width>
                     <height>{{ vscale(32) }}</height>
                     <font>font12</font>
                     <align>left</align>
@@ -323,10 +352,9 @@
                     <label>$INFO[Window.Property(prev.info.date)]$INFO[Window.Property(prev.info.duration), &#8226; ]</label>
                 </control>
                 <control type="textbox">
-                    <autoscroll delay="2000" time="2000" repeat="10000"></autoscroll>
-                    <posx>580</posx>
+                    <posx>680</posx>
                     <posy>{{ vscale(240) }}</posy>
-                    <width>1280</width>
+                    <width>1180</width>
                     <height>{{ vscale(225) }}</height>
                     <font>font12</font>
                     <align>left</align>
@@ -349,30 +377,22 @@
                 <visible>Integer.IsGreater(Container(400).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <height>{{ vscale(360) }}</height>
                 <width>1920</width>
-                <control type="image">
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>1920</width>
-                    <height>{{ vscale(360) }}</height>
-                    <texture>script.plex/white-square.png</texture>
-                    <colordiffuse>40000000</colordiffuse>
-                </control>
                 <control type="label">
-                    <posx>60</posx>
+                    <posx>160</posx>
                     <posy>0</posy>
                     <width>800</width>
-                    <height>{{ vscale(80) }}</height>
-                    <font>font12</font>
+                    <height>{{ vscale(48) }}</height>
+                    <font>font30_title</font>
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]$ADDON[script.plexmod 32440][/UPPERCASE]</label>
+                    <label>$ADDON[script.plexmod 32440]</label>
                 </control>
                 <control type="list" id="400">
-                    <posx>0</posx>
-                    <posy>{{ vscale(18) }}</posy>
-                    <width>1920</width>
-                    <height>{{ vscale(430) }}</height>
+                    <posx>100</posx>
+                    <posy>0</posy>
+                    <width>1740</width>
+                    <height>{{ vscale(360) }}</height>
                     <onup>100</onup>
                     <ondown>401</ondown>
                     <onleft>noop</onleft>
@@ -380,8 +400,9 @@
                     <scrolltime>200</scrolltime>
                     <orientation>horizontal</orientation>
                     <preloaditems>4</preloaditems>
+                    {% include "includes/postplay_ondeck_card_layout.xml.tpl" %}
                     <!-- ITEM LAYOUT ########################################## -->
-                    <itemlayout width="359">
+                    <itemlayout width="359" condition="false">
                         <control type="group">
                             <posx>55</posx>
                             <posy>{{ vscale(61) }}</posy>
@@ -393,7 +414,7 @@
                                     <posy>0</posy>
                                     <width>299</width>
                                     <height>{{ vscale(168) }}</height>
-                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                    <texture diffuse="script.plex/landscape-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="image">
@@ -401,7 +422,7 @@
                                     <posy>0</posy>
                                     <width>299</width>
                                     <height>{{ vscale(168) }}</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <texture background="true" diffuse="script.plex/landscape-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="group">
@@ -422,7 +443,7 @@
                                         <width>299</width>
                                         <height>{{ vscale(8) }}</height>
                                         <texture>$INFO[ListItem.Property(progress)]</texture>
-                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                        <colordiffuse>FFFFFFFF</colordiffuse>
                                     </control>
                                 </control>
                                 {% include "includes/watched_indicator.xml.tpl" with xoff=299 & uw_size=35 & wbg_w=40 & wbg_h=32 %}
@@ -456,7 +477,7 @@
                                         <posy>0</posy>
                                         <width>299</width>
                                         <height>{{ vscale(168) }}</height>
-                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        <texture colordiffuse="FF404040" diffuse="script.plex/landscape-rounded-mask.png">script.plex/white-square.png</texture>
                                     </control>
                                     <control type="image">
                                         <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
@@ -488,7 +509,7 @@
                     </itemlayout>
 
                     <!-- FOCUSED LAYOUT ####################################### -->
-                    <focusedlayout width="359">
+                    <focusedlayout width="359" condition="false">
                         <control type="group">
                             <posx>55</posx>
                             <posy>{{ vscale(61) }}</posy>
@@ -513,7 +534,7 @@
                                         <posy>0</posy>
                                         <width>299</width>
                                         <height>{{ vscale(168) }}</height>
-                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                        <texture diffuse="script.plex/landscape-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="image">
@@ -521,7 +542,7 @@
                                         <posy>0</posy>
                                         <width>299</width>
                                         <height>{{ vscale(168) }}</height>
-                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                        <texture background="true" diffuse="script.plex/landscape-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="group">
@@ -542,7 +563,7 @@
                                             <width>299</width>
                                             <height>{{ vscale(8) }}</height>
                                             <texture>$INFO[ListItem.Property(progress)]</texture>
-                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                            <colordiffuse>FFFFFFFF</colordiffuse>
                                         </control>
                                     </control>
                                     {% include "includes/watched_indicator.xml.tpl" with xoff=299 & uw_size=35 & wbg_w=40 & wbg_h=32 %}
@@ -575,7 +596,7 @@
                                             <posy>0</posy>
                                             <width>299</width>
                                             <height>{{ vscale(168) }}</height>
-                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                            <texture colordiffuse="FF404040" diffuse="script.plex/landscape-rounded-mask.png">script.plex/white-square.png</texture>
                                         </control>
                                         <control type="image">
                                             <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
@@ -609,7 +630,7 @@
                                     <posy>0</posy>
                                     <width>309</width>
                                     <height>{{ vscale(178) }}</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
+                                    <texture>script.plex/landscape-hub-rounded-outline.png</texture>
                                 </control>
                             </control>
                         </control>
@@ -623,20 +644,20 @@
                 <width>1920</width>
                 <height>{{ vscale(520) }}</height>
                 <control type="label">
-                    <posx>60</posx>
+                    <posx>160</posx>
                     <posy>0</posy>
                     <width>1000</width>
-                    <height>{{ vscale(80) }}</height>
-                    <font>font12</font>
+                    <height>{{ vscale(48) }}</height>
+                    <font>font30_title</font>
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]$INFO[Window.Property(related.header)][/UPPERCASE]</label>
+                    <label>$INFO[Window.Property(related.header)]</label>
                 </control>
                 <control type="list" id="401">
-                    <posx>0</posx>
-                    <posy>{{ vscale(16) }}</posy>
-                    <width>1920</width>
+                    <posx>100</posx>
+                    <posy>0</posy>
+                    <width>1740</width>
                     <height>{{ vscale(520) }}</height>
                     <onup>400</onup>
                     <ondown>403</ondown>
@@ -645,8 +666,9 @@
                     <scrolltime>200</scrolltime>
                     <orientation>horizontal</orientation>
                     <preloaditems>4</preloaditems>
+                    {% include "includes/postplay_related_card_layout.xml.tpl" %}
                     <!-- ITEM LAYOUT ########################################## -->
-                    <itemlayout width="304">
+                    <itemlayout width="304" condition="false">
                         <control type="group">
                             <posx>55</posx>
                             <posy>{{ vscale(72) }}</posy>
@@ -660,7 +682,7 @@
                                         <posy>0</posy>
                                         <width>244</width>
                                         <height>{{ vscale(361) }}</height>
-                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        <texture colordiffuse="FF404040" diffuse="script.plex/poster-home-rounded-mask.png">script.plex/white-square.png</texture>
                                     </control>
                                     <control type="image">
                                         <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
@@ -692,14 +714,14 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>{{ vscale(361) }}</height>
-                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                    <texture diffuse="script.plex/poster-home-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>{{ vscale(361) }}</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <texture background="true" diffuse="script.plex/poster-home-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="group">
@@ -720,7 +742,7 @@
                                         <width>244</width>
                                         <height>{{ vscale(8) }}</height>
                                         <texture>$INFO[ListItem.Property(progress)]</texture>
-                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                        <colordiffuse>FFFFFFFF</colordiffuse>
                                     </control>
                                 </control>
                                 {% include "includes/watched_indicator.xml.tpl" with xoff=244 & uw_size=48 & with_count=True & scale="medium" %}
@@ -741,7 +763,7 @@
                     </itemlayout>
 
                     <!-- FOCUSED LAYOUT ####################################### -->
-                    <focusedlayout width="304">
+                    <focusedlayout width="304" condition="false">
                         <control type="group">
                             <posx>55</posx>
                             <posy>{{ vscale(72) }}</posy>
@@ -758,6 +780,14 @@
                                     <height>{{ vscale(441) }}</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
+                                <control type="image">
+                                    <visible>Control.HasFocus(401)</visible>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>254</width>
+                                    <height>{{ vscale(371) }}</height>
+                                    <texture>script.plex/poster-home-rounded-focus.png</texture>
+                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -768,7 +798,7 @@
                                             <posy>0</posy>
                                             <width>244</width>
                                             <height>{{ vscale(361) }}</height>
-                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                            <texture colordiffuse="FF404040" diffuse="script.plex/poster-home-rounded-mask.png">script.plex/white-square.png</texture>
                                         </control>
                                         <control type="image">
                                             <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
@@ -800,14 +830,14 @@
                                         <posy>0</posy>
                                         <width>244</width>
                                         <height>{{ vscale(361) }}</height>
-                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                        <texture diffuse="script.plex/poster-home-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
                                         <width>244</width>
                                         <height>{{ vscale(361) }}</height>
-                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                        <texture background="true" diffuse="script.plex/poster-home-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="group">
@@ -828,7 +858,7 @@
                                             <width>244</width>
                                             <height>{{ vscale(8) }}</height>
                                             <texture>$INFO[ListItem.Property(progress)]</texture>
-                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                            <colordiffuse>FFFFFFFF</colordiffuse>
                                         </control>
                                     </control>
                                     {% include "includes/watched_indicator.xml.tpl" with xoff=244 & uw_size=48 & with_count=True & scale="medium" %}
@@ -844,14 +874,6 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                 </control>
-                                <control type="image">
-                                    <visible>Control.HasFocus(401)</visible>
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>254</width>
-                                    <height>{{ vscale(371) }}</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                             </control>
                         </control>
                     </focusedlayout>
@@ -864,28 +886,29 @@
                 <width>1920</width>
                 <height>{{ vscale(410) }}</height>
                 <control type="label">
-                    <posx>60</posx>
-                    <posy>{{ vscale(20) }}</posy>
+                    <posx>160</posx>
+                    <posy>0</posy>
                     <width>1000</width>
-                    <height>{{ vscale(80) }}</height>
-                    <font>font12</font>
+                    <height>{{ vscale(48) }}</height>
+                    <font>font30_title</font>
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]$ADDON[script.plexmod 32419][/UPPERCASE]</label>
+                    <label>$ADDON[script.plexmod 35019]</label>
                 </control>
                 <control type="list" id="403">
-                    <posx>0</posx>
-                    <posy>{{ vscale(36) }}</posy>
-                    <width>1920</width>
+                    <posx>100</posx>
+                    <posy>{{ vscale(48) }}</posy>
+                    <width>1740</width>
                     <height>{{ vscale(410) }}</height>
                     <onup>401</onup>
-                    <ondown>404</ondown>
+                    <ondown>403</ondown>
                     <scrolltime>200</scrolltime>
                     <orientation>horizontal</orientation>
                     <preloaditems>4</preloaditems>
+                    {% include "includes/role_card_layout.xml.tpl" with role_focus_id=403 %}
                     <!-- ITEM LAYOUT ########################################## -->
-                    <itemlayout width="304">
+                    <itemlayout width="304" condition="false">
                         <control type="group">
                            <posx>55</posx>
                             <posy>{{ vscale(61) }}</posy>
@@ -922,7 +945,7 @@
                     </itemlayout>
 
                     <!-- FOCUSED LAYOUT ####################################### -->
-                    <focusedlayout width="304">
+                    <focusedlayout width="304" condition="false">
                         <control type="group">
                             <posx>55</posx>
                             <posy>{{ vscale(61) }}</posy>
@@ -974,7 +997,7 @@
                                     <posy>0</posy>
                                     <width>254</width>
                                     <height>{{ vscale(254) }}</height>
-                                    <texture>script.plex/buttons/role-selected.png</texture>
+                                    <texture>script.plex/circle-rounded-focus.png</texture>
                                 </control>
                             </control>
                         </control>

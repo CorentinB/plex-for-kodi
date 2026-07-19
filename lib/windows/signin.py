@@ -99,6 +99,7 @@ class PinLoginWindow(kodigui.BaseWindow):
     res = '1080i'
     width = 1920
     height = 1080
+    CANCEL_BUTTON_ID = 100
 
     def __init__(self, *args, **kwargs):
         self.abort = False
@@ -125,6 +126,11 @@ class PinLoginWindow(kodigui.BaseWindow):
             util.ERROR()
 
         kodigui.BaseWindow.onAction(self, action)
+
+    def onClick(self, controlID):
+        if controlID == self.CANCEL_BUTTON_ID:
+            self.abort = True
+            self.doClose()
 
 
 class ExpiredWindow(kodigui.BaseWindow):

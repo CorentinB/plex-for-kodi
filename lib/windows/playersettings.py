@@ -303,7 +303,7 @@ def showQualityDialog(video, non_playback=False, selected_idx=None):
                 T(32001, 'Original')
             )))
 
-    choice = showOptionsDialog('Quality', options, non_playback=non_playback, selected_idx=selected_idx)
+    choice = showOptionsDialog(T(32397, 'Quality'), options, non_playback=non_playback, selected_idx=selected_idx)
     if choice is None:
         return
 

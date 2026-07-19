@@ -7,129 +7,74 @@
     <posy>0</posy>
     <width>1920</width>
     <height>1080</height>
-    <texture colordiffuse="99606060" border="10">script.plex/white-square.png</texture>
+    <texture colordiffuse="B3000000">script.plex/white-square.png</texture>
 </control>
 <control type="group">
     <visible>!String.IsEmpty(Window.Property(initialized))</visible>
-    <posx>585</posx>
-    <posy>{{ vperc(vscale(640)) }}</posy>
+    <posx>510</posx>
+    <posy>{{ vperc(vscale(720)) }}</posy>
     <control type="image">
         <posx>-40</posx>
         <posy>{{ vscale(-40) }}</posy>
-        <width>830</width>
-        <height>{{ vscale(640) }}</height>
+        <width>980</width>
+        <height>{{ vscale(720) }}</height>
         <texture border="42">script.plex/drop-shadow.png</texture>
     </control>
     <control type="image">
         <posx>0</posx>
         <posy>0</posy>
-        <width>750</width>
-        <height>{{ vscale(560) }}</height>
-        <texture colordiffuse="EE323232" border="10">script.plex/white-square-rounded.png</texture>
+        <width>900</width>
+        <height>{{ vscale(640) }}</height>
+        <texture colordiffuse="F20B0B0B" border="28">script.plex/white-square-rounded.png</texture>
     </control>
     <control type="image">
         <posx>0</posx>
         <posy>0</posy>
-        <width>750</width>
-        <height>{{ vscale(80) }}</height>
-        <texture colordiffuse="99000000" border="10">script.plex/white-square-top-rounded.png</texture>
-    </control>
-
-    <control type="image">
-        <posx>48</posx>
-        <posy>{{ vscale(31) }}</posy>
-        <width>19</width>
-        <height>{{ vscale(19) }}</height>
-        <texture colordiffuse="FFE5A00D">script.plex/indicators/circle-19.png</texture>
+        <width>900</width>
+        <height>{{ vscale(88) }}</height>
+        <texture colordiffuse="DD151515" border="28">script.plex/white-square-top-rounded.png</texture>
     </control>
 
     <control type="label">
-        <posx>115</posx>
+        <posx>48</posx>
         <posy>0</posy>
-        <width>575</width>
-        <height>{{ vscale(80) }}</height>
-        <font>font12</font>
+        <width>804</width>
+        <height>{{ vscale(88) }}</height>
+        <font>font13</font>
         <align>left</align>
         <aligny>center</aligny>
-        <textcolor>FFE5A00D</textcolor>
+        <textcolor>FFFFFFFF</textcolor>
+        <scroll>false</scroll>
         <label>$INFO[Window.Property(header)]</label>
     </control>
 
     <control type="textbox">
-        <posx>115</posx>
-        <posy>{{ vscale(105) }}</posy>
-        <width>575</width>
-        <height>{{ vscale(325) }}</height>
+        <posx>48</posx>
+        <posy>{{ vscale(118) }}</posy>
+        <width>804</width>
+        <height>{{ vscale(372) }}</height>
         <font>font10</font>
         <align>left</align>
         <textcolor>FFFFFFFF</textcolor>
         <scrolltime>200</scrolltime>
-        <autoscroll delay="3000" time="3000" repeat="3000"></autoscroll>
+        <autoscroll>false</autoscroll>
         <label>$INFO[Window.Property(info)]</label>
     </control>
 
     <control type="grouplist" id="100">
         <defaultcontrol always="true">1001</defaultcontrol>
-        <posx>-10</posx>
-        <posy>{{ vscale(420) }}</posy>
-        <width>770</width>
-        <height>{{ vscale(155) }}</height>
+        <posx>48</posx>
+        <posy>{{ vscale(540) }}</posy>
+        <width>804</width>
+        <height>{{ vscale(64) }}</height>
         <align>center</align>
-        <itemgap>-50</itemgap>
+        <itemgap>18</itemgap>
         <orientation>horizontal</orientation>
         <scrolltime>0</scrolltime>
         <usecontrolcoords>true</usecontrolcoords>
-        <control type="button" id="1001">
-            <visible allowhiddenfocus="true">!String.IsEmpty(Window.Property(button.0))</visible>
-            <enable>String.IsEmpty(Window.Property(delay_buttons)) | !String.IsEmpty(Window.Property(enable_buttons))</enable>
-            <animation effect="zoom" start="100" end="110,120" time="100" center="auto" reversible="false">Focus</animation>
-            <animation effect="zoom" start="110,120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
-            <posx>0</posx>
-            <posy>0</posy>
-            <width min="120">auto</width>
-            <height>{{ vscale(143, 1.1) }}</height>
-            <font>font10</font>
-            <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/buttons/blank-focus.png</texturefocus>
-            <texturenofocus colordiffuse="99FFFFFF" border="50">script.plex/buttons/blank.png</texturenofocus>
-            <textoffsetx>70</textoffsetx>
-            <textcolor>FF000000</textcolor>
-            <focusedcolor>FF000000</focusedcolor>
-            <label>$INFO[Window.Property(button.0)]</label>
-        </control>
-        <control type="button" id="1002">
-            <visible>!String.IsEmpty(Window.Property(button.1))</visible>
-            <enable>String.IsEmpty(Window.Property(delay_buttons)) | !String.IsEmpty(Window.Property(enable_buttons))</enable>
-            <animation effect="zoom" start="100" end="110,120" time="100" center="auto" reversible="false">Focus</animation>
-            <animation effect="zoom" start="110,120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
-            <posx>0</posx>
-            <posy>0</posy>
-            <width min="120">auto</width>
-            <height>{{ vscale(143, 1.1) }}</height>
-            <font>font10</font>
-            <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/buttons/blank-focus.png</texturefocus>
-            <texturenofocus colordiffuse="99FFFFFF" border="50">script.plex/buttons/blank.png</texturenofocus>
-            <textoffsetx>70</textoffsetx>
-            <textcolor>FF000000</textcolor>
-            <focusedcolor>FF000000</focusedcolor>
-            <label>$INFO[Window.Property(button.1)]</label>
-        </control>
-        <control type="button" id="1003">
-            <visible>!String.IsEmpty(Window.Property(button.2))</visible>
-            <enable>String.IsEmpty(Window.Property(delay_buttons)) | !String.IsEmpty(Window.Property(enable_buttons))</enable>
-            <animation effect="zoom" start="100" end="110,120" time="100" center="auto" reversible="false">Focus</animation>
-            <animation effect="zoom" start="110,120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
-            <posx>0</posx>
-            <posy>0</posy>
-            <width min="120">auto</width>
-            <height>{{ vscale(143, 1.1) }}</height>
-            <font>font10</font>
-            <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/buttons/blank-focus.png</texturefocus>
-            <texturenofocus colordiffuse="99FFFFFF" border="50">script.plex/buttons/blank.png</texturenofocus>
-            <textoffsetx>70</textoffsetx>
-            <textcolor>FF000000</textcolor>
-            <focusedcolor>FF000000</focusedcolor>
-            <label>$INFO[Window.Property(button.2)]</label>
-        </control>
+        {% include "includes/options_dialog_button.xml.tpl" with id=1001 & index=0 %}
+        {% include "includes/options_dialog_button.xml.tpl" with id=1002 & index=1 %}
+        {% include "includes/options_dialog_button.xml.tpl" with id=1003 & index=2 %}
     </control>
 
 </control>

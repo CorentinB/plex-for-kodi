@@ -2,21 +2,51 @@
 {% block headers %}<defaultcontrol>406</defaultcontrol>{% endblock %}
 {% block controls %}
 {% include "includes/default_background.xml.tpl" with background_source="$INFO[Player.Art(landscape)]" %}
+<control type="image">
+    <visible>String.IsEmpty(Player.Art(landscape))</visible>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+    <texture background="true">script.plex/home/background-fallback.png</texture>
+    {% include "includes/scale_background.xml.tpl" %}
+</control>
 
 <control type="image">
-    <posx>75</posx>
-    <posy>{{ vscale(75) }}</posy>
-    <width>786</width>
-    <height>{{ vscale(786) }}</height>
-    <texture>script.plex/white-square.png</texture>
-    <colordiffuse>20FFFFFF</colordiffuse>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+    <texture>script.plex/home/tvos-background-wash.png</texture>
+</control>
+<control type="image">
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+    <texture colordiffuse="33000000">script.plex/white-square.png</texture>
+</control>
+
+<control type="image">
+    <posx>45</posx>
+    <posy>{{ vscale(45) }}</posy>
+    <width>846</width>
+    <height>{{ vscale(846) }}</height>
+    <texture border="42">script.plex/square-rounded-shadow.png</texture>
 </control>
 <control type="image">
     <posx>90</posx>
     <posy>{{ vscale(90) }}</posy>
     <width>756</width>
     <height>{{ vscale(756) }}</height>
-    <texture>$INFO[Player.Art(thumb)]</texture>
+    <texture fallback="script.plex/thumb_fallbacks/music.png" diffuse="script.plex/square-rounded-mask.png">$INFO[Player.Art(thumb)]</texture>
+</control>
+<control type="image">
+    <posx>80</posx>
+    <posy>{{ vscale(80) }}</posy>
+    <width>776</width>
+    <height>{{ vscale(776) }}</height>
+    <texture colordiffuse="24FFFFFF">script.plex/square-rounded-outline.png</texture>
 </control>
 
 <control type="group">
@@ -25,7 +55,7 @@
     <control type="label">
         <posx>0</posx>
         <posy>{{ vscale(305) }}</posy>
-        <width>1000</width>
+        <width>820</width>
         <height>{{ vscale(54) }}</height>
         <font>font13</font>
         <align>left</align>
@@ -36,18 +66,18 @@
     <control type="label">
         <posx>0</posx>
         <posy>{{ vscale(359) }}</posy>
-        <width>1000</width>
+        <width>820</width>
         <height>{{ vscale(54) }}</height>
         <font>font13</font>
         <align>left</align>
         <aligny>center</aligny>
-        <textcolor>FFFFFFFF</textcolor>
+        <textcolor>AAFFFFFF</textcolor>
         <label>$INFO[MusicPlayer.Album]</label>
     </control>
     <control type="label">
         <posx>0</posx>
         <posy>{{ vscale(470) }}</posy>
-        <width>1000</width>
+        <width>820</width>
         <height>{{ vscale(54) }}</height>
         <font>font13</font>
         <align>left</align>
@@ -58,7 +88,7 @@
     <control type="label">
         <posx>0</posx>
         <posy>{{ vscale(580) }}</posy>
-        <width>1000</width>
+        <width>820</width>
         <height>{{ vscale(54) }}</height>
         <font>font13</font>
         <align>left</align>
@@ -69,12 +99,12 @@
 </control>
 
 <control type="group">
-    <posx>1845</posx>
+    <posx>939</posx>
     <posy>0</posy>
     <control type="label">
         <posx>0</posx>
         <posy>{{ vscale(738) }}</posy>
-        <width>1000</width>
+        <width>820</width>
         <height>{{ vscale(54) }}</height>
         <font>font13</font>
         <align>right</align>
@@ -85,7 +115,7 @@
     <control type="label">
         <posx>0</posx>
         <posy>{{ vscale(794) }}</posy>
-        <width>1000</width>
+        <width>820</width>
         <height>{{ vscale(54) }}</height>
         <font>font13</font>
         <align>right</align>
@@ -197,7 +227,7 @@
         <width>1</width>
         <height>{{ vscale(8) }}</height>
         <texture>script.plex/white-square.png</texture>
-        <colordiffuse>FFE5A00D</colordiffuse>
+        <colordiffuse>FFFFFFFF</colordiffuse>
     </control>
     <control type="progress">
         <visible>!Control.HasFocus(500)</visible>
@@ -207,10 +237,10 @@
         <width>1920</width>
         <height>{{ vscale(6) }}</height>
         <texturebg>script.plex/transparent-6px.png</texturebg>
-        <lefttexture>-</lefttexture>
-        <midtexture colordiffuse="FFCC7B19">script.plex/white-square-6px.png</midtexture>
-        <righttexture>-</righttexture>
-        <overlaytexture>-</overlaytexture>
+        <lefttexture>script.plex/transparent-6px.png</lefttexture>
+        <midtexture colordiffuse="FFFFFFFF">script.plex/white-square-6px.png</midtexture>
+        <righttexture>script.plex/transparent-6px.png</righttexture>
+        <overlaytexture>script.plex/transparent-6px.png</overlaytexture>
         <info>Player.Progress</info>
     </control>
     <control type="progress">
@@ -221,10 +251,10 @@
         <width>1920</width>
         <height>{{ vscale(6) }}</height>
         <texturebg>script.plex/transparent-6px.png</texturebg>
-        <lefttexture>-</lefttexture>
-        <midtexture colordiffuse="FFAC5B00">script.plex/white-square-6px.png</midtexture>
-        <righttexture>-</righttexture>
-        <overlaytexture>-</overlaytexture>
+        <lefttexture>script.plex/transparent-6px.png</lefttexture>
+        <midtexture colordiffuse="FFFFFFFF">script.plex/white-square-6px.png</midtexture>
+        <righttexture>script.plex/transparent-6px.png</righttexture>
+        <overlaytexture>script.plex/transparent-6px.png</overlaytexture>
         <info>Player.Progress</info>
     </control>
 </control>
@@ -235,9 +265,9 @@
     <width>1920</width>
     <height>{{ vscale(6) }}</height>
     <visible>true</visible>
-    <texturesliderbar>-</texturesliderbar>
-    <textureslidernib colordiffuse="FFE5A00D">script.plex/white-square-6px.png</textureslidernib>
-    <textureslidernibfocus>-</textureslidernibfocus>
+    <texturesliderbar>script.plex/transparent-6px.png</texturesliderbar>
+    <textureslidernib colordiffuse="FFFFFFFF">script.plex/white-square-6px.png</textureslidernib>
+    <textureslidernibfocus>script.plex/transparent-6px.png</textureslidernibfocus>
     <action>seek</action>
 </control> -->
 
@@ -249,7 +279,7 @@
     <width>1</width>
     <height>{{ vscale(6) }}</height>
     <texture>script.plex/white-square.png</texture>
-    <colordiffuse>FFCC7B19</colordiffuse>
+    <colordiffuse>FFFFFFFF</colordiffuse>
 </control> -->
 
 <control type="group" id="202">

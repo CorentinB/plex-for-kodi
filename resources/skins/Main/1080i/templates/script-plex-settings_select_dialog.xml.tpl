@@ -36,7 +36,7 @@
         <align>center</align>
         <aligny>center</aligny>
         <textcolor>FFFFFFFF</textcolor>
-        <label>[B][UPPERCASE]$INFO[Window.Property(heading)][/UPPERCASE][/B]</label>
+        <label>[B]$INFO[Window.Property(heading)][/B]</label>
     </control>
     <control type="list" id="100">
         <posx>0</posx>
@@ -59,7 +59,7 @@
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <scroll>true</scroll>
+                <scroll>false</scroll>
                 <scrollspeed>15</scrollspeed>
                 <label>$INFO[ListItem.Label]</label>
             </control>
@@ -73,7 +73,7 @@
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <scroll>true</scroll>
+                <scroll>false</scroll>
                 <scrollspeed>15</scrollspeed>
                 <label>$INFO[ListItem.Label]</label>
             </control>
@@ -86,18 +86,18 @@
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFBBBBBB</textcolor>
-                <scroll>true</scroll>
+                <scroll>false</scroll>
                 <scrollspeed>15</scrollspeed>
                 <label>$INFO[ListItem.Label2]</label>
             </control>
         </itemlayout>
         <focusedlayout height="{{ vscale(100) }}">
             <control type="image">
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>600</width>
-                <height>{{ vscale(100) }}</height>
-                <texture colordiffuse="FFE5A00D">script.plex/white-square.png</texture>
+                <posx>10</posx>
+                <posy>{{ vscale(5) }}</posy>
+                <width>580</width>
+                <height>{{ vscale(90) }}</height>
+                <texture colordiffuse="FFFFFFFF" border="24">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="label">
                 <visible>String.IsEmpty(ListItem.Label2)</visible>
@@ -109,7 +109,7 @@
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FF000000</textcolor>
-                <scroll>true</scroll>
+                <scroll>false</scroll>
                 <scrollspeed>15</scrollspeed>
                 <label>$INFO[ListItem.Label]</label>
             </control>
@@ -123,7 +123,7 @@
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FF000000</textcolor>
-                <scroll>true</scroll>
+                <scroll>false</scroll>
                 <scrollspeed>15</scrollspeed>
                 <label>$INFO[ListItem.Label]</label>
             </control>
@@ -136,7 +136,7 @@
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FF222222</textcolor>
-                <scroll>true</scroll>
+                <scroll>false</scroll>
                 <scrollspeed>15</scrollspeed>
                 <label>$INFO[ListItem.Label2]</label>
             </control>

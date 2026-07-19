@@ -272,6 +272,30 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMix
     SETTINGS_BUTTON_ID = 305
     MEDIA_BUTTON_ID = 307
 
+    ACTION_BUTTON_IDS = (
+        PLAY_BUTTON_ID,
+        PLAY_BUTTON_DISABLED_ID,
+        SHUFFLE_BUTTON_ID,
+        OPTIONS_BUTTON_ID,
+        INFO_BUTTON_ID,
+        SETTINGS_BUTTON_ID,
+        PLAY_BUTTON_ID + 1000,
+        PLAY_BUTTON_DISABLED_ID + 1000,
+        SHUFFLE_BUTTON_ID + 1000,
+        OPTIONS_BUTTON_ID + 1000,
+        INFO_BUTTON_ID + 1000,
+        SETTINGS_BUTTON_ID + 1000,
+        MEDIA_BUTTON_ID + 1000,
+    )
+    HERO_FOCUS_IDS = ACTION_BUTTON_IDS + (
+        MAIN_BUTTON_GROUP_ID,
+        MAIN_BUTTON_GROUP_ID + 1000,
+        OPTIONS_GROUP_ID,
+        HOME_BUTTON_ID,
+        SEARCH_BUTTON_ID,
+        PLAYER_STATUS_BUTTON_ID,
+    )
+
     SEASONS_CONTROL_ATTR = "seasonsListControl"
 
     def __init__(self, *args, **kwargs):
@@ -886,12 +910,12 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMix
 
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
+            self.setProperty('on.extras', '1')
             if controlID == self.RELATED_LIST_ID:
                 self.updateBackgroundFrom(self.relatedListControl.getSelectedItem().dataSource)
-        if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + [ControlGroup(300).HasFocus(0) | ControlGroup(1300).HasFocus(0)]'):
+        elif controlID in self.HERO_FOCUS_IDS:
+            self.setProperty('hub.focus', '')
             self.setProperty('on.extras', '')
-        elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0) + !ControlGroup(1300).HasFocus(0)'):
-            self.setProperty('on.extras', '1')
 
     def toggleWatched(self, mli=None, item=None, state=None, **kw):
         if not mli and not item:
@@ -928,15 +952,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMix
     def getRoleItemDDPosition(self, *args, **kwargs):
         y = 900
         if xbmc.getCondVisibility('Control.IsVisible(500)'):
-            y += 380
+            y += 400
         if xbmc.getCondVisibility('Control.IsVisible(501)'):
-            y += 420
+            y += 380
         if xbmc.getCondVisibility('!String.IsEmpty(Window.Property(on.extras))'):
-            y -= 80
+            y -= 125
         if xbmc.getCondVisibility('Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)'):
-            y -= 500
+            y -= 400
         if xbmc.getCondVisibility('Integer.IsGreater(Window.Property(hub.focus),1) + Control.IsVisible(501)'):
-            y -= 500
+            y -= 380
 
         return super(EpisodesWindow, self).getRoleItemDDPosition(y=y, container_id="402")
 
@@ -1383,6 +1407,19 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMix
         self.setBoolProperty('current_item.loaded', False)
         self.postpone_simple(self.updateBackgroundFrom, self.season or self.show_)
 
+        background_art = self.show_ and self.show_.defaultArt or None
+        try:
+            blurred_background = background_art and background_art.asTranscodedImageURL(
+                self.width,
+                self.height,
+                blur=18,
+                opacity=100,
+                background='000000',
+            ) or ''
+        except (AttributeError, TypeError, ValueError):
+            blurred_background = ''
+        self.setProperty('episodes.background.blurred', blurred_background)
+
         self.setProperty('season.thumb', (self.season or self.show_).thumb.asTranscodedImageURL(*self.POSTER_DIM))
         self.setProperty('show.title', showTitle)
         self.setProperty('season.title', (self.season or self.show_).title)
@@ -1503,13 +1540,18 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMix
             mli.setBoolProperty('media.multiple', len(list(filter(lambda x: x.isAccessible(), video.media()))) > 1)
 
         directors = u' / '.join([d.tag for d in video.directors()][:2])
-        directorsLabel = len(video.directors) > 1 and T(32401, u'DIRECTORS').upper() or T(32383,
-                                                                                          u'DIRECTOR').upper()
+        directorsLabel = len(video.directors) > 1 and T(32401, u'Directors') or T(32383, u'Director')
         mli.setProperty('directors', directors and u'{0}    {1}'.format(directorsLabel, directors) or '')
         writers = u' / '.join([r.tag for r in video.writers()][:2])
-        writersLabel = len(video.writers) > 1 and T(32403, u'WRITERS').upper() or T(32402, u'WRITER').upper()
+        writersLabel = len(video.writers) > 1 and T(32403, u'Writers') or T(32402, u'Writer')
         mli.setProperty('writers',
                         writers and u'{0}{1}    {2}'.format(directors and '    ' or '', writersLabel, writers) or '')
+        creators = []
+        if directors:
+            creators.append(u'{0} {1}'.format(directorsLabel, directors))
+        if writers:
+            creators.append(u'{0} {1}'.format(writersLabel, writers))
+        mli.setProperty('creators', u'    \u2022    '.join(creators))
 
     def setItemAudioAndSubtitleInfo(self, video, mli):
         if util.getSetting('use_external_audio', False) and hasattr(type(video), 'discoverExternalAudioStreams'):

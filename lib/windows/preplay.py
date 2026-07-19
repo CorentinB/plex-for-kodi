@@ -8,6 +8,7 @@ from plexnet import plexplayer, media, plexobjects, util as pnUtil, plexapp, ple
 
 from lib import metadata
 from lib import util
+from lib.home_hero import _short_text, normalize_content_rating
 from lib.util import T
 from lib.language_util import getNativeLanguages
 from . import busy
@@ -123,10 +124,30 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
     SETTINGS_BUTTON_ID = 305
     OPTIONS_BUTTON_ID = 306
     MEDIA_BUTTON_ID = 307
+    PLAYER_STATUS_BUTTON_ID = 204
+    ACTION_BUTTON_IDS = (
+        PLAY_BUTTON_ID,
+        2302,
+        2303,
+        2304,
+        2305,
+        INFO_BUTTON_ID,
+        TRAILER_BUTTON_ID,
+        308,
+        309,
+        MEDIA_BUTTON_ID,
+        SETTINGS_BUTTON_ID,
+        OPTIONS_BUTTON_ID,
+    )
+    HERO_FOCUS_IDS = ACTION_BUTTON_IDS + (
+        MAIN_BUTTON_GROUP_ID,
+        OPTIONS_GROUP_ID,
+        HOME_BUTTON_ID,
+        SEARCH_BUTTON_ID,
+        PLAYER_STATUS_BUTTON_ID,
+    )
 
     POSSIBLE_PLAY_BUTTON_IDS = [302, 2302, 2303, 2304, 2305]
-
-    PLAYER_STATUS_BUTTON_ID = 204
 
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
@@ -329,14 +350,13 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
 
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
+            self.setProperty('on.extras', '1')
 
             if controlID == self.RELATED_LIST_ID:
                 self.updateBackgroundFrom(self.relatedListControl.getSelectedItem().dataSource)
-
-        if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
+        elif controlID in self.HERO_FOCUS_IDS:
+            self.setProperty('hub.focus', '')
             self.setProperty('on.extras', '')
-        elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
-            self.setProperty('on.extras', '1')
 
     def toggleWatched(self, item, state=None, **kw):
         watched = super(PrePlayWindow, self).toggleWatched(item, state=state, **kw)
@@ -694,20 +714,42 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
     def setInfo(self, skip_bg=False):
         if not skip_bg:
             self.updateBackgroundFrom(self.video)
+        background_art = self.video.defaultArt
+        try:
+            blurred_background = background_art and background_art.asTranscodedImageURL(
+                self.width,
+                self.height,
+                blur=18,
+                opacity=100,
+                background='000000',
+            ) or ''
+        except (AttributeError, TypeError, ValueError):
+            blurred_background = ''
+        self.setProperty('preplay.background.blurred', blurred_background)
         self.setProperty('title', self.video.title)
         self.setProperty('duration', self.video.duration and util.durationToText(self.video.duration.asInt()))
-        self.setProperty('summary', self.video.summary.strip().replace('\t', ' '))
+        summary = self.video.summary.strip().replace('\t', ' ')
+        self.setProperty('summary', summary)
+        self.setProperty('summary.short', _short_text(summary, limit=220))
         self.setProperty('unwatched', not self.video.isWatched and '1' or '')
         self.setBoolProperty('watched', self.video.isFullyWatched)
         self.setBoolProperty('disable_playback', self.fromWatchlist)
 
         directors = u' / '.join([d.tag for d in self.video.directors()][:3])
+        self.setProperty('director.names', directors)
         directorsLabel = len(self.video.directors) > 1 and T(32401, u'DIRECTORS').upper() or T(32383, u'DIRECTOR').upper()
         self.setProperty('directors', directors and u'{0}    {1}'.format(directorsLabel, directors) or '')
         writers = u' / '.join([r.tag for r in self.video.writers()][:3])
+        self.setProperty('writer.names', writers)
         writersLabel = len(self.video.writers) > 1 and T(32403, u'WRITERS').upper() or T(32402, u'WRITER').upper()
         self.setProperty('writers',
                          writers and u'{0}{1}    {2}'.format(directors and '    ' or '', writersLabel, writers) or '')
+        creator_parts = []
+        if directors:
+            creator_parts.append(u'{0} {1}'.format(T(32383, u'Director'), directors))
+        if writers:
+            creator_parts.append(u'{0} {1}'.format(T(32402, u'Writer'), writers))
+        self.setProperty('creators', u'    •    '.join(creator_parts))
 
         # fixme: can this ever happen?
         if self.video.type == 'episode':
@@ -726,7 +768,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
             self.setProperty('date', self.video.year)
             if self.fromWatchlist and not self.wl_availability:
                 self.setProperty('wl_server_availability_verbose', util.cleanLeadingZeros(self.video.originallyAvailableAt.asDatetime('%B %d, %Y')))
-            self.setProperty('content.rating', self.video.contentRating.split('/', 1)[-1])
+            self.setProperty('content.rating', normalize_content_rating(self.video.contentRating))
 
             cast = u' / '.join([r.tag for r in self.video.roles()][:5])
             castLabel = 'CAST'
@@ -743,6 +785,14 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
             self.setProperty('video.rendering', self.video.videoCodecRendering)
             self.setProperty('audio.channels', self.video.audioChannelsString(metadata.apiTranslate))
             self.setBoolProperty('media.multiple', len(list(filter(lambda x: x.isAccessible(), self.video.media()))) > 1)
+
+        meta_parts = (
+            self.getProperty('date'),
+            self.getProperty('duration'),
+            self.getProperty('info'),
+            self.getProperty('studios'),
+        )
+        self.setProperty('meta.primary', u'  •  '.join(part for part in meta_parts if part))
 
         self.populateRatings(self.video, self)
 
@@ -823,7 +873,10 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
                 mli.setProperty(
                     'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(extra.type in ('show', 'season', 'episode') and 'show' or 'movie')
                 )
-                mli.setProperty('extra.duration', extra.duration and util.simplifiedTimeDisplay(extra.duration.asInt()))
+                extra_duration = extra.duration and util.simplifiedTimeDisplay(extra.duration.asInt())
+                if extra_duration:
+                    mli.setProperty('extra.duration', extra_duration)
+                    mli.setProperty('extra.duration.available', '1')
                 items.append(mli)
                 idx += 1
 

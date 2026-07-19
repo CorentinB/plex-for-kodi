@@ -47,8 +47,15 @@ class UtilMixin(GoHomeMixin):
         self.doClose()
 
     def showAudioPlayer(self, **kwargs):
+        from lib import player
         from . import musicplayer
+
+        return_focus = self.getFocusId()
         self.processCommand(opener.handleOpen(musicplayer.MusicPlayerWindow, **kwargs))
+        if (self.isOpen
+                and return_focus == getattr(self, 'PLAYER_STATUS_BUTTON_ID', 204)
+                and not player.PLAYER.isPlayingAudio()):
+            self.setFocusId(getattr(self, 'SEARCH_BUTTON_ID', 202))
 
     def getNextShowEp(self, pl, items, title):
         revitems = list(reversed(items))

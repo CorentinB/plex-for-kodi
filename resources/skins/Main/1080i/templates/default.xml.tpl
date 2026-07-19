@@ -39,15 +39,14 @@
                 <width>40</width>
                 <height>{{ vscale(40) }}</height>
                 <control type="button" id="201">
-                    <animation effect="zoom" start="100" end="144" time="100" center="20,{{ vscale(20) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="144" end="100" time="100" center="20,{{ vscale(20) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="20,{{ vscale(20) }}" reversible="true" condition="Control.HasFocus(201)">Conditional</animation>
                     <width>40</width>
                     <height>{{ vscale(40) }}</height>
                     <onright>202</onright>
                     <ondown>50</ondown>
                     <font>font12</font>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/home-focus.png</texturefocus>
+                    <texturefocus colordiffuse="FFFFFFFF">script.plex/buttons/home-focus.png</texturefocus>
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/home.png</texturenofocus>
                     <label> </label>
                 </control>
@@ -57,8 +56,7 @@
                 <width>40</width>
                 <height>{{ vscale(40) }}</height>
                 <control type="button" id="202">
-                    <animation effect="zoom" start="100" end="144" time="100" center="20,{{ vscale(20) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="144" end="100" time="100" center="20,{{ vscale(20) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="20,{{ vscale(20) }}" reversible="true" condition="Control.HasFocus(202)">Conditional</animation>
                     <width>40</width>
                     <height>{{ vscale(40) }}</height>
                     <onright>204</onright>
@@ -66,7 +64,7 @@
                     <ondown>50</ondown>
                     <font>font12</font>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search-focus.png</texturefocus>
+                    <texturefocus colordiffuse="FFFFFFFF">script.plex/buttons/search-focus.png</texturefocus>
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/search.png</texturenofocus>
                     <label> </label>
                 </control>
@@ -89,8 +87,8 @@
                 <focusedcolor>FF000000</focusedcolor>
                 <align>right</align>
                 <aligny>center</aligny>
-                <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-                <texturenofocus>-</texturenofocus>
+                <texturefocus colordiffuse="FFFFFFFF" border="20">script.plex/white-square-rounded.png</texturefocus>
+                <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                 <textoffsetx>100</textoffsetx>
                 <textoffsety>0</textoffsety>
                 <label> </label>
@@ -161,10 +159,10 @@
                 <width>240</width>
                 <height>{{ vscale(1) }}</height>
                 <texturebg colordiffuse="9AFFFFFF">script.plex/white-square-1px.png</texturebg>
-                <lefttexture>-</lefttexture>
-                <midtexture colordiffuse="FFCC7B19">script.plex/white-square-1px.png</midtexture>
-                <righttexture>-</righttexture>
-                <overlaytexture>-</overlaytexture>
+                <lefttexture>script.plex/transparent-6px.png</lefttexture>
+                <midtexture colordiffuse="FFFFFFFF">script.plex/white-square-1px.png</midtexture>
+                <righttexture>script.plex/transparent-6px.png</righttexture>
+                <overlaytexture>script.plex/transparent-6px.png</overlaytexture>
                 <info>Player.Progress</info>
             </control>
         </control>

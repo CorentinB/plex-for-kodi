@@ -637,12 +637,20 @@ class Role(MediaTag):
             data = response.json()
             container = data.get('MediaContainer', {})
             credit_groups = container.get('CreditGroup', [])
+            if isinstance(credit_groups, dict):
+                credit_groups = [credit_groups]
 
             if credit_type is not None:
                 # Legacy single-type mode
                 for group in credit_groups:
+                    if not isinstance(group, dict):
+                        continue
                     if group.get('type', '').lower() == credit_type.lower():
                         credits = group.get('Credit', [])
+                        if isinstance(credits, dict):
+                            credits = [credits]
+                        elif not isinstance(credits, list):
+                            credits = []
                         util.DEBUG_LOG('getDiscoverCredits: Found {0} {1} credits for {2}'.format(
                             len(credits), credit_type, self.tag))
                         return credits
@@ -651,8 +659,14 @@ class Role(MediaTag):
             # Return all groups as (type, credits) tuples
             result = []
             for group in credit_groups:
+                if not isinstance(group, dict):
+                    continue
                 group_type = group.get('type', '')
                 credits = group.get('Credit', [])
+                if isinstance(credits, dict):
+                    credits = [credits]
+                elif not isinstance(credits, list):
+                    credits = []
                 if credits:
                     result.append((group_type, credits))
             util.DEBUG_LOG('getDiscoverCredits: Found {0} credit groups for {1}: {2}'.format(

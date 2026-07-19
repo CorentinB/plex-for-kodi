@@ -8,6 +8,7 @@ from plexnet import playlist, util as pnUtil, plexapp, plexlibrary
 
 from lib import metadata
 from lib import util
+from lib.home_hero import _short_text
 from lib.util import T
 from lib.language_util import getNativeLanguages
 from . import busy
@@ -145,9 +146,25 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMixin, 
                            (self.fillRoles, None, None)])
 
     def updateProperties(self):
+        summary = (self.mediaItem.summary or '').strip().replace('\t', ' ')
         self.setProperty('title', self.mediaItem.title)
-        self.setProperty('summary', self.mediaItem.summary)
+        self.setProperty('summary', summary)
+        # Keep the hero synopsis to two clean TV-readable lines.  A longer
+        # character cap can still wrap to a clipped third line in French.
+        self.setProperty('summary.short', _short_text(summary, limit=180))
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
+        background_art = self.mediaItem.defaultArt or self.mediaItem.defaultThumb
+        try:
+            blurred_background = background_art and background_art.asTranscodedImageURL(
+                self.width,
+                self.height,
+                blur=18,
+                opacity=100,
+                background='000000',
+            ) or ''
+        except (AttributeError, TypeError, ValueError):
+            blurred_background = ''
+        self.setProperty('seasons.background.blurred', blurred_background)
         self.updateBackgroundFrom(self.mediaItem)
         self.setProperty('duration', util.durationToText(self.mediaItem.fixedDuration()))
         self.setProperty('info', '')
@@ -162,14 +179,25 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMixin, 
         self.setProperty('extras.header', T(32305, 'Extras'))
         self.setProperty('related.header', T(32306, 'Related Shows') if not self.fromWatchlist else T(34018, 'Related Media'))
 
+        creator_label = ''
+        creator_name = ''
         if self.mediaItem.creator:
-            self.setProperty('directors', u'{0}    {1}'.format(T(32418, 'Creator').upper(), self.mediaItem.creator))
+            creator_label = T(32418, 'Creator')
+            creator_name = self.mediaItem.creator
+            self.setProperty('directors', u'{0}    {1}'.format(creator_label, creator_name))
         elif self.mediaItem.studio:
-            self.setProperty('directors', u'{0}    {1}'.format(T(32386, 'Studio').upper(), self.mediaItem.studio))
+            creator_label = T(32386, 'Studio')
+            creator_name = self.mediaItem.studio
+            self.setProperty('directors', u'{0}    {1}'.format(creator_label, creator_name))
+        else:
+            self.setProperty('directors', '')
+        self.setProperty('creator.label', creator_label)
+        self.setProperty('creator.name', creator_name)
 
         cast = self.mediaItem.roles and u' / '.join([r.tag for r in self.mediaItem.roles()][:5]) or ''
-        castLabel = T(32419, 'Cast').upper()
+        castLabel = T(32419, 'Cast')
         self.setProperty('writers', cast and u'{0}    {1}'.format(castLabel, cast) or '')
+        self.setProperty('cast.names', cast)
 
         genres = self.mediaItem.genres()
         self.setProperty('info', genres and (u' / '.join([g.tag for g in genres][:3])) or '')
@@ -188,6 +216,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMixin, 
             deselect_subtitles=getNativeLanguages(util.getSetting("disable_subtitle_languages") or []))
         self.setProperty('subtitles', sss and sss.getTitle() or 'None')
 
+        self.progressImageControl.setVisible(False)
         leafcount = self.mediaItem.leafCount.asFloat()
         if leafcount:
             viewed = self.mediaItem.viewedLeafCount.asInt()
@@ -205,8 +234,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMixin, 
 
             # if we have _any_ progress, display it as the smallest step
             wBase = 0 < wBase < 0.01 and 0.01 or wBase
-            width = (int(wBase * self.width)) or 1
-            self.progressImageControl.setWidth(width)
+            if wBase > 0:
+                self.progressImageControl.setWidth(max(1, int(wBase * self.width)))
+                self.progressImageControl.setVisible(True)
 
     def focusPlayButton(self, extended=False):
         if extended:
@@ -737,9 +767,23 @@ class ArtistWindow(ShowWindow):
         self.processCommand(opener.handleOpen(musicplayer.MusicPlayerWindow, track=pl.current(), playlist=pl))
 
     def updateProperties(self):
-        self.setProperty('summary', self.mediaItem.summary)
+        summary = (self.mediaItem.summary or '').strip().replace('\t', ' ')
+        self.setProperty('summary', summary)
+        self.setProperty('summary.short', _short_text(summary, limit=190))
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty('related.header', T(32960, 'Similar Artists'))
+        background_art = self.mediaItem.defaultArt or self.mediaItem.defaultThumb
+        try:
+            blurred_background = background_art and background_art.asTranscodedImageURL(
+                self.width,
+                self.height,
+                blur=18,
+                opacity=100,
+                background='000000',
+            ) or ''
+        except (AttributeError, TypeError, ValueError):
+            blurred_background = ''
+        self.setProperty('artist.background.blurred', blurred_background)
         self.updateBackgroundFrom(self.mediaItem)
 
     @busy.dialog()

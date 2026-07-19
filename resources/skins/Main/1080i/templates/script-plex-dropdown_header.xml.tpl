@@ -11,8 +11,8 @@
     <posy>0</posy>
     <width>1920</width>
     <height>1080</height>
-    <texturefocus>-</texturefocus>
-    <texturenofocus>-</texturenofocus>
+    <texturefocus>script.plex/transparent-6px.png</texturefocus>
+    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
 </control>
 <control type="group" id="100">
     <defaultcontrol>250</defaultcontrol>
@@ -37,7 +37,7 @@
             <height>{{ vscale(132) }}</height>
             <texture colordiffuse="D3111111" border="10">script.plex/white-square-rounded.png</texture>
         </control>
-        <control type="label">
+        <control type="label" id="112">
             <posx>20</posx>
             <posy>0</posy>
             <width>600</width>
@@ -46,8 +46,7 @@
             <align>center</align>
             <aligny>center</aligny>
             <textcolor>FFEEEEEE</textcolor>
-            <scroll>true</scroll>
-            <scrollspeed>15</scrollspeed>
+            <scroll>false</scroll>
             <label>[B]$INFO[Window.Property(header)][/B]</label>
         </control>
     </control>
@@ -55,7 +54,7 @@
         <posx>0</posx>
         <posy>0</posy>
         <width>600</width>
-        <height>{{ vscale(528) }}</height>
+        <height>{{ vscale(924) }}</height>
         <onup condition="String.IsEqual(Window.Property(close.direction),top)">Close</onup>
         <onup condition="!String.IsEqual(Window.Property(close.direction),top)">noop</onup>
         <onleft condition="String.IsEqual(Window.Property(close.direction),left)">Close</onleft>
@@ -110,8 +109,7 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <scroll>true</scroll>
-                <scrollspeed>20</scrollspeed>
+                <scroll>false</scroll>
                 <label>$INFO[ListItem.Label]</label>
             </control>
             <control type="label">
@@ -124,8 +122,7 @@
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <scroll>true</scroll>
-                <scrollspeed>20</scrollspeed>
+                <scroll>false</scroll>
                 <label>$INFO[ListItem.Label]</label>
             </control>
             <control type="group">
@@ -141,8 +138,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <scroll>true</scroll>
-                    <scrollspeed>20</scrollspeed>
+                    <scroll>false</scroll>
                     <label>$INFO[ListItem.Label]</label>
                 </control>
                 <control type="label">
@@ -155,8 +151,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <scroll>true</scroll>
-                    <scrollspeed>20</scrollspeed>
+                    <scroll>false</scroll>
                     <label>$INFO[ListItem.Label]</label>
                 </control>
                 <!-- Submenu chevron -->
@@ -188,14 +183,14 @@
             </control>
         </itemlayout>
         <focusedlayout height="{{ vscale(66) }}">
-            <!-- Normal focused state (gold) - when not moving -->
+            <!-- Normal focused state (white) - when not moving -->
             <control type="image">
                 <visible>!String.IsEmpty(ListItem.Property(first)) + String.IsEmpty(ListItem.Property(moving))</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>600</width>
                 <height>{{ vscale(66) }}</height>
-                <texture colordiffuse="F3E5A00D" border="10">script.plex/white-square-top-rounded.png</texture>
+                <texture colordiffuse="F3F5F5F5" border="10">script.plex/white-square-top-rounded.png</texture>
             </control>
             <control type="image">
                 <visible>String.IsEmpty(ListItem.Property(first)) + String.IsEmpty(ListItem.Property(last)) + String.IsEmpty(ListItem.Property(only)) + String.IsEmpty(ListItem.Property(moving))</visible>
@@ -203,7 +198,7 @@
                 <posy>0</posy>
                 <width>600</width>
                 <height>{{ vscale(66) }}</height>
-                <texture colordiffuse="F3E5A00D">script.plex/white-square.png</texture>
+                <texture colordiffuse="F3F5F5F5">script.plex/white-square.png</texture>
             </control>
             <control type="image">
                 <visible>!String.IsEmpty(ListItem.Property(last)) + String.IsEmpty(ListItem.Property(moving))</visible>
@@ -211,7 +206,7 @@
                 <posy>0</posy>
                 <width>600</width>
                 <height>{{ vscale(66) }}</height>
-                <texture flipy="true" colordiffuse="FFE5A00D" border="10">script.plex/white-square-top-rounded.png</texture>
+                <texture flipy="true" colordiffuse="FFF5F5F5" border="10">script.plex/white-square-top-rounded.png</texture>
             </control>
             <control type="image">
                 <visible>!String.IsEmpty(ListItem.Property(only)) + String.IsEmpty(ListItem.Property(moving))</visible>
@@ -219,7 +214,7 @@
                 <posy>0</posy>
                 <width>600</width>
                 <height>{{ vscale(66) }}</height>
-                <texture colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texture>
+                <texture colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texture>
             </control>
             <!-- Moving state (muted gray, more opaque to prevent orange flash during move) -->
             <control type="image">
@@ -264,8 +259,7 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <textcolor>FF000000</textcolor>
-                <scroll>true</scroll>
-                <scrollspeed>20</scrollspeed>
+                <scroll>false</scroll>
                 <label>$INFO[ListItem.Label]</label>
             </control>
             <control type="label">
@@ -278,8 +272,7 @@
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FF000000</textcolor>
-                <scroll>true</scroll>
-                <scrollspeed>20</scrollspeed>
+                <scroll>false</scroll>
                 <label>$INFO[ListItem.Label]</label>
             </control>
             <control type="group">
@@ -295,8 +288,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FF000000</textcolor>
-                    <scroll>true</scroll>
-                    <scrollspeed>20</scrollspeed>
+                    <scroll>false</scroll>
                     <label>$INFO[ListItem.Label]</label>
                 </control>
                 <control type="label">
@@ -309,8 +301,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FF000000</textcolor>
-                    <scroll>true</scroll>
-                    <scrollspeed>20</scrollspeed>
+                    <scroll>false</scroll>
                     <label>$INFO[ListItem.Label]</label>
                 </control>
                 <!-- Submenu chevron -->
@@ -343,17 +334,17 @@
         </focusedlayout>
     </control>
     <control type="scrollbar" id="1152">
-        <hitrect x="600" y="0" w="50" h="{{ vscale(528) }}" />
+        <hitrect x="600" y="0" w="50" h="{{ vscale(924) }}" />
         <left>604</left>
         <top>0</top>
         <width>12</width>
-        <height>{{ vscale(528) }}</height>
+        <height>{{ vscale(924) }}</height>
         <visible>true</visible>
         <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texturesliderbackground>
         <texturesliderbar colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texturesliderbar>
-        <texturesliderbarfocus colordiffuse="FFE5A00D" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
-        <textureslidernib>-</textureslidernib>
-        <textureslidernibfocus>-</textureslidernibfocus>
+        <texturesliderbarfocus colordiffuse="FFF5F5F5" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
+        <textureslidernib>script.plex/transparent-6px.png</textureslidernib>
+        <textureslidernibfocus>script.plex/transparent-6px.png</textureslidernibfocus>
         <pulseonselect>false</pulseonselect>
         <orientation>vertical</orientation>
         <showonepage>false</showonepage>

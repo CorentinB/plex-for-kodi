@@ -92,9 +92,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RolesMi
 
     NEXT_DIM = util.scaleResolution(537, 303)
     PREV_DIM = util.scaleResolution(462, 259)
-    ONDECK_DIM = util.scaleResolution(329, 185)
-    RELATED_DIM = util.scaleResolution(268, 402)
-    ROLES_DIM = util.scaleResolution(334, 334)
+    ONDECK_DIM = util.scaleResolution(385, 217)
+    RELATED_DIM = util.scaleResolution(244, 361)
+    ROLES_DIM = util.scaleResolution(200, 200)
 
     OPTIONS_GROUP_ID = 200
 
@@ -328,9 +328,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RolesMi
         if xbmc.getCondVisibility('!String.IsEmpty(Window.Property(on.extras))'):
             y -= 300
         if xbmc.getCondVisibility('Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)'):
-            y -= 500
+            y -= 360
         if xbmc.getCondVisibility('Integer.IsGreater(Window.Property(hub.focus),1) + Control.IsVisible(501)'):
-            y -= 500
+            y -= 520
 
         return super(VideoPlayerWindow, self).getRoleItemDDPosition(y=y, container_id="403")
 
@@ -479,7 +479,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RolesMi
         self.getHubs()
 
         self.setProperty(
-            'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(self.prev.type in ('show', 'season', 'episode') and 'show' or 'movie')
+            'thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png'
         )
 
         util.DEBUG_LOG('PostPlay: Showing video info')
@@ -585,7 +585,12 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RolesMi
         if self.next:
             self.setProperty(
                 'post.play.background',
-                util.backgroundFromArt(self.next.art, width=self.width, height=self.height)
+                util.backgroundFromArt(
+                    self.next.art,
+                    width=self.width,
+                    height=self.height,
+                    minimum_blur=18,
+                )
             )
             if self.next.type == "episode" and hide_spoilers:
                 if self.noTitles:
@@ -603,7 +608,12 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RolesMi
         if self.prev:
             self.setProperty(
                 'post.play.background',
-                util.backgroundFromArt(self.prev.art, width=self.width, height=self.height)
+                util.backgroundFromArt(
+                    self.prev.art,
+                    width=self.width,
+                    height=self.height,
+                    minimum_blur=18,
+                )
             )
             self.setProperty('prev.info.title', self.prev.title)
             self.setProperty('prev.info.duration', util.durationToText(self.prev.duration.asInt()))

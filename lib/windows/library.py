@@ -1463,7 +1463,7 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
         mli.setProperty('progress', util.getProgressImage(mli.dataSource))
 
     def setTitle(self):
-        self.setProperty('screen.title', self.section.title.upper())
+        self.setProperty('screen.title', self.section.title)
 
         self.updateFilterDisplay()
 

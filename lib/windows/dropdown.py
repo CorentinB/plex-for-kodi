@@ -22,7 +22,6 @@ class DropdownDialog(kodigui.BaseDialog):
     dropWidth = 360
     borderOff = -20
 
-    GROUP_ID = 100
     OPTIONS_LIST_ID = 250
     SCROLLBAR_ID = 1152
 
@@ -94,19 +93,11 @@ class DropdownDialog(kodigui.BaseDialog):
         else:
             shadowControl.setHeight(height)
         self.optionsList.setHeight(ol_height)
-        if self.getBoolProperty('scroll'):
-            try:
-                self.getControl(self.SCROLLBAR_ID).setHeight(ol_height)
-            except:
-                pass
-
         if y == "middle":
             y = util.vperci(util.vscale(ol_height))
 
         self._adjustedY = int(y)
-        self.getControl(100).setPosition(self.x, int(y))
-        if self.header:
-            shadowControl.setPosition(-60, util.vscalei(-106))
+        self.positionControls(self.x, int(y))
 
         self.setProperty('show', '1')
         self.setProperty('close.direction', self.closeDirection)
@@ -117,6 +108,18 @@ class DropdownDialog(kodigui.BaseDialog):
         if openSubList and self.openSubLists:
             # once the item is selected, open its sublist if wanted
             self.setChoice()
+
+    def positionControls(self, x, y):
+        """Move the supported group without requesting its XML scrollbar.
+
+        WindowXML exposes groups, images and lists to Python, but not Kodi's
+        scrollbar control. Keeping the scrollbar inside the group lets Kodi
+        position and drive it through ``pagecontrol`` without crossing that
+        API boundary.
+        """
+        self.getControl(100).setPosition(x, y)
+        if self.header:
+            self.getControl(110).setPosition(-60, util.vscalei(-106))
 
     def onAction(self, action):
         try:

@@ -24,6 +24,7 @@ import plexnet.util
 
 from .kodijsonrpc import rpc
 from . import colors
+from . import artwork
 # noinspection PyUnresolvedReferences
 from .exceptions import NoDataException
 from .logging import log, DEBUG_LOG, LOG, ERROR, setShutdown, showNotification
@@ -163,29 +164,40 @@ def sortTitle(title):
 
 def durationToText(seconds):
     """
-    Converts seconds to a short user friendly string
-    Example: 143 -> 2m 23s
+    Converts milliseconds to a compact localized user-facing string.
     """
     days = int(seconds / 86400000)
     if days:
-        return '{0} day{1}'.format(days, days > 1 and 's' or '')
+        return T(
+            35048 if days == 1 else 35049,
+            '{0} day' if days == 1 else '{0} days',
+        ).format(days)
     left = seconds % 86400000
     hours = int(left / 3600000)
     if hours:
-        hours = '{0} hr{1} '.format(hours, hours > 1 and 's' or '')
+        hours = T(
+            35050 if hours == 1 else 35051,
+            '{0} hr' if hours == 1 else '{0} hrs',
+        ).format(hours)
     else:
         hours = ''
     left = left % 3600000
     mins = int(left / 60000)
     if mins:
-        return hours + '{0} min{1}'.format(mins, mins > 1 and 's' or '')
+        minutes = T(
+            35052 if mins == 1 else 35053,
+            '{0} min' if mins == 1 else '{0} mins',
+        ).format(mins)
+        return ' '.join(value for value in (hours, minutes) if value)
     elif hours:
-        return hours.rstrip()
-    secs = int(left % 60000)
+        return hours
+    secs = int(left % 60000) // 1000
     if secs:
-        secs /= 1000
-        return '{0} sec{1}'.format(secs, secs > 1 and 's' or '')
-    return '0 seconds'
+        return T(
+            35054 if secs == 1 else 35055,
+            '{0} sec' if secs == 1 else '{0} secs',
+        ).format(secs)
+    return T(35056, '0 seconds')
 
 
 def durationToShortText(ms, shortHourMins=False, shortSeconds=False, noSpaces=False):
@@ -796,14 +808,18 @@ def getProgressImage(obj, perc=None, view_offset=None):
     return 'script.plex/progress/{0}.png'.format(pct)
 
 
-def backgroundFromArt(art, width=1920, height=1080, background=colors.noAlpha.Background):
-    if not art:
+def backgroundFromArt(art, width=1920, height=1080, background=colors.noAlpha.Background,
+                      minimum_blur=None):
+    if not artwork.is_usable_art(art):
         return
 
     w, h = scaleResolution(width, height, by=addonSettings.backgroundResolutionScalePerc)
+    blur = addonSettings.backgroundArtBlurAmount2
+    if minimum_blur is not None:
+        blur = max(blur, minimum_blur)
     return art.asTranscodedImageURL(
         w, h,
-        blur=addonSettings.backgroundArtBlurAmount2,
+        blur=blur,
         opacity=addonSettings.backgroundArtOpacityAmount2,
         background=background
     )

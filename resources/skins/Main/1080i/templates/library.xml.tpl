@@ -1,6 +1,17 @@
 {% extends "default.xml.tpl" %}
 {% block headers %}<defaultcontrol>100</defaultcontrol>{% endblock %}
 
+{% block background %}
+{% include "includes/default_background.xml.tpl" %}
+<control type="image">
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+    <texture colordiffuse="B0FFFFFF">script.plex/home/tvos-background-wash.png</texture>
+</control>
+{% endblock background %}
+
 {% block header %}
 <control type="group" id="200">
     {% block header_animation %}<animation effect="slide" end="0,{{ vscale(-135) }}" time="200" tween="quadratic" easing="out" condition="Integer.IsGreater(Container(101).ListItem.Property(index),5) + !ControlGroup(200).HasFocus(0) + String.IsEmpty(Window.Property(content.filling))">Conditional</animation>{% endblock %}
@@ -36,8 +47,7 @@
             <width>40</width>
             <height>{{ vscale(40) }}</height>
             <control type="button" id="201">
-                <animation effect="zoom" start="100" end="144" time="100" center="20,{{ vscale(20) }}" reversible="false">Focus</animation>
-                <animation effect="zoom" start="144" end="100" time="100" center="20,{{ vscale(20) }}" reversible="false">UnFocus</animation>
+                <animation effect="zoom" start="100" end="106" time="110" center="20,{{ vscale(20) }}" reversible="true" condition="Control.HasFocus(201)">Conditional</animation>
                 <width>40</width>
                 <height>{{ vscale(40) }}</height>
                 <onright>202</onright>
@@ -45,27 +55,26 @@
                 <ondown condition="!String.IsEmpty(Window.Property(no.content.filtered))">600</ondown>
                 <font>font12</font>
                 <focusedcolor>FF000000</focusedcolor>
-                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/home-focus.png</texturefocus>
+                <texturefocus colordiffuse="FFF5F5F5">script.plex/buttons/home-focus.png</texturefocus>
                 <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/home.png</texturenofocus>
                 <label> </label>
             </control>
         </control>
         <control type="label">
-            <width max="300">auto</width>
+            <width max="650">auto</width>
             <height>{{ vscale(40) }}</height>
             <font>font12</font>
             <align>left</align>
             <aligny>center</aligny>
             <textcolor>FFFFFFFF</textcolor>
-            <label>[UPPERCASE]$INFO[Window.Property(screen.title)][/UPPERCASE][COLOR=gray]$INFO[Window.Property(items.count),  (,)][/COLOR]</label>
-            <scroll>true</scroll>
+            <label>$INFO[Window.Property(screen.title)][COLOR=99FFFFFF]$INFO[Window.Property(items.count),  (,)][/COLOR]</label>
+            <scroll>false</scroll>
         </control>
         <control type="group">
             <width>40</width>
             <height>{{ vscale(40) }}</height>
             <control type="button" id="202">
-                <animation effect="zoom" start="100" end="144" time="100" center="20,{{ vscale(20) }}" reversible="false">Focus</animation>
-                <animation effect="zoom" start="144" end="100" time="100" center="20,{{ vscale(20) }}" reversible="false">UnFocus</animation>
+                <animation effect="zoom" start="100" end="106" time="110" center="20,{{ vscale(20) }}" reversible="true" condition="Control.HasFocus(202)">Conditional</animation>
                 <width>40</width>
                 <height>{{ vscale(40) }}</height>
                 <onright condition="String.IsEmpty(Window.Property(no.content.filtered))">204</onright>
@@ -75,7 +84,7 @@
                 <ondown condition="!String.IsEmpty(Window.Property(no.content.filtered))">600</ondown>
                 <font>font12</font>
                 <focusedcolor>FF000000</focusedcolor>
-                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search-focus.png</texturefocus>
+                <texturefocus colordiffuse="FFF5F5F5">script.plex/buttons/search-focus.png</texturefocus>
                 <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/search.png</texturenofocus>
                 <label> </label>
             </control>
@@ -98,8 +107,8 @@
             <focusedcolor>FF000000</focusedcolor>
             <align>right</align>
             <aligny>center</aligny>
-            <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-            <texturenofocus>-</texturenofocus>
+            <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+            <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
             <textoffsetx>100</textoffsetx>
             <textoffsety>0</textoffsety>
             <label> </label>
@@ -170,10 +179,10 @@
             <width>240</width>
             <height>{{ vscale(1) }}</height>
             <texturebg colordiffuse="9AFFFFFF">script.plex/white-square-1px.png</texturebg>
-            <lefttexture>-</lefttexture>
+            <lefttexture>script.plex/transparent-6px.png</lefttexture>
             <midtexture colordiffuse="FFCC7B19">script.plex/white-square-1px.png</midtexture>
-            <righttexture>-</righttexture>
-            <overlaytexture>-</overlaytexture>
+            <righttexture>script.plex/transparent-6px.png</righttexture>
+            <overlaytexture>script.plex/transparent-6px.png</overlaytexture>
             <info>Player.Progress</info>
         </control>
     </control>
@@ -207,11 +216,11 @@
             <disabledcolor>FFFFFFFF</disabledcolor>
             <align>center</align>
             <aligny>center</aligny>
-            <texturefocus>-</texturefocus>
-            <texturenofocus>-</texturenofocus>
+            <texturefocus>script.plex/transparent-6px.png</texturefocus>
+            <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
             <textoffsetx>0</textoffsetx>
             <textoffsety>0</textoffsety>
-            <label>[UPPERCASE]$INFO[Window.Property(filter2.display)][/UPPERCASE]</label>
+            <label>$INFO[Window.Property(filter2.display)]</label>
         </control>
         <control type="button" id="211">
             <width max="500">auto</width>
@@ -221,11 +230,11 @@
             <focusedcolor>FF000000</focusedcolor>
             <align>center</align>
             <aligny>center</aligny>
-            <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-            <texturenofocus>-</texturenofocus>
+            <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+            <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
             <textoffsetx>20</textoffsetx>
             <textoffsety>0</textoffsety>
-            <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
+            <label>$INFO[Window.Property(filter1.display)]</label>
         </control>
         <control type="button" id="310">
             <visible>!String.IsEqual(Window.Property(media),artist)</visible>
@@ -238,11 +247,10 @@
             <disabledcolor>FFFFFFFF</disabledcolor>
             <align>center</align>
             <aligny>center</aligny>
-            <texturenofocus>-</texturenofocus>
-            <texturenofocus>-</texturenofocus>
+            <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
             <textoffsetx>20</textoffsetx>
             <textoffsety>0</textoffsety>
-            <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+            <label>$INFO[Window.Property(media.type)]</label>
         </control>
         <control type="button" id="312">
             <visible>String.IsEqual(Window.Property(media),artist)</visible>
@@ -254,11 +262,11 @@
             <disabledcolor>FFFFFFFF</disabledcolor>
             <align>center</align>
             <aligny>center</aligny>
-            <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-            <texturenofocus>-</texturenofocus>
+            <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+            <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
             <textoffsetx>20</textoffsetx>
             <textoffsety>0</textoffsety>
-            <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+            <label>$INFO[Window.Property(media.type)]</label>
         </control>
         <control type="button" id="210">
             <width max="300">auto</width>
@@ -268,11 +276,11 @@
             <focusedcolor>FF000000</focusedcolor>
             <align>center</align>
             <aligny>center</aligny>
-            <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-            <texturenofocus>-</texturenofocus>
+            <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+            <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
             <textoffsetx>20</textoffsetx>
             <textoffsety>0</textoffsety>
-            <label>[UPPERCASE]$INFO[Window.Property(sort.display)][/UPPERCASE]</label>
+            <label>$INFO[Window.Property(sort.display)]</label>
         </control>
     </control>
     {% endblock filteropts_grouplist %}
@@ -301,6 +309,13 @@
     <visible>!String.IsEmpty(Window.Property(no.content))</visible>
     <posx>0</posx>
     <posy>{{ vscale(465) }}</posy>
+    <control type="image">
+        <posx>560</posx>
+        <posy>{{ vscale(-76) }}</posy>
+        <width>800</width>
+        <height>{{ vscale(220) }}</height>
+        <texture colordiffuse="D90B0B0B" border="30">script.plex/white-square-rounded.png</texture>
+    </control>
     <control type="label">
         <scroll>false</scroll>
         <posx>60</posx>
@@ -329,6 +344,13 @@
     <visible>!String.IsEmpty(Window.Property(no.content.filtered))</visible>
     <posx>0</posx>
     <posy>{{ vscale(465) }}</posy>
+    <control type="image">
+        <posx>560</posx>
+        <posy>{{ vscale(-76) }}</posy>
+        <width>800</width>
+        <height>{{ vscale(220) }}</height>
+        <texture colordiffuse="D90B0B0B" border="30">script.plex/white-square-rounded.png</texture>
+    </control>
     <control type="label">
         <scroll>false</scroll>
         <posx>60</posx>

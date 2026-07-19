@@ -41,7 +41,11 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
 
     SEEK_IMAGE_WIDTH = 1920
 
+    SELECTION_INDICATOR_Y = 896
+    BAR_X = 0
+    BAR_Y = 921
     BAR_RIGHT = 1920
+    BAR_BOTTOM = 969
 
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
@@ -67,9 +71,15 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         self.commonInit()
         self.updateProperties()
         self.play()
+        player.PLAYER.on('session.ended', self.playbackSessionEnded)
+        if util.CRON:
+            util.CRON.registerReceiver(self)
         self.setFocusId(406)
 
     def doClose(self, **kwargs):
+        if util.CRON:
+            util.CRON.cancelReceiver(self)
+        player.PLAYER.off('session.ended', self.playbackSessionEnded)
         player.PLAYER.off('av.started', self.onPlayBackStarted)
         if self.playlist and self.playlist.isRemote:
             self.playlist.off('change', self.updateProperties)

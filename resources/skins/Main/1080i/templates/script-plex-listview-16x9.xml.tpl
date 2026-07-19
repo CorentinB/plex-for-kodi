@@ -6,7 +6,7 @@
 {% block filteropts_grouplist %}
 <control type="grouplist" id="600">
     <visible>String.IsEmpty(Window.Property(hide.filteroptions))</visible>
-    <right>120</right>
+    <right>170</right>
     <posy>{{ vscale(135) }}</posy>
     <width>870</width>
     <height>{{ vscale(65) }}</height>
@@ -29,11 +29,11 @@
         <disabledcolor>A0FFFFFF</disabledcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus>-</texturefocus>
-        <texturenofocus>-</texturenofocus>
+        <texturefocus>script.plex/transparent-6px.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>0</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(filter2.display)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(filter2.display)]</label>
     </control>
     <control type="button" id="211">
         <visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
@@ -44,11 +44,11 @@
         <focusedcolor>FF000000</focusedcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
+        <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>20</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(filter1.display)]</label>
     </control>
     <control type="button" id="310">
         <visible>String.IsEqual(Window.Property(subDir),1) | ![String.IsEqual(Window.Property(media),show) | String.IsEqual(Window.Property(media),movie) | String.IsEqual(Window.Property(media),movies_shows)]</visible>
@@ -61,11 +61,10 @@
         <disabledcolor>FFFFFFFF</disabledcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus>-</texturenofocus>
-        <texturenofocus>-</texturenofocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>20</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(media.type)]</label>
     </control>
     <control type="button" id="312">
         <visible>!String.IsEqual(Window.Property(subDir),1) + [String.IsEqual(Window.Property(media),show) | String.IsEqual(Window.Property(media),movie) | String.IsEqual(Window.Property(media),movies_shows)]</visible>
@@ -77,11 +76,11 @@
         <disabledcolor>FFFFFFFF</disabledcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
+        <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>20</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(media.type)]</label>
     </control>
     <control type="button" id="210">
         <visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
@@ -92,18 +91,18 @@
         <focusedcolor>FF000000</focusedcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
+        <texturefocus colordiffuse="FFF5F5F5" border="10">script.plex/white-square-rounded.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <textoffsetx>20</textoffsetx>
         <textoffsety>0</textoffsety>
-        <label>[UPPERCASE]$INFO[Window.Property(sort.display)][/UPPERCASE]</label>
+        <label>$INFO[Window.Property(sort.display)]</label>
     </control>
 </control>
 {% endblock filteropts_grouplist %}
 
 {% block content %}
 <control type="group">
-    <posx>60</posx>
+    <posx>100</posx>
     <posy>{{ vscale(248) }}</posy>
     <control type="image">
         <visible>!String.IsEqual(Window.Property(media),show) + !String.IsEqual(Window.Property(media),movie)</visible>
@@ -112,7 +111,7 @@
         <width>630</width>
         <height>{{ vscale(355) }}</height>
         <fadetime>500</fadetime>
-        <texture background="true" fallback="script.plex/thumb_fallbacks/movie.png">$INFO[Container(101).ListItem.Property(art)]</texture>
+        <texture background="true" fallback="script.plex/thumb_fallbacks/movie.png" diffuse="script.plex/landscape-rounded-mask.png">$INFO[Container(101).ListItem.Property(art)]</texture>
         <aspectratio>scale</aspectratio>
     </control>
     <control type="image">
@@ -122,10 +121,10 @@
         <width>630</width>
         <height>{{ vscale(355) }}</height>
         <fadetime>500</fadetime>
-        <texture background="true" fallback="script.plex/thumb_fallbacks/show.png">$INFO[Container(101).ListItem.Property(art)]</texture>
+        <texture background="true" fallback="script.plex/thumb_fallbacks/show.png" diffuse="script.plex/landscape-rounded-mask.png">$INFO[Container(101).ListItem.Property(art)]</texture>
         <aspectratio>scale</aspectratio>
     </control>
-    <control type="label">
+    <control type="textbox">
         <posx>0</posx>
         <posy>{{ vscale(355) }}</posy>
         <width>440</width>
@@ -135,13 +134,14 @@
         <aligny>center</aligny>
         <textcolor>FFFFFFFF</textcolor>
         <label>[B]$INFO[Container(101).ListItem.Label][/B]</label>
+        <autoscroll>false</autoscroll>
     </control>
     <control type="label">
-        <posx>630</posx>
+        <posx>470</posx>
         <posy>{{ vscale(355) }}</posy>
-        <width>180</width>
+        <width>160</width>
         <height>{{ vscale(80) }}</height>
-        <font>font12</font>
+        <font>font10</font>
         <align>right</align>
         <aligny>center</aligny>
         <textcolor>FFFFFFFF</textcolor>
@@ -160,11 +160,11 @@
         <posy>{{ vscale(463) }}</posy>
         <width>630</width>
         <height>{{ vscale(307) }}</height>
-        <font>font12</font>
+        <font>font10</font>
         <align>left</align>
         <textcolor>FFDDDDDD</textcolor>
         <label>$INFO[Container(101).ListItem.Property(summary)]</label>
-        <autoscroll delay="2000" time="2000" repeat="10000"></autoscroll>
+        <autoscroll>false</autoscroll>
     </control>
 </control>
 
@@ -177,21 +177,21 @@
         <control type="grouplist" id="300">
             <animation effect="fade" start="0" end="100" time="200" reversible="true">VisibleChange</animation>
             <defaultcontrol>301</defaultcontrol>
-            <posx>30</posx>
+            <posx>155</posx>
             <posy>{{ vscale(-25) }}</posy>
-            <width>1000</width>
-            <height>{{ vscale(145) }}</height>
+            <width>600</width>
+            <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>101</ondown>
             <onleft>210</onleft>
             <onright>600</onright>
-            <itemgap>-20</itemgap>
+            <itemgap>14</itemgap>
             <orientation>horizontal</orientation>
             <scrolltime tween="quadratic" easing="out">200</scrolltime>
             <usecontrolcoords>true</usecontrolcoords>
             <visible>!String.IsEmpty(Window.Property(initialized))</visible>
 
-            {% with attr = {"width": 126, "height": 100} & template = "includes/themed_button.xml.tpl" & hitrect = {"x": 20, "y": 20, "w": 86, "h": 60} %}
+            {% with attr = {"width": 126, "height": 100} & template = "includes/themed_button.xml.tpl" & hitrect = {"x": 20, "y": 20, "w": 86, "h": 60} & library_style = True %}
                 {% include template with name="play" & id=301 & visible="String.IsEmpty(Window.Property(disable_playback)) + [!String.IsEqual(Window(10000).Property(script.plex.item.type),collection) | String.IsEqual(Window.Property(media),collection)]" %}
                 {% include template with name="shuffle" & id=302 & visible="String.IsEmpty(Window.Property(disable_playback)) + [!String.IsEqual(Window(10000).Property(script.plex.item.type),collection) | String.IsEqual(Window.Property(media),collection)]" %}
                 {% include template with name="more" & id=303 & visible="String.IsEmpty(Window.Property(disable_playback)) + [String.IsEmpty(Window.Property(no.options)) | Player.HasAudio]" %}
@@ -244,22 +244,24 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>915</width>
-                                <height>{{ vscale(72) }}</height>
+                                <height>{{ vscale(34) }}</height>
                                 <font>font10</font>
                                 <align>left</align>
+                                <aligny>center</aligny>
                                 <textcolor>FFFFFFFF</textcolor>
                                 <label>[B]$INFO[ListItem.Label][/B]</label>
                             </control>
                             <control type="label">
                                 <visible>!String.IsEmpty(ListItem.Property(year))</visible>
                                 <posx>0</posx>
-                                <posy>{{ vscale(30) }}</posy>
+                                <posy>{{ vscale(32) }}</posy>
                                 <width>915</width>
-                                <height>{{ vscale(72) }}</height>
+                                <height>{{ vscale(34) }}</height>
                                 <font>font10</font>
                                 <align>left</align>
-                                <textcolor>FFFFFFFF</textcolor>
-                                <label>[B]$INFO[ListItem.Property(year)][/B]</label>
+                                <aligny>center</aligny>
+                                <textcolor>A0FFFFFF</textcolor>
+                                <label>$INFO[ListItem.Property(year)]</label>
                             </control>
                         </control>
                     </control>
@@ -291,22 +293,24 @@
                                     <posx>0</posx>
                                     <posy>0</posy>
                                     <width>915</width>
-                                    <height>{{ vscale(72) }}</height>
+                                    <height>{{ vscale(34) }}</height>
                                     <font>font10</font>
                                     <align>left</align>
+                                    <aligny>center</aligny>
                                     <textcolor>FFFFFFFF</textcolor>
                                     <label>[B]$INFO[ListItem.Label][/B]</label>
                                 </control>
                                 <control type="label">
                                     <visible>!String.IsEmpty(ListItem.Property(year))</visible>
                                     <posx>0</posx>
-                                    <posy>{{ vscale(30) }}</posy>
+                                    <posy>{{ vscale(32) }}</posy>
                                     <width>915</width>
-                                    <height>{{ vscale(72) }}</height>
+                                    <height>{{ vscale(34) }}</height>
                                     <font>font10</font>
                                     <align>left</align>
-                                    <textcolor>FFFFFFFF</textcolor>
-                                    <label>[B]$INFO[ListItem.Property(year)][/B]</label>
+                                    <aligny>center</aligny>
+                                    <textcolor>A0FFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Property(year)]</label>
                                 </control>
                             </control>
                         </control>
@@ -338,7 +342,7 @@
                             <width>1005</width>
                             <height>{{ vscale(76) }}</height>
                             <texture border="12">script.plex/white-square-rounded.png</texture>
-                            <colordiffuse>FFE5A00D</colordiffuse>
+                            <colordiffuse>F2F5F5F5</colordiffuse>
                         </control>
 
                         <control type="group">
@@ -351,22 +355,24 @@
                                     <posx>0</posx>
                                     <posy>0</posy>
                                     <width>510</width>
-                                    <height>{{ vscale(72) }}</height>
-                                    <font>font12</font>
+                                    <height>{{ vscale(34) }}</height>
+                                    <font>font10</font>
                                     <align>left</align>
+                                    <aligny>center</aligny>
                                     <textcolor>DF000000</textcolor>
                                     <label>[B]$INFO[ListItem.Label][/B]</label>
                                 </control>
                                 <control type="label">
                                     <visible>!String.IsEmpty(ListItem.Property(year))</visible>
                                     <posx>0</posx>
-                                    <posy>{{ vscale(30) }}</posy>
+                                    <posy>{{ vscale(32) }}</posy>
                                     <width>510</width>
-                                    <height>{{ vscale(72) }}</height>
-                                    <font>font12</font>
+                                    <height>{{ vscale(34) }}</height>
+                                    <font>font10</font>
                                     <align>left</align>
-                                    <textcolor>DF000000</textcolor>
-                                    <label>[B]$INFO[ListItem.Property(year)][/B]</label>
+                                    <aligny>center</aligny>
+                                    <textcolor>A0000000</textcolor>
+                                    <label>$INFO[ListItem.Property(year)]</label>
                                 </control>
                             </control>
                         </control>
@@ -385,9 +391,9 @@
         <visible>true</visible>
         <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texturesliderbackground>
         <texturesliderbar colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texturesliderbar>
-        <texturesliderbarfocus colordiffuse="FFE5A00D" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
-        <textureslidernib>-</textureslidernib>
-        <textureslidernibfocus>-</textureslidernibfocus>
+        <texturesliderbarfocus colordiffuse="FFF5F5F5" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
+        <textureslidernib>script.plex/transparent-6px.png</textureslidernib>
+        <textureslidernibfocus>script.plex/transparent-6px.png</textureslidernibfocus>
         <pulseonselect>false</pulseonselect>
         <orientation>vertical</orientation>
         <showonepage>false</showonepage>
@@ -439,7 +445,7 @@
                         <font>font10</font>
                         <align>center</align>
                         <aligny>center</aligny>
-                        <textcolor>FFE5A00D</textcolor>
+                        <textcolor>FFFFFFFF</textcolor>
                         <label>$INFO[ListItem.Label]</label>
                     </control>
                 </control>
@@ -475,7 +481,7 @@
                         <font>font10</font>
                         <align>center</align>
                         <aligny>center</aligny>
-                        <textcolor>FFE5A00D</textcolor>
+                        <textcolor>FFFFFFFF</textcolor>
                         <label>$INFO[ListItem.Label]</label>
                     </control>
                 </control>
@@ -490,7 +496,7 @@
                         <posy>0</posy>
                         <width>34</width>
                         <height>{{ vscale(34) }}</height>
-                        <colordiffuse>FFE5A00D</colordiffuse>
+                        <colordiffuse>FFF5F5F5</colordiffuse>
                         <texture border="12">script.plex/white-outline-rounded.png</texture>
                     </control>
                 </control>

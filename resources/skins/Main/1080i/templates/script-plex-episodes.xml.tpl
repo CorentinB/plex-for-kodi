@@ -1,22 +1,49 @@
 {% extends "default.xml.tpl" %}
+{% block background %}
+{% include "includes/default_background.xml.tpl" %}
+<control type="image">
+    <visible>!String.IsEmpty(Window.Property(episodes.background.blurred))</visible>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+    <fadetime>450</fadetime>
+    <texture background="true">$INFO[Window.Property(episodes.background.blurred)]</texture>
+    {% include "includes/scale_background.xml.tpl" %}
+</control>
+<control type="image">
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+    <texture>script.plex/home/tvos-background-wash.png</texture>
+</control>
+<control type="image">
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+    <texture colordiffuse="24000000">script.plex/white-square.png</texture>
+</control>
+{% endblock background %}
 {% block content %}
 <control type="group" id="50">
     <animation effect="slide" end="0,{{ vscale(-125) }}" time="200" tween="quadratic" easing="out" condition="!String.IsEmpty(Window.Property(on.extras))">Conditional</animation>
 
     <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
-        <effect type="slide" end="0,{{ vscale(-500) }}" time="200" tween="quadratic" easing="out"/>
+        <effect type="slide" end="0,{{ vscale(-400) }}" time="200" tween="quadratic" easing="out"/>
     </animation>
 
     <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
-        <effect type="slide" end="0,{{ vscale(-500) }}" time="200" tween="quadratic" easing="out"/>
+        <effect type="slide" end="0,{{ vscale(-380) }}" time="200" tween="quadratic" easing="out"/>
     </animation>
 
     <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),2) + Control.IsVisible(502)" reversible="true">
-        <effect type="slide" end="0,{{ vscale(-500) }}" time="200" tween="quadratic" easing="out"/>
+        <effect type="slide" end="0,{{ vscale(-400) }}" time="200" tween="quadratic" easing="out"/>
     </animation>
 
     <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),3) + Control.IsVisible(503)" reversible="true">
-        <effect type="slide" end="0,{{ vscale(-500) }}" time="200" tween="quadratic" easing="out"/>
+        <effect type="slide" end="0,{{ vscale(-360) }}" time="200" tween="quadratic" easing="out"/>
     </animation>
 
     <ondown condition="!String.IsEmpty(Window.Property(disable_playback))">400</ondown>
@@ -28,7 +55,7 @@
     {% block buttons %}
         {% if theme.episodes.use_button_bg %}
             <control type="image">
-                <visible>String.IsEmpty(Window.Property(disable_playback))</visible>
+                <visible>false</visible>
                 <posx>60</posx>
                 <posy>{{ vscale(369) }}</posy>
                 <width>657</width>
@@ -38,58 +65,60 @@
             </control>
         {% endif %}
         <control type="grouplist" id="300">
+            <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),0)">Conditional</animation>
             <visible allowhiddenfocus="!String.IsEmpty(Container(400).ListItem.Property(media.multiple))">String.IsEmpty(Container(400).ListItem.Property(media.multiple)) + !String.IsEmpty(Window.Property(initialized)) + String.IsEmpty(Window.Property(disable_playback))</visible>
             <defaultcontrol always="true">301</defaultcontrol>
-            <posx>30</posx>
-            <posy>{{ theme.episodes.buttongroup.posy|vscale }}</posy>
-            <width>717</width>
-            <height>{{ vscale(200) }}</height>
+            <posx>155</posx>
+            <posy>{{ vscale(315) }}</posy>
+            <width>657</width>
+            <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>400</ondown>
-            <align>center</align>
-            <itemgap>{{ theme.episodes.buttongroup.itemgap }}</itemgap>
+            <align>left</align>
+            <itemgap>14</itemgap>
             <orientation>horizontal</orientation>
             <scrolltime tween="quadratic" easing="out">200</scrolltime>
             <usecontrolcoords>true</usecontrolcoords>
 
-            {% with attr = theme.episodes.buttons & template = "includes/themed_button.xml.tpl" %}
-                {% include template with name="info" & id=304 %}
-                {% include template with name="play" & id=301 & onleft=304 & onright=305 &
+            {% with attr = theme.episodes.buttons & template = "includes/themed_button.xml.tpl" & episode_style = True %}
+                {% include template with name="play" & id=301 &
                     enable="!String.IsEmpty(Window.Property(current_item.loaded))" & visible="!String.IsEmpty(Window.Property(current_item.loaded))" &
                     allowhiddenfocus=True
                 %}
-                {% include template with name="play" & id=306 & onleft=304 & onright=305 &
+                {% include template with name="play" & id=306 &
                                     visible="String.IsEmpty(Window.Property(current_item.loaded))"
                 %}
+                {% include template with name="info" & id=304 %}
                 {% include template with name="settings" & id=305 %}
                 {% include template with name="more" & id=303 %}
                 {% include template with name="shuffle" & id=302 %}
             {% endwith %}
         </control>
         <control type="grouplist" id="1300">
+            <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),0)">Conditional</animation>
             <visible>!String.IsEmpty(Container(400).ListItem.Property(media.multiple)) + !String.IsEmpty(Window.Property(initialized)) + String.IsEmpty(Window.Property(disable_playback))</visible>
             <defaultcontrol always="true">1301</defaultcontrol>
-            <posx>30</posx>
-            <posy>{{ theme.episodes.buttongroup_1300.posy|vscale }}</posy>
-            <width>717</width>
-            <height>{{ vscale(200) }}</height>
+            <posx>155</posx>
+            <posy>{{ vscale(315) }}</posy>
+            <width>657</width>
+            <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>400</ondown>
-            <align>center</align>
-            <itemgap>{{ theme.episodes.buttongroup_1300.itemgap }}</itemgap>
+            <align>left</align>
+            <itemgap>14</itemgap>
             <orientation>horizontal</orientation>
             <scrolltime tween="quadratic" easing="out">200</scrolltime>
             <usecontrolcoords>true</usecontrolcoords>
 
-            {% with attr = theme.episodes.buttons_1300 & template = "includes/themed_button.xml.tpl" %}
-                {% include template with name="info" & id=1304 %}
-                {% include template with name="play" & id=1301 & onleft=1304 & onright=1305 &
+            {% with attr = theme.episodes.buttons_1300 & template = "includes/themed_button.xml.tpl" & episode_style = True %}
+                {% include template with name="play" & id=1301 &
                     enable="!String.IsEmpty(Window.Property(current_item.loaded))" & visible="!String.IsEmpty(Window.Property(current_item.loaded))" &
                     allowhiddenfocus=True
                 %}
-                {% include template with name="play" & id=1306 & onleft=1304 & onright=1307 &
+                {% include template with name="play" & id=1306 &
                                     visible="String.IsEmpty(Window.Property(current_item.loaded))"
                 %}
+                {% include template with name="info" & id=1304 %}
                 {% include template with name="media" & id=1307 %}
                 {% include template with name="settings" & id=1305 %}
                 {% include template with name="more" & id=1303 %}
@@ -100,6 +129,7 @@
     {% endblock %}
 
     <control type="group">
+        <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),0)">Conditional</animation>
         <posx>0</posx>
         <posy>0</posy>
         <width>1920</width>
@@ -107,26 +137,26 @@
         <control type="group">
             <control type="image">
                 <visible>false</visible>
-                <posx>60</posx>
+                <posx>160</posx>
                 <posy>0</posy>
-                <width>656</width>
-                <height>{{ vscale(369) }}</height>
-                <texture background="true">script.plex/home/background-fallback_black.png</texture>
+                <width>520</width>
+                <height>{{ vscale(293) }}</height>
+                <texture background="true" diffuse="script.plex/episode-hero-rounded-mask.png">script.plex/home/background-fallback_black.png</texture>
                 <aspectratio>scale</aspectratio>
             </control>
             <control type="image">
-                <posx>60</posx>
+                <posx>160</posx>
                 <posy>0</posy>
-                <width>656</width>
-                <height>{{ vscale(369) }}</height>
-                <texture background="true" fallback="script.plex/thumb_fallbacks/show.png">$INFO[Container(400).ListItem.Thumb]</texture>
+                <width>520</width>
+                <height>{{ vscale(293) }}</height>
+                <texture background="true" fallback="script.plex/thumb_fallbacks/show.png" diffuse="script.plex/episode-hero-rounded-mask.png">$INFO[Container(400).ListItem.Thumb]</texture>
                 <aspectratio>scale</aspectratio>
             </control>
-            {% include "includes/watched_indicator.xml.tpl" with itemref="Container(400).ListItem" & xoff=656+60 & uw_size=35 & scale="large" %}
+            {% include "includes/watched_indicator.xml.tpl" with itemref="Container(400).ListItem" & xoff=520+160 & uw_size=35 & scale="large" %}
         </control>
 
         <control type="grouplist">
-            <posx>776</posx>
+            <posx>740</posx>
             <posy>0</posy>
             <width>880</width>
             <height>{{ vscale(60) }}</height>
@@ -142,8 +172,7 @@
                 <align>left</align>
                 <aligny>top</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <scroll>true</scroll>
-                <scrollspeed>35</scrollspeed>
+                <scroll>false</scroll>
                 <label>$INFO[Container(400).ListItem.Property(title)]</label>
             </control>
             <control type="label">
@@ -154,8 +183,7 @@
                 <align>left</align>
                 <aligny>top</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <scroll>true</scroll>
-                <scrollspeed>35</scrollspeed>
+                <scroll>false</scroll>
                 <label>$INFO[Container(400).ListItem.Property(title)]</label>
             </control>
             <control type="button">
@@ -167,8 +195,8 @@
                 <font>font12</font>
                 <align>center</align>
                 <aligny>center</aligny>
-                <focusedcolor>FFE5A00D</focusedcolor>
-                <textcolor>FFE5A00D</textcolor>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <textcolor>FFFFFFFF</textcolor>
                 <textoffsetx>15</textoffsetx>
                 <texturefocus colordiffuse="40000000" border="12">script.plex/white-square-rounded.png</texturefocus>
                 <texturenofocus colordiffuse="40000000" border="12">script.plex/white-square-rounded.png</texturenofocus>
@@ -184,15 +212,14 @@
             <texture>script.plex/stars/$INFO[Container(400).ListItem.Property(rating.stars)].png</texture>
         </control>
         <control type="label">
-            <posx>776</posx>
+            <posx>740</posx>
             <posy>{{ vscale(50) }}</posy>
             <width>714</width>
             <height>{{ vscale(60) }}</height>
             <font>font13</font>
             <align>left</align>
             <aligny>top</aligny>
-            <scroll>true</scroll>
-            <scrollspeed>25</scrollspeed>
+            <scroll>false</scroll>
             <textcolor>FFFFFFFF</textcolor>
             <label>$INFO[Container(400).ListItem.Property(show.title)]</label>
         </control>
@@ -244,7 +271,7 @@
         </control>
 
         <control type="grouplist">
-            <posx>776</posx>
+            <posx>740</posx>
             <posy>{{ vscale(100) }}</posy>
             <width>1360</width>
             <height>{{ vscale(30) }}</height>
@@ -277,12 +304,12 @@
             </control>
         </control>
         <control type="grouplist">
-            <posx>776</posx>
+            <posx>740</posx>
             <posy>{{ vscale(148) }}</posy>
             <width>1360</width>
             <height>{{ vscale(34) }}</height>
             <align>left</align>
-            <itemgap>0</itemgap>
+            <itemgap>10</itemgap>
             <orientation>horizontal</orientation>
             <usecontrolcoords>true</usecontrolcoords>
             <control type="label">
@@ -295,44 +322,99 @@
             </control>
             <control type="button">
                 <visible>!String.IsEmpty(Container(400).ListItem.Property(video.res))</visible>
-                <posx>10</posx>
                 <width>auto</width>
                 <height>{{ vscale(34) }}</height>
-                <font>font12</font>
+                <font>font10</font>
                 <align>center</align>
-                <aligny>top</aligny>
+                <aligny>center</aligny>
                 <focusedcolor>FFFFFFFF</focusedcolor>
                 <textcolor>FFFFFFFF</textcolor>
-                <textoffsetx>15</textoffsetx>
+                <textoffsetx>14</textoffsetx>
                 <texturefocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturefocus>
                 <texturenofocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturenofocus>
-                <label>$INFO[Container(400).ListItem.Property(video.res)]$INFO[Container(400).ListItem.Property(video.rendering), &#8226; ]$INFO[Container(400).ListItem.Property(video.codec), &#8226; ]$INFO[Container(400).ListItem.Property(audio.codec), &#8226; ]$INFO[Container(400).ListItem.Property(audio.channels), &#8226; ]</label>
+                <label>$INFO[Container(400).ListItem.Property(video.res)]</label>
+            </control>
+            <control type="button">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(video.rendering))</visible>
+                <width>auto</width>
+                <height>{{ vscale(34) }}</height>
+                <font>font10</font>
+                <align>center</align>
+                <aligny>center</aligny>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <textcolor>FFFFFFFF</textcolor>
+                <textoffsetx>14</textoffsetx>
+                <texturefocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturefocus>
+                <texturenofocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturenofocus>
+                <label>$INFO[Container(400).ListItem.Property(video.rendering)]</label>
+            </control>
+            <control type="button">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(video.codec))</visible>
+                <width>auto</width>
+                <height>{{ vscale(34) }}</height>
+                <font>font10</font>
+                <align>center</align>
+                <aligny>center</aligny>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <textcolor>FFFFFFFF</textcolor>
+                <textoffsetx>14</textoffsetx>
+                <texturefocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturefocus>
+                <texturenofocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturenofocus>
+                <label>$INFO[Container(400).ListItem.Property(video.codec)]</label>
+            </control>
+            <control type="button">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(audio.codec))</visible>
+                <width>auto</width>
+                <height>{{ vscale(34) }}</height>
+                <font>font10</font>
+                <align>center</align>
+                <aligny>center</aligny>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <textcolor>FFFFFFFF</textcolor>
+                <textoffsetx>14</textoffsetx>
+                <texturefocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturefocus>
+                <texturenofocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturenofocus>
+                <label>$INFO[Container(400).ListItem.Property(audio.codec)]</label>
+            </control>
+            <control type="button">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(audio.channels))</visible>
+                <width>auto</width>
+                <height>{{ vscale(34) }}</height>
+                <font>font10</font>
+                <align>center</align>
+                <aligny>center</aligny>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <textcolor>FFFFFFFF</textcolor>
+                <textoffsetx>14</textoffsetx>
+                <texturefocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturefocus>
+                <texturenofocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturenofocus>
+                <label>$INFO[Container(400).ListItem.Property(audio.channels)]</label>
             </control>
         </control>
 
         <control type="label">
-            <visible>!String.IsEmpty(Container(400).ListItem.Property(directors)) | !String.IsEmpty(Container(400).ListItem.Property(writers))</visible>
-            <posx>776</posx>
+            <visible>!String.IsEmpty(Container(400).ListItem.Property(creators))</visible>
+            <posx>740</posx>
             <posy>{{ vscale(194) }}</posy>
             <width>1360</width>
             <height>{{ vscale(30) }}</height>
             <font>font12</font>
             <align>left</align>
             <textcolor>99FFFFFF</textcolor>
-            <label>$INFO[Container(400).ListItem.Property(directors)]$INFO[Container(400).ListItem.Property(writers)]</label>
+            <label>$INFO[Container(400).ListItem.Property(creators)]</label>
         </control>
 
         <control type="grouplist">
-            <posx>776</posx>
+            <visible>!String.IsEmpty(Container(400).ListItem.Property(audio))</visible>
+            <posx>740</posx>
             <posy>{{ vscale(263) }}</posy>
-            <width>1360</width>
+            <width>500</width>
             <height>{{ vscale(34) }}</height>
             <align>left</align>
             <itemgap>15</itemgap>
             <orientation>horizontal</orientation>
             <usecontrolcoords>true</usecontrolcoords>
             <control type="button">
-                <visible>!String.IsEmpty(Container(400).ListItem.Property(audio))</visible>
                 <width>auto</width>
                 <height>{{ vscale(34) }}</height>
                 <font>font12</font>
@@ -343,20 +425,30 @@
                 <textoffsetx>15</textoffsetx>
                 <texturefocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturefocus>
                 <texturenofocus colordiffuse="40000000" border="8">script.plex/white-square-rounded-top-padded.png</texturenofocus>
-                <label>[UPPERCASE]$ADDON[script.plexmod 32395][/UPPERCASE]</label>
+                <label>$ADDON[script.plexmod 32395]</label>
             </control>
             <control type="label">
-                <width>auto</width>
+                <width>360</width>
                 <height>{{ vscale(34) }}</height>
                 <font>font12</font>
                 <align>left</align>
                 <aligny>top</aligny>
                 <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
                 <label>$INFO[Container(400).ListItem.Property(audio)]</label>
             </control>
+        </control>
+        <control type="grouplist">
+            <visible>!String.IsEmpty(Container(400).ListItem.Property(subtitles))</visible>
+            <posx>1280</posx>
+            <posy>{{ vscale(263) }}</posy>
+            <width>544</width>
+            <height>{{ vscale(34) }}</height>
+            <align>left</align>
+            <itemgap>15</itemgap>
+            <orientation>horizontal</orientation>
+            <usecontrolcoords>true</usecontrolcoords>
             <control type="button">
-                <visible>!String.IsEmpty(Container(400).ListItem.Property(subtitles))</visible>
-                <left>34</left>
                 <width>auto</width>
                 <height>{{ vscale(34) }}</height>
                 <font>font12</font>
@@ -367,23 +459,21 @@
                 <textoffsetx>15</textoffsetx>
                 <texturefocus colordiffuse="40000000" border="12">script.plex/white-square-rounded-top-padded.png</texturefocus>
                 <texturenofocus colordiffuse="40000000" border="12">script.plex/white-square-rounded-top-padded.png</texturenofocus>
-                <label>[UPPERCASE]$ADDON[script.plexmod 32396][/UPPERCASE]</label>
+                <label>$ADDON[script.plexmod 32396]</label>
             </control>
             <control type="label">
-                <visible>!String.IsEmpty(Container(400).ListItem.Property(subtitles))</visible>
-                <width max="460">auto</width>
+                <width>330</width>
                 <height>{{ vscale(34) }}</height>
                 <font>font12</font>
                 <align>left</align>
                 <aligny>top</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <scroll>true</scroll>
-                <scrollspeed>15</scrollspeed>
+                <scroll>false</scroll>
                 <label>$INFO[Container(400).ListItem.Property(subtitles)]</label>
             </control>
         </control>
         <control type="textbox">
-            <posx>776</posx>
+            <posx>740</posx>
             <posy>{{ vscale(340) }}</posy>
             <width>1084</width>
             <height>{{ vscale(172) }}</height>
@@ -391,7 +481,7 @@
             <align>left</align>
             <textcolor>FFFFFFFF</textcolor>
             <scrolltime>200</scrolltime>
-            <autoscroll delay="2000" time="2000" repeat="10000">!Control.HasFocus(13)</autoscroll>
+            <autoscroll>false</autoscroll>
             <label>$INFO[Container(400).ListItem.Property(summary)]</label>
         </control>
 
@@ -422,25 +512,26 @@
 
         <!-- EPISODES -->
         <control type="group" id="500">
+            <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),0)">Conditional</animation>
             <visible>Integer.IsGreater(Container(400).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
-            <height>{{ vscale(360) }}</height>
+            <height>{{ vscale(400) }}</height>
             <width>1920</width>
             <control type="label">
-                <posx>60</posx>
+                <posx>160</posx>
                 <posy>0</posy>
                 <width>1600</width>
-                <height>{{ vscale(80) }}</height>
-                <font>font12</font>
+                <height>{{ vscale(48) }}</height>
+                <font>font30_title</font>
                 <align>left</align>
                 <aligny>center</aligny>
-                <textcolor>AAFFFFFF</textcolor>
-                <label>[UPPERCASE]$INFO[Window.Property(episodes.header)][/UPPERCASE]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(episodes.header)]</label>
             </control>
             <control type="list" id="400">
-                <posx>0</posx>
-                <posy>{{ vscale(18) }}</posy>
-                <width>1920</width>
-                <height>{{ vscale(360) }}</height>
+                <posx>100</posx>
+                <posy>{{ vscale(30) }}</posy>
+                <width>1740</width>
+                <height>{{ vscale(390) }}</height>
                 <onup condition="Control.IsVisible(300)">300</onup>
                 <onup condition="Control.IsVisible(1300)">1300</onup>
                 <ondown>401</ondown>
@@ -449,8 +540,9 @@
                 <scrolltime>200</scrolltime>
                 <orientation>horizontal</orientation>
                 <preloaditems>4</preloaditems>
+                {% include "includes/episode_card_layout.xml.tpl" %}
                 <!-- ITEM LAYOUT ########################################## -->
-                <itemlayout width="359">
+                <itemlayout width="359" condition="false">
                     <control type="group">
                         <posx>55</posx>
                         <posy>{{ vscale(61) }}</posy>
@@ -557,7 +649,7 @@
                 </itemlayout>
 
                 <!-- FOCUSED LAYOUT ####################################### -->
-                <focusedlayout width="359">
+                <focusedlayout width="359" condition="false">
                     <control type="group">
                         <posx>55</posx>
                         <posy>{{ vscale(61) }}</posy>
@@ -718,24 +810,25 @@
 
         <!-- Seasons -->
         <control type="group" id="501">
+            <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),1)">Conditional</animation>
             <visible>Integer.IsGreater(Container(401).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <height>{{ vscale(380) }}</height>
             <width>1920</width>
             <control type="label">
-                <posx>60</posx>
+                <posx>160</posx>
                 <posy>0</posy>
                 <width>800</width>
-                <height>{{ vscale(40) }}</height>
-                <font>font12</font>
+                <height>{{ vscale(48) }}</height>
+                <font>font30_title</font>
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <label>[UPPERCASE]$INFO[Window.Property(seasons.header)][/UPPERCASE]</label>
+                <label>$INFO[Window.Property(seasons.header)]</label>
             </control>
             <control type="list" id="401">
-                <posx>0</posx>
+                <posx>100</posx>
                 <posy>{{ vscale(36) }}</posy>
-                <width>1920</width>
+                <width>1740</width>
                 <height>{{ vscale(380) }}</height>
                 <onup>400</onup>
                 <ondown>402</ondown>
@@ -755,14 +848,14 @@
                                 <posy>0</posy>
                                 <width>158</width>
                                 <height>{{ vscale(236) }}</height>
-                                <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                <texture diffuse="script.plex/poster-season-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                             </control>
                             <control type="image">
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>158</width>
                                 <height>{{ vscale(236) }}</height>
-                                <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                <texture background="true" diffuse="script.plex/poster-season-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                                 <aspectratio>scale</aspectratio>
                             </control>
                             {% include "includes/watched_indicator.xml.tpl" with with_count=True %}
@@ -809,8 +902,7 @@
                         <posx>55</posx>
                         <posy>{{ vscale(29) }}</posy>
                         <control type="group">
-                            <animation effect="zoom" start="100" end="110" time="100" center="84,{{ vscale(123) }}" reversible="false">Focus</animation>
-                            <animation effect="zoom" start="110" end="100" time="100" center="84,{{ vscale(123) }}" reversible="false">UnFocus</animation>
+                            <animation effect="zoom" start="100" end="106" time="110" center="84,{{ vscale(123) }}" reversible="true" condition="Control.HasFocus(401)">Conditional</animation>
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="image">
@@ -821,6 +913,14 @@
                                 <height>{{ vscale(326) }}</height>
                                 <texture border="42">script.plex/drop-shadow.png</texture>
                             </control>
+                            <control type="image">
+                                <visible>Control.HasFocus(401)</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>168</width>
+                                <height>{{ vscale(246) }}</height>
+                                <texture>script.plex/poster-season-rounded-focus.png</texture>
+                            </control>
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
@@ -829,14 +929,14 @@
                                     <posy>0</posy>
                                     <width>158</width>
                                     <height>{{ vscale(236) }}</height>
-                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                    <texture diffuse="script.plex/poster-season-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
                                     <width>158</width>
                                     <height>{{ vscale(236) }}</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <texture background="true" diffuse="script.plex/poster-season-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 {% include "includes/watched_indicator.xml.tpl" with with_count=True %}
@@ -863,7 +963,7 @@
                                     </control>
                                 </control>
                                 <control type="label">
-                                    <scroll>Control.HasFocus(401)</scroll>
+                                    <scroll>false</scroll>
                                     <posx>0</posx>
                                     <posy>{{ vscale(240) }}</posy>
                                     <width>158</width>
@@ -874,14 +974,6 @@
                                     <label>$INFO[ListItem.Label]</label>
                                 </control>
                             </control>
-                            <control type="image">
-                                <visible>Control.HasFocus(401)</visible>
-                                <posx>0</posx>
-                                <posy>0</posy>
-                                <width>168</width>
-                                <height>{{ vscale(246) }}</height>
-                                <texture border="10">script.plex/home/selected.png</texture>
-                            </control>
                         </control>
                     </control>
                 </focusedlayout>
@@ -891,33 +983,35 @@
 
         <!-- ROLES -->
         <control type="group" id="502">
+            <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),2)">Conditional</animation>
             <visible>Integer.IsGreater(Container(402).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>402</defaultcontrol>
             <width>1920</width>
             <height>{{ vscale(400) }}</height>
             <control type="label">
-                <posx>60</posx>
-                <posy>{{ vscale(-20) }}</posy>
+                <posx>160</posx>
+                <posy>0</posy>
                 <width>1000</width>
-                <height>{{ vscale(80) }}</height>
-                <font>font12</font>
+                <height>{{ vscale(48) }}</height>
+                <font>font30_title</font>
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <label>[UPPERCASE]$ADDON[script.plexmod 32419][/UPPERCASE]</label>
+                <label>$ADDON[script.plexmod 35019]</label>
             </control>
             <control type="list" id="402">
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>1920</width>
+                <posx>100</posx>
+                <posy>{{ vscale(48) }}</posy>
+                <width>1740</width>
                 <height>{{ vscale(400) }}</height>
                 <onup>401</onup>
                 <ondown>403</ondown>
                 <scrolltime>200</scrolltime>
                 <orientation>horizontal</orientation>
                 <preloaditems>4</preloaditems>
+                {% include "includes/role_card_layout.xml.tpl" with role_focus_id=402 %}
                 <!-- ITEM LAYOUT ########################################## -->
-                <itemlayout width="304">
+                <itemlayout width="304" condition="false">
                     <control type="group">
                         <posx>55</posx>
                         <posy>{{ vscale(61) }}</posy>
@@ -970,7 +1064,7 @@
                 </itemlayout>
 
                 <!-- FOCUSED LAYOUT ####################################### -->
-                <focusedlayout width="304">
+                <focusedlayout width="304" condition="false">
                     <control type="group">
                         <posx>55</posx>
                         <posy>{{ vscale(61) }}</posy>
@@ -986,6 +1080,14 @@
                                 <width>334</width>
                                 <height>{{ vscale(334) }}</height>
                                 <texture border="42">script.plex/buttons/role-shadow.png</texture>
+                            </control>
+                            <control type="image">
+                                <visible>Control.HasFocus(402)</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>254</width>
+                                <height>{{ vscale(254) }}</height>
+                                <texture>script.plex/circle-rounded-focus.png</texture>
                             </control>
                             <control type="group">
                                 <posx>5</posx>
@@ -1009,7 +1111,7 @@
                                     <posx>0</posx>
                                     <posy>{{ vscale(253) }}</posy>
                                     <control type="label">
-                                        <scroll>Control.HasFocus(402)</scroll>
+                                        <scroll>false</scroll>
                                         <posx>0</posx>
                                         <posy>0</posy>
                                         <width>244</width>
@@ -1020,7 +1122,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>Control.HasFocus(402)</scroll>
+                                        <scroll>false</scroll>
                                         <posx>0</posx>
                                         <posy>{{ vscale(30) }}</posy>
                                         <width>244</width>
@@ -1032,14 +1134,6 @@
                                     </control>
                                 </control>
                             </control>
-                            <control type="image">
-                                <visible>Control.HasFocus(402)</visible>
-                                <posx>0</posx>
-                                <posy>0</posy>
-                                <width>254</width>
-                                <height>{{ vscale(254) }}</height>
-                                <texture>script.plex/buttons/role-selected.png</texture>
-                            </control>
                         </control>
                     </control>
                 </focusedlayout>
@@ -1049,32 +1143,34 @@
 
         <!-- EXTRAS -->
         <control type="group" id="503">
+            <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),3)">Conditional</animation>
             <visible>Integer.IsGreater(Container(403).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <height>{{ vscale(360) }}</height>
             <width>1920</width>
             <control type="label">
-                <posx>60</posx>
+                <posx>160</posx>
                 <posy>0</posy>
                 <width>800</width>
-                <height>{{ vscale(80) }}</height>
-                <font>font12</font>
+                <height>{{ vscale(48) }}</height>
+                <font>font30_title</font>
                 <align>left</align>
                 <aligny>center</aligny>
-                <textcolor>AAFFFFFF</textcolor>
-                <label>[UPPERCASE]$INFO[Window.Property(extras.header)][/UPPERCASE]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(extras.header)]</label>
             </control>
             <control type="list" id="403">
-                <posx>0</posx>
+                <posx>100</posx>
                 <posy>{{ vscale(18) }}</posy>
-                <width>1920</width>
+                <width>1740</width>
                 <height>{{ vscale(430) }}</height>
                 <onup>402</onup>
                 <ondown>404</ondown>
                 <scrolltime>200</scrolltime>
                 <orientation>horizontal</orientation>
                 <preloaditems>4</preloaditems>
+                {% include "includes/episode_extra_card_layout.xml.tpl" %}
                 <!-- ITEM LAYOUT ########################################## -->
-                <itemlayout width="359">
+                <itemlayout width="359" condition="false">
                     <control type="group">
                         <posx>55</posx>
                         <posy>{{ vscale(61) }}</posy>
@@ -1124,7 +1220,7 @@
                 </itemlayout>
 
                 <!-- FOCUSED LAYOUT ####################################### -->
-                <focusedlayout width="359">
+                <focusedlayout width="359" condition="false">
                     <control type="group">
                         <posx>55</posx>
                         <posy>{{ vscale(61) }}</posy>
@@ -1202,25 +1298,26 @@
 
         <!-- RELATED -->
         <control type="group" id="504">
+            <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),4)">Conditional</animation>
             <visible>Integer.IsGreater(Container(404).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>404</defaultcontrol>
             <width>1920</width>
             <height>{{ vscale(520) }}</height>
             <control type="label">
-                <posx>60</posx>
+                <posx>160</posx>
                 <posy>0</posy>
                 <width>1000</width>
-                <height>{{ vscale(80) }}</height>
-                <font>font12</font>
+                <height>{{ vscale(48) }}</height>
+                <font>font30_title</font>
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <label>[UPPERCASE]$INFO[Window.Property(related.header)][/UPPERCASE]</label>
+                <label>$INFO[Window.Property(related.header)]</label>
             </control>
             <control type="list" id="404">
-                <posx>0</posx>
+                <posx>100</posx>
                 <posy>{{ vscale(16) }}</posy>
-                <width>1920</width>
+                <width>1740</width>
                 <height>{{ vscale(520) }}</height>
                 <onup>403</onup>
                 <ondown>404</ondown>
@@ -1229,8 +1326,9 @@
                 <scrolltime>200</scrolltime>
                 <orientation>horizontal</orientation>
                 <preloaditems>4</preloaditems>
+                {% include "includes/episode_related_card_layout.xml.tpl" %}
                 <!-- ITEM LAYOUT ########################################## -->
-                <itemlayout width="304">
+                <itemlayout width="304" condition="false">
                     <control type="group">
                         <posx>55</posx>
                         <posy>{{ vscale(72) }}</posy>
@@ -1325,7 +1423,7 @@
                 </itemlayout>
 
                 <!-- FOCUSED LAYOUT ####################################### -->
-                <focusedlayout width="304">
+                <focusedlayout width="304" condition="false">
                     <control type="group">
                         <posx>55</posx>
                         <posy>{{ vscale(72) }}</posy>

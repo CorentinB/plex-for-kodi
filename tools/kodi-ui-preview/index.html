@@ -12,7 +12,7 @@
         <div class="preview-toolbar">
           <div>
             <h1>PM4K Home Preview</h1>
-            <p>HTML approximation of <code>script-plex-home.xml.tpl</code></p>
+            <p><span class="native-dot" aria-hidden="true"></span>Native XML is authoritative · HTML mirrors the proven composition</p>
           </div>
           <div class="toolbar-controls" aria-label="Preview controls">
             <button class="tool-button is-active" data-scale="fit" type="button">Fit</button>
@@ -24,31 +24,23 @@
         </div>
 
         <div class="stage-shell" id="stage-shell">
-          <div class="kodi-stage" id="kodi-stage" data-lines="false" data-art="true">
+          <div class="kodi-stage" id="kodi-stage" data-lines="false" data-art="true" data-hub-index="0">
             <div class="backdrop" aria-hidden="true"></div>
+            <aside class="left-rail" aria-label="Quick navigation">
+              <div class="avatar">CB</div>
+              <button class="rail-button" type="button" aria-label="Search"><img src="/skin-media/script.plex/buttons/search.png" alt=""></button>
+            </aside>
             <header class="kodi-header">
-              <button class="icon-button search is-focusable" type="button" aria-label="Search"></button>
-              <div class="brand-label">Plex</div>
-              <div class="now-playing">
-                <img src="/skin-media/script.plex/buttons/player/modern/play.png" alt="">
-                <div>
-                  <span>Massive Attack</span>
-                  <strong>Teardrop</strong>
-                </div>
-              </div>
-              <button class="server-button is-focusable" type="button">
-                <span class="server-dot"></span>
-                <span>Living Room Server</span>
-                <span class="dropdown-mark"></span>
-              </button>
-              <button class="user-button is-focusable" type="button">
-                <span>CB</span>
-                <span class="dropdown-mark"></span>
-              </button>
+              <nav class="section-strip" aria-label="Library sections"></nav>
+              <img class="plex-logo" src="/skin-media/script.plex/home/plex.png" alt="Plex">
             </header>
-
-            <nav class="section-strip" aria-label="Library sections"></nav>
+            <section class="hero-panel" aria-label="Selected media">
+              <h1 data-hero-title></h1>
+              <p class="hero-meta" data-hero-meta></p>
+              <p class="hero-summary" data-hero-summary></p>
+            </section>
             <section class="hub-stack" aria-label="Home hubs"></section>
+            <div class="row-top-scrim" aria-hidden="true"></div>
           </div>
         </div>
       </section>
@@ -56,7 +48,7 @@
       <aside class="source-panel" aria-label="Source templates">
         <div class="source-header">
           <h2>Source Map</h2>
-          <p>Kodi XML concepts represented by this preview.</p>
+          <p>Read-only view of the Kodi templates represented by this approximation.</p>
         </div>
         <div class="source-list" id="source-list"></div>
         <pre class="source-excerpt" id="source-excerpt">Loading templates...</pre>

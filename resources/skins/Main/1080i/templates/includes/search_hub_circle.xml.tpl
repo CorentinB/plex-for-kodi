@@ -6,6 +6,7 @@
             <posx>5</posx>
             <posy>5</posy>
             <control type="image">
+                <visible>String.IsEmpty(ListItem.Thumb)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>244</width>
@@ -50,8 +51,7 @@
         <posx>55</posx>
         <posy>{{ vscale(61) }}</posy>
         <control type="group">
-            <animation effect="zoom" start="100" end="110" time="100" center="127,{{ vscale(127) }}" reversible="false">Focus</animation>
-            <animation effect="zoom" start="110" end="100" time="100" center="127,{{ vscale(127) }}" reversible="false">UnFocus</animation>
+            <animation effect="zoom" start="100" end="106" time="110" center="127,{{ vscale(127) }}" reversible="true" condition="Control.HasFocus({{ hub_id }})">Conditional</animation>
             <posx>0</posx>
             <posy>0</posy>
             <control type="image">
@@ -62,10 +62,19 @@
                 <height>{{ vscale(334) }}</height>
                 <texture border="42">script.plex/buttons/role-shadow.png</texture>
             </control>
+            <control type="image">
+                <visible>Control.HasFocus({{ hub_id }})</visible>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>254</width>
+                <height>{{ vscale(254) }}</height>
+                <texture>script.plex/circle-rounded-focus.png</texture>
+            </control>
             <control type="group">
                 <posx>5</posx>
                 <posy>5</posy>
                 <control type="image">
+                    <visible>String.IsEmpty(ListItem.Thumb)</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>244</width>
@@ -101,14 +110,6 @@
                     <textcolor>FFFFFFFF</textcolor>
                     <label>$INFO[ListItem.Label2]</label>
                 </control>
-            </control>
-            <control type="image">
-                <visible>Control.HasFocus({{ hub_id }})</visible>
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>254</width>
-                <height>{{ vscale(254) }}</height>
-                <texture>script.plex/buttons/role-selected.png</texture>
             </control>
         </control>
     </control>

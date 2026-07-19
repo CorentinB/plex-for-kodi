@@ -20,8 +20,8 @@
     <focusedcolor>FFFFFFFF</focusedcolor>
     <align>center</align>
     <aligny>center</aligny>
-    <texturefocus>-</texturefocus>
-    <texturenofocus>-</texturenofocus>
+    <texturefocus>script.plex/transparent-6px.png</texturefocus>
+    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
     <textoffsetx>0</textoffsetx>
     <textoffsety>0</textoffsety>
     <label> </label>

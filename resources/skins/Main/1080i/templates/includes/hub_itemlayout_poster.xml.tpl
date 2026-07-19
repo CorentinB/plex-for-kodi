@@ -2,7 +2,7 @@
 <itemlayout width="287" condition="String.IsEqual(Window.Property(hub.display.{{ hub_id }}),poster)">
     <control type="group">
         <posx>55</posx>
-        <posy>{{ vscale(72) }}</posy>
+        <posy>{{ vscale(22) }}</posy>
         <control type="group">
             <posx>5</posx>
             <posy>5</posy>
@@ -13,7 +13,7 @@
                     <posy>0</posy>
                     <width>244</width>
                     <height>{{ vscale(361) }}</height>
-                    <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                    <texture diffuse="script.plex/poster-home-rounded-mask.png" colordiffuse="FF404040">script.plex/white-square.png</texture>
                 </control>
                 <control type="image">
                     <visible>String.IsEmpty(ListItem.Property(is.updating))</visible>
@@ -37,14 +37,14 @@
                 <posy>0</posy>
                 <width>244</width>
                 <height>{{ vscale(361) }}</height>
-                <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                <texture diffuse="script.plex/poster-home-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
             </control>
             <control type="image">
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>244</width>
                 <height>{{ vscale(361) }}</height>
-                <texture background="true">$INFO[ListItem.Thumb]</texture>
+                <texture background="true" diffuse="script.plex/poster-home-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                 <aspectratio>scale</aspectratio>
             </control>
             <control type="group">
@@ -68,12 +68,12 @@
                     <colordiffuse>FFCC7B19</colordiffuse>
                 </control>
             </control>
-            <control type="label">
-                <scroll>false</scroll>
+            <control type="textbox">
+                <autoscroll>false</autoscroll>
                 <posx>0</posx>
                 <posy>{{ vscale(371) }}</posy>
                 <width>244</width>
-                <height>{{ vscale(35) }}</height>
+                <height>{{ vscale(60) }}</height>
                 <font>font10</font>
                 <align>center</align>
                 <textcolor>FFFFFFFF</textcolor>
@@ -83,7 +83,7 @@
                 <scroll>false</scroll>
                 <visible>!String.IsEmpty(Window.Property(hub.text2lines.{{ hub_id }}))</visible>
                 <posx>0</posx>
-                <posy>{{ vscale(398) }}</posy>
+                <posy>{{ vscale(431) }}</posy>
                 <width>244</width>
                 <height>{{ vscale(35) }}</height>
                 <font>font10</font>

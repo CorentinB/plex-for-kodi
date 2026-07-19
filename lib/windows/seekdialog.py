@@ -578,8 +578,11 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
         self.isDirectPlay = not meta.isTranscoded
         self.isTranscoded = not self.isDirectPlay
         self.setProperty('video.title', title)
-        self.setProperty('is.show', (self.player.video.type == 'episode') and '1' or '')
-        self.setProperty('ep.year', (self.player.video.type == 'episode') and self.player.video.year or '')
+        is_episode = self.player.video.type == 'episode'
+        self.setProperty('is.show', is_episode and '1' or '')
+        self.setProperty('ep.season', is_episode and T(32303, 'Season {}').format(self.player.video.parentIndex) or '')
+        self.setProperty('ep.episode', is_episode and T(32304, 'Episode {}').format(self.player.video.index) or '')
+        self.setProperty('ep.year', is_episode and self.player.video.year or '')
         self.setProperty('has.playlist', self.handler.playlist and '1' or '')
         self.setProperty('shuffled', (self.handler.playlist and self.handler.playlist.isShuffled) and '1' or '')
         self.setProperty('show.buffer', (util.addonSettings.playerShowBuffer and self.isDirectPlay) and '1' or '')
@@ -1824,6 +1827,9 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
         self.setProperty('video.title', self.title)
         self.setProperty('video.title2', self.title2)
         self.setProperty('is.show', is_show and '1' or '')
+        self.setProperty('ep.season', is_show and T(32303, 'Season {}').format(v.parentIndex) or '')
+        self.setProperty('ep.episode', is_show and T(32304, 'Episode {}').format(v.index) or '')
+        self.setProperty('ep.year', is_show and v.year or '')
         self.setProperty('media.show_ends', self.showItemEndsInfo and '1' or '')
         self.setProperty('time.ends_label', self.showItemEndsLabel and (util.T(32543, 'Ends at')) or '')
         self.setBoolProperty('no.osd.hide_info', self.no_time_no_osd_spoilers)
@@ -2809,12 +2815,17 @@ class PlaylistDialog(kodigui.BaseDialog, SpoilersMixin):
     def onFirstInit(self):
         self.handler.player.on('playlist.changed', self.playQueueCallback)
         self.handler.player.on('session.ended', self.sessionEnded)
-        self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 6)
-        self.fillPlaylist()
+        self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 7)
+        if not self.fillPlaylist():
+            self.doClose()
+            return
         self.updatePlayingItem()
         self.setFocusId(self.PLAYLIST_LIST_ID)
 
     def onReInit(self):
+        if not self.fillPlaylist():
+            self.doClose()
+            return
         self.updatePlayingItem()
         self.setFocusId(self.PLAYLIST_LIST_ID)
 
@@ -2829,16 +2840,6 @@ class PlaylistDialog(kodigui.BaseDialog, SpoilersMixin):
     def onClick(self, controlID):
         if controlID == self.PLAYLIST_LIST_ID:
             self.playlistListClicked()
-
-    def onAction(self, action):
-        controlID = self.getFocusId()
-        if action == xbmcgui.ACTION_MOVE_LEFT:
-            if controlID == self.PLAYLIST_LIST_ID:
-                self.doClose()
-                return
-            elif controlID == self.PLAYLIST_SCROLLBAR_ID:
-                self.setFocusId(self.PLAYLIST_LIST_ID)
-        super(PlaylistDialog, self).onAction(action)
 
     def playlistListClicked(self):
         mli = self.playlistListControl.getSelectedItem()
@@ -2856,12 +2857,54 @@ class PlaylistDialog(kodigui.BaseDialog, SpoilersMixin):
         elif pi.type in ('movie', 'clip'):
             return self.createMovieListItem(pi)
 
+    @staticmethod
+    def _asInt(value, default=0):
+        if value is None:
+            return default
+        try:
+            return value.asInt(default)
+        except AttributeError:
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return default
+
+    @staticmethod
+    def _itemIdentity(item):
+        if not item:
+            return None
+        try:
+            comment = item.get('comment') or ''
+        except AttributeError:
+            comment = ''
+        if comment:
+            return str(comment).split(':', 1)[0]
+        rating_key = getattr(item, 'ratingKey', None)
+        if rating_key is None:
+            try:
+                rating_key = item.get('ratingKey')
+            except AttributeError:
+                pass
+        return rating_key is not None and str(rating_key) or None
+
+    def _thumbnail(self, item, names, **thumbnail_opts):
+        for name in names:
+            image = getattr(item, name, None)
+            if not util.artwork.is_usable_art(image):
+                continue
+            try:
+                return image.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM, **thumbnail_opts)
+            except AttributeError:
+                return str(image)
+        return ''
+
     def createEpisodeListItem(self, episode):
         label2 = u'{0} \u2022 {1}'.format(
-            episode.grandparentTitle,
-            u'{0} \u2022 {1}'.format(T(32310, 'S').format(episode.parentIndex), T(32311, 'E').format(episode.index))
+            getattr(episode, 'grandparentTitle', '') or '',
+            u'{0} \u2022 {1}'.format(T(32310, 'S').format(getattr(episode, 'parentIndex', '')),
+                                     T(32311, 'E').format(getattr(episode, 'index', '')))
         )
-        title = episode.title
+        title = getattr(episode, 'title', '') or T(33008, '')
         thumbnail_opts = {}
         no_spoilers = self.getNoSpoilers(episode)
         if no_spoilers != "off":
@@ -2872,23 +2915,27 @@ class PlaylistDialog(kodigui.BaseDialog, SpoilersMixin):
                 thumbnail_opts = self.getThumbnailOpts(episode, hide_spoilers=hide_spoilers)
 
         mli = kodigui.ManagedListItem(title, label2,
-                                      thumbnailImage=episode.thumb.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM,
-                                                                                        **thumbnail_opts),
+                                      thumbnailImage=self._thumbnail(
+                                          episode, ('thumb', 'defaultThumb', 'art', 'defaultArt'), **thumbnail_opts),
                                       data_source=episode)
-        mli.setProperty('track.duration', util.durationToShortText(episode.duration.asInt()))
+        mli.setProperty('track.duration', util.durationToShortText(
+            self._asInt(getattr(episode, 'duration', None))))
         mli.setProperty('video', '1')
-        mli.setProperty('unwatched', not episode.isWatched and '1' or '')
-        mli.setProperty('watched', episode.isFullyWatched and '1' or '')
+        mli.setProperty('unwatched', not getattr(episode, 'isWatched', False) and '1' or '')
+        mli.setProperty('watched', getattr(episode, 'isFullyWatched', False) and '1' or '')
         return mli
 
     def createMovieListItem(self, movie):
-        mli = kodigui.ManagedListItem(movie.title, movie.year,
-                                      thumbnailImage=movie.art.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM),
+        mli = kodigui.ManagedListItem(getattr(movie, 'title', '') or T(33008, ''),
+                                      str(getattr(movie, 'year', '') or ''),
+                                      thumbnailImage=self._thumbnail(
+                                          movie, ('defaultArt', 'art', 'defaultThumb', 'thumb')),
                                       data_source=movie)
-        mli.setProperty('track.duration', util.durationToShortText(movie.duration.asInt()))
+        mli.setProperty('track.duration', util.durationToShortText(
+            self._asInt(getattr(movie, 'duration', None))))
         mli.setProperty('video', '1')
-        mli.setProperty('unwatched', not movie.isWatched and '1' or '')
-        mli.setProperty('watched', movie.isFullyWatched and '1' or '')
+        mli.setProperty('unwatched', not getattr(movie, 'isWatched', False) and '1' or '')
+        mli.setProperty('watched', getattr(movie, 'isFullyWatched', False) and '1' or '')
         return mli
 
     def playQueueCallback(self, **kwargs):
@@ -2900,16 +2947,16 @@ class PlaylistDialog(kodigui.BaseDialog, SpoilersMixin):
         if self._closing or not self.handler:
             return
         mli = self.playlistListControl.getSelectedItem()
-        if not mli:
-            return
-        pi = mli.dataSource
-        plexID = pi['comment'].split(':', 1)[0]
-        viewPos = self.playlistListControl.getViewPosition()
+        selected_id = self._itemIdentity(mli and mli.dataSource)
+        viewPos = mli and self.playlistListControl.getViewPosition() or 0
 
-        self.fillPlaylist()
+        if not self.fillPlaylist():
+            self.doClose()
+            return
+        self.updatePlayingItem()
 
         for ni in self.playlistListControl:
-            if ni.dataSource['comment'].split(':', 1)[0] == plexID:
+            if selected_id and self._itemIdentity(ni.dataSource) == selected_id:
                 self.playlistListControl.selectItem(ni.pos())
                 break
 
@@ -2921,10 +2968,11 @@ class PlaylistDialog(kodigui.BaseDialog, SpoilersMixin):
             self.playlistListControl.shiftView(diff, True)
 
     def updatePlayingItem(self):
-        playing = self.handler.player.video.ratingKey
+        video = getattr(getattr(self.handler, 'player', None), 'video', None)
+        playing = getattr(video, 'ratingKey', None)
         selectIndex = None
         for (index, mli) in enumerate(self.playlistListControl):
-            isMLI = mli.dataSource.ratingKey == playing
+            isMLI = playing is not None and self._itemIdentity(mli.dataSource) == str(playing)
             mli.setProperty('playing', isMLI and '1' or '')
             if isMLI:
                 selectIndex = index
@@ -2936,18 +2984,22 @@ class PlaylistDialog(kodigui.BaseDialog, SpoilersMixin):
         items = []
         idx = 1
         for pi in self.playlist.items():
+            rating_key = self._itemIdentity(pi)
+            progress = self.handler.getProgressForItem(rating_key, None) if rating_key else None
             # mark watched items in playlist during current playback session
-            if self.handler.getProgressForItem(str(pi.ratingKey), None) is True:
-                pi.set('viewCount',pi.get('viewCount', 0).asInt() + 1)
+            if progress is True:
+                pi.set('viewCount', self._asInt(pi.get('viewCount', 0)) + 1)
                 pi.set('viewOffset', 0)
+                progress = None
 
             mli = self.createListItem(pi)
             if mli:
                 mli.setProperty('track.number', str(idx))
                 mli.setProperty('progress', util.getProgressImage(mli.dataSource,
-                                                      view_offset=self.handler.getProgressForItem(str(pi.ratingKey), None)))
+                                                                  view_offset=progress))
                 items.append(mli)
                 idx += 1
 
         self.playlistListControl.reset()
         self.playlistListControl.addItems(items)
+        return len(items)

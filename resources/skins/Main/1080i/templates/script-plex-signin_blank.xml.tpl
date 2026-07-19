@@ -1,46 +1,55 @@
 {% extends "base.xml.tpl" %}
 {% block headers %}<defaultcontrol>100</defaultcontrol>{% endblock %}
 {% block controls %}
+{% include "includes/signin_background.xml.tpl" %}
+
 <control type="image">
-    <posx>0</posx>
-    <posy>0</posy>
-    <width>1920</width>
-    <height>1080</height>
-    <texture background="true">script.plex/home/background-fallback_black.png</texture>
+    <posx>160</posx>
+    <posy>{{ vscale(270) }}</posy>
+    <width>1040</width>
+    <height>{{ vscale(480) }}</height>
+    <texture colordiffuse="E60B0B0B" border="30">script.plex/white-square-rounded.png</texture>
 </control>
-<control type="image">
-    <posx>0</posx>
-    <posy>{% if core.needs_scaling %}{{ vperc(vscale(1080)) }}{% else %}0{% endif %}</posy>
-    <width>1920</width>
-    <height>{{ vscale(1080) }}</height>
-    <texture>script.plex/sign_in/back.jpg</texture>
+<control type="label">
+    <posx>214</posx>
+    <posy>{{ vscale(316) }}</posy>
+    <width>920</width>
+    <height>{{ vscale(64) }}</height>
+    <font>font30_title</font>
+    <align>left</align>
+    <aligny>center</aligny>
+    <textcolor>FFFFFFFF</textcolor>
+    <label>$ADDON[script.plexmod 35030]</label>
 </control>
 
 <control type="textbox">
-    <posx>210</posx>
-    <posy>{{ vscale(375) }}</posy>
-    <width>1502</width>
-    <height>{{ vscale(530) }}</height>
+    <posx>214</posx>
+    <posy>{{ vscale(410) }}</posy>
+    <width>920</width>
+    <height>{{ vscale(180) }}</height>
     <font>font13</font>
-    <textcolor>FFFFFFFF</textcolor>
+    <textcolor>CCFFFFFF</textcolor>
     <align>left</align>
-    <label>[B]$INFO[Window.Property(message)][/B]</label>
+    <autoscroll>false</autoscroll>
+    <label>$INFO[Window.Property(message)]</label>
 </control>
 
 <control type="button" id="100">
-    <posx>0</posx>
-    <posy>0</posy>
-    <width>1920</width>
-    <height>1080</height>
-    <font>font20</font>
+    <posx>214</posx>
+    <posy>{{ vscale(626) }}</posy>
+    <width>190</width>
+    <height>{{ vscale(70) }}</height>
+    <onleft>100</onleft>
+    <onright>100</onright>
+    <onup>100</onup>
+    <ondown>100</ondown>
+    <font>font13</font>
     <textcolor>FFFFFFFF</textcolor>
-    <focusedcolor>FFFFFFFF</focusedcolor>
+    <focusedcolor>FF111111</focusedcolor>
     <align>center</align>
     <aligny>center</aligny>
-    <texturefocus>-</texturefocus>
-    <texturenofocus>-</texturenofocus>
-    <textoffsetx>0</textoffsetx>
-    <textoffsety>0</textoffsety>
-    <label> </label>
+    <texturefocus colordiffuse="F2FFFFFF" border="28">script.plex/white-square-rounded.png</texturefocus>
+    <texturenofocus colordiffuse="33FFFFFF" border="28">script.plex/white-square-rounded.png</texturenofocus>
+    <label>$LOCALIZE[186]</label>
 </control>
 {% endblock %}

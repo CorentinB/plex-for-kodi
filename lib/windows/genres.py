@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from plexnet import plexobjects
 
+from lib import artwork
 from lib import util
 from lib.util import T
 from . import kodigui
@@ -24,6 +25,8 @@ class GenreBrowserWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
+    THUMB_DIM = util.scaleResolution(770, 434)
+
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         windowutils.UtilMixin.__init__(self)
@@ -32,12 +35,13 @@ class GenreBrowserWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def onFirstInit(self):
         self.genreListControl = kodigui.ManagedControlList(self, self.GENRE_PANEL_ID, 5)
-        self.setProperty('screen.title', u'{0} \u00b7 {1}'.format(
-            self.section.title.upper(), T(34102, 'Categories').upper()
-        ))
-        self.fillGenres()
+        self.setProperty('screen.title', T(34102, 'Categories'))
+        self.setProperty('screen.context', self.section and self.section.title or '')
+        self.setBoolProperty('use_bg_fallback', True)
+        itemCount = self.fillGenres()
+        self.setBoolProperty('no.content', not itemCount)
         self.setBoolProperty('initialized', True)
-        self.setFocusId(self.GENRE_PANEL_ID)
+        self.setFocusId(itemCount and self.GENRE_PANEL_ID or self.HOME_BUTTON_ID)
 
     def fillGenres(self):
         if self.section.key.startswith('/'):
@@ -47,18 +51,32 @@ class GenreBrowserWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         categories = plexobjects.listItems(self.section.server, path, bytag=True)
         if not categories:
-            return
+            self.setProperty('items.count', '0')
+            return 0
 
         items = []
         for cat in categories:
             mli = kodigui.ManagedListItem(str(cat.title))
             mli.dataSource = cat
-            if cat.__dict__.get('thumb'):
-                mli.setThumbnailImage(cat.thumb.asURL(includeToken=True))
+            mli.setProperty('thumb.fallback', 'script.plex/home/background-fallback.png')
+            thumb = cat.__dict__.get('thumb')
+            if artwork.is_usable_art(thumb):
+                try:
+                    mli.setThumbnailImage(thumb.asTranscodedImageURL(*self.THUMB_DIM))
+                    mli.setProperty('background', thumb.asTranscodedImageURL(
+                        self.width,
+                        self.height,
+                        blur=18,
+                        opacity=100,
+                        background='000000',
+                    ))
+                except (AttributeError, TypeError, ValueError):
+                    pass
             items.append(mli)
 
         self.genreListControl.addItems(items)
         self.setProperty('items.count', str(len(items)))
+        return len(items)
 
     def doClose(self, **kw):
         kodigui.ControlledWindow.doClose(self)

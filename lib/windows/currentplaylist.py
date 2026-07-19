@@ -22,7 +22,7 @@ def require_duration(f):
     return wrapper
 
 
-class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
+class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin, util.CronReceiver):
     xmlFile = 'script-plex-music_current_playlist.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -51,14 +51,14 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     OPTIONS_BUTTON_ID = 411
     STOP_BUTTON_ID = 407
 
-    SEEK_IMAGE_WIDTH = 819
+    SEEK_IMAGE_WIDTH = 630
     SELECTION_BOX_WIDTH = 101
-    SELECTION_INDICATOR_Y = 896
+    SELECTION_INDICATOR_Y = 842
 
-    BAR_X = 0
-    BAR_Y = 921
-    BAR_RIGHT = 819
-    BAR_BOTTOM = 969
+    BAR_X = 90
+    BAR_Y = 885
+    BAR_RIGHT = 720
+    BAR_BOTTOM = 897
 
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
@@ -70,6 +70,9 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.musicPlayerWinID = kwargs.get('winID')
 
     def doClose(self, **kwargs):
+        if util.CRON:
+            util.CRON.cancelReceiver(self)
+        player.PLAYER.off('session.ended', self.playbackSessionEnded)
         player.PLAYER.off('av.started', self.onPlayBackStarted)
         player.PLAYER.off('playlist.changed', self.playQueueCallback)
         if player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue.isRemote:
@@ -93,12 +96,24 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.fillPlaylist()
         self.selectPlayingItem()
-        self.setFocusId(self.PLAYLIST_LIST_ID)
+        self.setFocusId(self.PLAYLIST_LIST_ID if self.playlistListControl.size() else 406)
         self.commonInit()
+        player.PLAYER.on('session.ended', self.playbackSessionEnded)
+        if util.CRON:
+            util.CRON.registerReceiver(self)
         self.updateProperties()
         if player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue.isRemote:
             player.PLAYER.handler.playQueue.on('change', self.updateProperties)
         player.PLAYER.on('playlist.changed', self.playQueueCallback)
+
+    def playbackSessionEnded(self, **kwargs):
+        self.doClose()
+
+    def tick(self):
+        if (self.isOpen
+                and not getattr(self, 'ignoreStopCommands', False)
+                and not player.PLAYER.isPlayingAudio()):
+            self.doClose()
 
     def onAction(self, action):
         try:
@@ -228,25 +243,34 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def selectPlayingItem(self):
         for mli in reversed(self.playlistListControl):
-            if xbmc.getCondVisibility('String.StartsWith(MusicPlayer.Comment,{0})'.format(mli.dataSource['comment'].split(':', 1)[0])):
+            comment = mli.dataSource.get('comment') or ''
+            if not comment:
+                continue
+            if xbmc.getCondVisibility('String.StartsWith(MusicPlayer.Comment,{0})'.format(comment.split(':', 1)[0])):
                 self.playlistListControl.selectItem(mli.pos())
                 break
 
     def playQueueCallback(self, **kwargs):
-        self.setProperty('pq.isshuffled', player.PLAYER.handler.playQueue.isShuffled and '1' or '')
+        playQueue = player.PLAYER.handler.playQueue
+        self.setProperty('pq.isshuffled', playQueue and playQueue.isShuffled and '1' or '')
         mli = self.playlistListControl.getSelectedItem()
-        pi = mli.dataSource
-        plexID = pi['comment'].split(':', 1)[0]
+        selectedPos = mli.pos() if mli else 0
+        comment = mli and (mli.dataSource.get('comment') or '') or ''
+        plexID = comment.split(':', 1)[0] if comment else ''
         viewPos = self.playlistListControl.getViewPosition()
 
         self.fillPlaylist()
 
         # due to Kodi playlist limitations and necessary swappery, we might've got the current item twice in the list;
         # select the latest one
-        for ni in reversed(self.playlistListControl):
-            if ni.dataSource['comment'].split(':', 1)[0] == plexID:
-                self.playlistListControl.selectItem(ni.pos())
-                break
+        if plexID:
+            for ni in reversed(self.playlistListControl):
+                itemComment = ni.dataSource.get('comment') or ''
+                if itemComment and itemComment.split(':', 1)[0] == plexID:
+                    self.playlistListControl.selectItem(ni.pos())
+                    break
+        elif self.playlistListControl.size():
+            self.playlistListControl.selectItem(min(selectedPos, self.playlistListControl.size() - 1))
 
         util.MONITOR.waitForAbort(0.25)
 
@@ -266,19 +290,32 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         player.PLAYER.playselected(mli.pos())
 
     def createListItem(self, pi, idx):
-        label2 = '{0} / {1}'.format(pi['artist'][0], pi['album'])
-        plexInfo = pi['comment']
-        mli = kodigui.ManagedListItem(pi['title'], label2, thumbnailImage=pi['thumbnail'], data_source=pi)
-        mli.setProperty('track.duration', util.simplifiedTimeDisplay(pi['duration'] * 1000))
+        artists = pi.get('artist') or []
+        if isinstance(artists, str):
+            artists = [artists]
+        artist = artists[0] if artists else ''
+        album = pi.get('album') or ''
+        label2 = ' / '.join(value for value in (artist, album) if value)
+        file_path = pi.get('file') or ''
+        title = pi.get('title') or pi.get('label') or file_path.rsplit('/', 1)[-1]
+        plexInfo = pi.get('comment') or ''
+        mli = kodigui.ManagedListItem(
+            title,
+            label2,
+            thumbnailImage=pi.get('thumbnail') or '',
+            data_source=pi,
+        )
+        duration = int(pi.get('duration') or 0)
+        mli.setProperty('track.duration', util.simplifiedTimeDisplay(duration * 1000) if duration else '')
         if plexInfo.startswith('PLEX-'):
             mli.setProperty('track.ID', plexInfo.split('-', 1)[-1].split(':', 1)[0])
-            mli.setProperty('track.number', str(pi['playcount']))
+            mli.setProperty('track.number', str(pi.get('playcount') or ''))
         else:
             mli.setProperty('track.ID', '!NONE!')
-            mli.setProperty('track.number', str(pi['track']))
+            mli.setProperty('track.number', str(pi.get('track') or idx))
             mli.setProperty('playlist.position', str(idx))
 
-        mli.setProperty('file', pi['file'])
+        mli.setProperty('file', file_path)
         return mli
 
     @busy.dialog()
@@ -302,7 +339,7 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.selectionIndicator = self.getControl(self.SELECTION_INDICATOR)
         self.selectionBox = self.getControl(self.SELECTION_BOX)
         self.selectionBoxHalf = self.SELECTION_BOX_WIDTH // 2
-        self.selectionBoxMax = self.SEEK_IMAGE_WIDTH
+        self.selectionBoxMax = self.SEEK_IMAGE_WIDTH - (self.selectionBoxHalf - 3)
         player.PLAYER.on('av.started', self.onPlayBackStarted)
 
     def checkSeekActions(self, action, controlID):
@@ -375,7 +412,7 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         w = int(ratio * self.SEEK_IMAGE_WIDTH)
         self.seekbarControl.setWidth(w or 1)
 
-        self.selectionIndicator.setPosition(w, self.SELECTION_INDICATOR_Y)
+        self.selectionIndicator.setPosition(self.BAR_X + w, self.SELECTION_INDICATOR_Y)
         if w < self.selectionBoxHalf - 3:
             self.selectionBox.setPosition((-self.selectionBoxHalf + (self.selectionBoxHalf - w)) - 3, 0)
         elif w > self.selectionBoxMax:

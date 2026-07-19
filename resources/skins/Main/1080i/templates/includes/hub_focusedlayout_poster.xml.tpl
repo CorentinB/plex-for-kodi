@@ -2,10 +2,9 @@
 <focusedlayout width="287" condition="String.IsEqual(Window.Property(hub.display.{{ hub_id }}),poster)">
     <control type="group">
         <posx>55</posx>
-        <posy>{{ vscale(72) }}</posy>
+        <posy>{{ vscale(22) }}</posy>
         <control type="group">
-            <animation effect="zoom" start="100" end="110" time="100" center="127,{{ vscale(180.5) }}" reversible="false">Focus</animation>
-            <animation effect="zoom" start="110" end="100" time="100" center="127,{{ vscale(180.5) }}" reversible="false">UnFocus</animation>
+            <animation effect="zoom" start="100" end="106" time="110" center="127,{{ vscale(185.5) }}" reversible="true" condition="Control.HasFocus({{ hub_id }})">Conditional</animation>
             <posx>0</posx>
             <posy>0</posy>
             <control type="image">
@@ -15,6 +14,14 @@
                 <width>334</width>
                 <height>{{ vscale(451) }}</height>
                 <texture border="42">script.plex/drop-shadow.png</texture>
+            </control>
+            <control type="image">
+                <visible>Control.HasFocus({{ hub_id }})</visible>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>254</width>
+                <height>{{ vscale(371) }}</height>
+                <texture>script.plex/poster-home-rounded-focus.png</texture>
             </control>
             <control type="group">
                 <posx>5</posx>
@@ -26,7 +33,7 @@
                         <posy>0</posy>
                         <width>244</width>
                         <height>{{ vscale(361) }}</height>
-                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                        <texture diffuse="script.plex/poster-home-rounded-mask.png" colordiffuse="FF404040">script.plex/white-square.png</texture>
                     </control>
                     <control type="image">
                         <visible>String.IsEmpty(ListItem.Property(is.updating))</visible>
@@ -50,14 +57,14 @@
                     <posy>0</posy>
                     <width>244</width>
                     <height>{{ vscale(361) }}</height>
-                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                    <texture diffuse="script.plex/poster-home-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                 </control>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>244</width>
                     <height>{{ vscale(361) }}</height>
-                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                    <texture background="true" diffuse="script.plex/poster-home-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                     <aspectratio>scale</aspectratio>
                 </control>
                 <control type="group">
@@ -81,22 +88,22 @@
                         <colordiffuse>FFCC7B19</colordiffuse>
                     </control>
                 </control>
-                <control type="label">
-                    <scroll>Control.HasFocus({{ hub_id }})</scroll>
+                <control type="textbox">
+                    <autoscroll>false</autoscroll>
                     <posx>0</posx>
                     <posy>{{ vscale(371) }}</posy>
                     <width>244</width>
-                    <height>{{ vscale(35) }}</height>
+                    <height>{{ vscale(60) }}</height>
                     <font>font10</font>
                     <align>center</align>
                     <textcolor>FFFFFFFF</textcolor>
                     <label>$INFO[ListItem.Label]</label>
                 </control>
                 <control type="label">
-                    <scroll>Control.HasFocus({{ hub_id }})</scroll>
+                    <scroll>false</scroll>
                     <visible>!String.IsEmpty(Window.Property(hub.text2lines.{{ hub_id }}))</visible>
                     <posx>0</posx>
-                    <posy>{{ vscale(398) }}</posy>
+                    <posy>{{ vscale(431) }}</posy>
                     <width>244</width>
                     <height>{{ vscale(35) }}</height>
                     <font>font10</font>
@@ -105,14 +112,6 @@
                     <label>$INFO[ListItem.Label2]</label>
                 </control>
                 {% include "includes/watched_indicator.xml.tpl" with xoff=244 & uw_size=48 & with_count=True & scale="medium" %}
-            </control>
-            <control type="image">
-                <visible>Control.HasFocus({{ hub_id }})</visible>
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>254</width>
-                <height>{{ vscale(371) }}</height>
-                <texture border="10">script.plex/home/selected.png</texture>
             </control>
         </control>
     </control>

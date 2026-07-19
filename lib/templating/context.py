@@ -62,6 +62,7 @@ TEMPLATE_CONTEXTS = {
             "assets": {
                 "buttons": {
                     "base": "script.plex/buttons/",
+                    "focusBase": "script.plex/buttons/",
                     "focusSuffix": "-focus",
                 }
             },
@@ -150,6 +151,7 @@ TEMPLATE_CONTEXTS = {
             "assets": {
                 "buttons": {
                     "base": "script.plex/buttons/player/modern/",
+                    "focusBase": "script.plex/buttons/player/modern-focused/",
                     "focusSuffix": "",
                 }
             },
@@ -209,6 +211,7 @@ TEMPLATE_CONTEXTS = {
             "assets": {
                 "buttons": {
                     "base": "script.plex/buttons/player/modern-dotted/",
+                    "focusBase": "script.plex/buttons/player/modern-dotted/",
                     "focusSuffix": "-focus",
                 }
             },

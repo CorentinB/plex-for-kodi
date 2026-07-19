@@ -6,11 +6,12 @@
             <posx>5</posx>
             <posy>5</posy>
             <control type="image">
+                <visible>String.IsEmpty(ListItem.Thumb)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>300</width>
                 <height>{{ vscale(169) }}</height>
-                <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                <texture diffuse="script.plex/landscape-search-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                 <aspectratio>scale</aspectratio>
             </control>
             <control type="image">
@@ -18,7 +19,7 @@
                 <posy>0</posy>
                 <width>300</width>
                 <height>{{ vscale(169) }}</height>
-                <texture background="true">$INFO[ListItem.Thumb]</texture>
+                <texture background="true" diffuse="script.plex/landscape-search-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                 <aspectratio>scale</aspectratio>
             </control>
             <control type="label">
@@ -42,8 +43,7 @@
         <posx>55</posx>
         <posy>{{ vscale(64) }}</posy>
         <control type="group">
-            <animation effect="zoom" start="100" end="110" time="100" center="155,{{ vscale(89.5) }}" reversible="false">Focus</animation>
-            <animation effect="zoom" start="110" end="100" time="100" center="155,{{ vscale(89.5) }}" reversible="false">UnFocus</animation>
+            <animation effect="zoom" start="100" end="106" time="110" center="155,{{ vscale(89.5) }}" reversible="true" condition="Control.HasFocus({{ hub_id }})">Conditional</animation>
             <posx>0</posx>
             <posy>0</posy>
             <control type="image">
@@ -54,15 +54,24 @@
                 <height>{{ vscale(259) }}</height>
                 <texture border="42">script.plex/drop-shadow.png</texture>
             </control>
+            <control type="image">
+                <visible>Control.HasFocus({{ hub_id }})</visible>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>310</width>
+                <height>{{ vscale(179) }}</height>
+                <texture border="22">script.plex/white-square-rounded.png</texture>
+            </control>
             <control type="group">
                 <posx>5</posx>
                 <posy>5</posy>
                 <control type="image">
+                    <visible>String.IsEmpty(ListItem.Thumb)</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>300</width>
                     <height>{{ vscale(169) }}</height>
-                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                    <texture diffuse="script.plex/landscape-search-rounded-mask.png">$INFO[ListItem.Property(thumb.fallback)]</texture>
                     <aspectratio>scale</aspectratio>
                 </control>
                 <control type="image">
@@ -70,7 +79,7 @@
                     <posy>0</posy>
                     <width>300</width>
                     <height>{{ vscale(169) }}</height>
-                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                    <texture background="true" diffuse="script.plex/landscape-search-rounded-mask.png">$INFO[ListItem.Thumb]</texture>
                     <aspectratio>scale</aspectratio>
                 </control>
                 <control type="label">
@@ -85,14 +94,6 @@
                     <textcolor>FFFFFFFF</textcolor>
                     <label>$INFO[ListItem.Label]</label>
                 </control>
-            </control>
-            <control type="image">
-                <visible>Control.HasFocus({{ hub_id }})</visible>
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>310</width>
-                <height>{{ vscale(179) }}</height>
-                <texture border="10">script.plex/home/selected.png</texture>
             </control>
         </control>
     </control>

@@ -7,47 +7,28 @@
     <control type="image">
         <posx>0</posx>
         <posy>0</posy>
+        <width>1920</width>
+        <height>1080</height>
+        <texture colordiffuse="70000000">script.plex/white-square.png</texture>
+    </control>
+    <control type="image">
+        <posx>0</posx>
+        <posy>0</posy>
         <width>564</width>
         <height>1080</height>
-        <texture colordiffuse="4C000000">script.plex/white-square.png</texture>
+        <texture colordiffuse="F21A1A1C">script.plex/white-square.png</texture>
     </control>
     <control type="image">
-        <posx>0</posx>
-        <posy>{{ vscale(135) }}</posy>
-        <width>564</width>
-        <height>{{ vscale(810) }}</height>
-        <visible>String.IsEmpty(Window.Property(hide.kbd))</visible>
-        <texture colordiffuse="FF2D2D2D">script.plex/white-square.png</texture>
-    </control>
-    <control type="image">
-        <posx>0</posx>
-        <posy>{{ vscale(135) }}</posy>
-        <width>564</width>
-        <height>{{ vscale(248) }}</height>
-        <visible>!String.IsEmpty(Window.Property(hide.kbd))</visible>
-        <texture colordiffuse="FF2D2D2D">script.plex/white-square.png</texture>
-    </control>
-    <control type="image">
-        <posx>0</posx>
-        <posy>{{ vscale(945) }}</posy>
-        <width>564</width>
-        <height>{{ vscale(135) }}</height>
-        <visible>String.IsEmpty(Window.Property(hide.kbd))</visible>
-        <texture colordiffuse="66000000">script.plex/white-square.png</texture>
-    </control>
-    <control type="image">
-        <posx>0</posx>
-        <posy>{{ vscale(383) }}</posy>
-        <width>564</width>
-        <height>{{ vscale(697) }}</height>
-        <visible>!String.IsEmpty(Window.Property(hide.kbd))</visible>
-        <texture colordiffuse="66000000">script.plex/white-square.png</texture>
+        <posx>563</posx>
+        <posy>0</posy>
+        <width>1</width>
+        <height>1080</height>
+        <texture colordiffuse="30FFFFFF">script.plex/white-square.png</texture>
     </control>
 </control>
 
 <control type="button" id="999">
-    <animation effect="zoom" start="100" end="144" time="100" center="80,{{ vscale(67.5) }}" reversible="false">Focus</animation>
-    <animation effect="zoom" start="144" end="100" time="100" center="80,{{ vscale(67.5) }}" reversible="false">UnFocus</animation>
+    <animation effect="zoom" start="100" end="106" time="110" center="80,{{ vscale(67.5) }}" reversible="true" condition="Control.HasFocus(999)">Conditional</animation>
     <posx>60</posx>
     <posy>{{ vscale(47.5) }}</posy>
     <width>40</width>
@@ -55,22 +36,22 @@
     <ondown>900</ondown>
     <font>font12</font>
     <focusedcolor>FF000000</focusedcolor>
-    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search-focus.png</texturefocus>
-    <texturenofocus colordiffuse="FFCC7B19">script.plex/buttons/search.png</texturenofocus>
+    <texturefocus colordiffuse="FFFFFFFF">script.plex/buttons/search-focus.png</texturefocus>
+    <texturenofocus colordiffuse="CFFFFFFF">script.plex/buttons/search.png</texturenofocus>
     <onclick>Close</onclick>
     <label> </label>
 </control>
 <control type="label">
     <scroll>false</scroll>
-    <posx>160</posx>
+    <posx>120</posx>
     <posy>{{ vscale(35) }}</posy>
-    <width>500</width>
+    <width>399</width>
     <height>{{ vscale(65) }}</height>
-    <font>font12</font>
+    <font>font13</font>
     <align>left</align>
     <aligny>center</aligny>
     <textcolor>FFFFFFFF</textcolor>
-    <label>[UPPERCASE]$ADDON[script.plexmod 32431][/UPPERCASE]</label>
+    <label>$ADDON[script.plexmod 32431]</label>
 </control>
 
 <control type="group" id="899">
@@ -89,7 +70,7 @@
                 <posy>0</posy>
                 <width>151</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="group">
                 <visible>String.IsEqual(Window.Property(search.section),all)</visible>
@@ -98,7 +79,7 @@
                     <posy>0</posy>
                     <width>151</width>
                     <height>{{ vscale(60) }}</height>
-                    <texture colordiffuse="FFCC7B19">script.plex/white-square.png</texture>
+                    <texture border="20" colordiffuse="FFF5F5F5">script.plex/white-square-rounded.png</texture>
                 </control>
                 <control type="label">
                     <scroll>false</scroll>
@@ -110,7 +91,7 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <textcolor>FF000000</textcolor>
-                    <label>All</label>
+                    <label>$ADDON[script.plexmod 32345]</label>
                 </control>
             </control>
             <control type="label">
@@ -135,7 +116,7 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <visible>String.IsEqual(Window.Property(search.section),movie)</visible>
@@ -143,7 +124,7 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FFCC7B19">script.plex/white-square.png</texture>
+                    <texture border="20" colordiffuse="FFF5F5F5">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
         <control type="group">
@@ -154,7 +135,7 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <visible>String.IsEqual(Window.Property(search.section),show)</visible>
@@ -162,7 +143,7 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FFCC7B19">script.plex/white-square.png</texture>
+                    <texture border="20" colordiffuse="FFF5F5F5">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
         <control type="group">
@@ -173,7 +154,7 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <visible>String.IsEqual(Window.Property(search.section),artist)</visible>
@@ -181,7 +162,7 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FFCC7B19">script.plex/white-square.png</texture>
+                    <texture border="20" colordiffuse="FFF5F5F5">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
         <control type="group">
@@ -192,7 +173,7 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <visible>String.IsEqual(Window.Property(search.section),photo)</visible>
@@ -200,7 +181,7 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
-                <texture colordiffuse="FFCC7B19">script.plex/white-square.png</texture>
+                    <texture border="20" colordiffuse="FFF5F5F5">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
 
@@ -223,8 +204,8 @@
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
 
-                    <texturefocus>-</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>script.plex/transparent-6px.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label> </label>
                 </control>
             </control>
@@ -245,8 +226,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus>-</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>script.plex/transparent-6px.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label> </label>
                 </control>
             </control>
@@ -267,8 +248,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus>-</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>script.plex/transparent-6px.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label> </label>
                 </control>
             </control>
@@ -289,8 +270,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus>-</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>script.plex/transparent-6px.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label> </label>
                 </control>
             </control>
@@ -312,8 +293,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus>-</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>script.plex/transparent-6px.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label> </label>
                 </control>
             </control>
@@ -323,17 +304,26 @@
             <posx>154</posx>
             <posy>0</posy>
             <control type="group">
-                <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(902)">Conditional</animation>
+                <animation effect="zoom" start="100" end="108" time="100" center="37,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(902)">Conditional</animation>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
                 <control type="image">
+                    <visible>!String.IsEqual(Window.Property(search.section),movie)</visible>
                     <posx>26</posx>
                     <posy>{{ vscale(20) }}</posy>
                     <width>22</width>
                     <height>{{ vscale(20) }}</height>
                     <texture colordiffuse="FFFFFFFF">script.plex/home/type/movie.png</texture>
+                </control>
+                <control type="image">
+                    <visible>String.IsEqual(Window.Property(search.section),movie)</visible>
+                    <posx>26</posx>
+                    <posy>{{ vscale(20) }}</posy>
+                    <width>22</width>
+                    <height>{{ vscale(20) }}</height>
+                    <texture colordiffuse="FF111111">script.plex/home/type/movie.png</texture>
                 </control>
             </control>
         </control>
@@ -341,17 +331,26 @@
             <posx>231</posx>
             <posy>0</posy>
             <control type="group">
-                <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(903)">Conditional</animation>
+                <animation effect="zoom" start="100" end="108" time="100" center="37,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(903)">Conditional</animation>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
                 <control type="image">
+                    <visible>!String.IsEqual(Window.Property(search.section),show)</visible>
                     <posx>26</posx>
                     <posy>{{ vscale(20) }}</posy>
                     <width>24</width>
                     <height>{{ vscale(20) }}</height>
                     <texture colordiffuse="FFFFFFFF">script.plex/home/type/show.png</texture>
+                </control>
+                <control type="image">
+                    <visible>String.IsEqual(Window.Property(search.section),show)</visible>
+                    <posx>26</posx>
+                    <posy>{{ vscale(20) }}</posy>
+                    <width>24</width>
+                    <height>{{ vscale(20) }}</height>
+                    <texture colordiffuse="FF111111">script.plex/home/type/show.png</texture>
                 </control>
             </control>
         </control>
@@ -359,17 +358,26 @@
             <posx>308</posx>
             <posy>0</posy>
             <control type="group">
-                <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(904)">Conditional</animation>
+                <animation effect="zoom" start="100" end="108" time="100" center="37,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(904)">Conditional</animation>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
                 <control type="image">
+                    <visible>!String.IsEqual(Window.Property(search.section),artist)</visible>
                     <posx>26</posx>
                     <posy>{{ vscale(20) }}</posy>
                     <width>18</width>
                     <height>{{ vscale(20) }}</height>
                     <texture colordiffuse="FFFFFFFF">script.plex/home/type/artist.png</texture>
+                </control>
+                <control type="image">
+                    <visible>String.IsEqual(Window.Property(search.section),artist)</visible>
+                    <posx>26</posx>
+                    <posy>{{ vscale(20) }}</posy>
+                    <width>18</width>
+                    <height>{{ vscale(20) }}</height>
+                    <texture colordiffuse="FF111111">script.plex/home/type/artist.png</texture>
                 </control>
             </control>
         </control>
@@ -377,17 +385,26 @@
             <posx>385</posx>
             <posy>0</posy>
             <control type="group">
-                <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(905)">Conditional</animation>
+                <animation effect="zoom" start="100" end="108" time="100" center="37,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(905)">Conditional</animation>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(60) }}</height>
                 <control type="image">
+                    <visible>!String.IsEqual(Window.Property(search.section),photo)</visible>
                     <posx>26</posx>
                     <posy>{{ vscale(20) }}</posy>
                     <width>22</width>
                     <height>{{ vscale(20) }}</height>
                     <texture colordiffuse="FFFFFFFF">script.plex/home/type/photo.png</texture>
+                </control>
+                <control type="image">
+                    <visible>String.IsEqual(Window.Property(search.section),photo)</visible>
+                    <posx>26</posx>
+                    <posy>{{ vscale(20) }}</posy>
+                    <width>22</width>
+                    <height>{{ vscale(20) }}</height>
+                    <texture colordiffuse="FF111111">script.plex/home/type/photo.png</texture>
                 </control>
             </control>
         </control>
@@ -404,7 +421,7 @@
             <posy>0</posy>
             <width>459</width>
             <height>{{ vscale(60) }}</height>
-            <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+            <texture border="18" colordiffuse="80101012">script.plex/white-square-rounded.png</texture>
         </control>
         <control type="edit" id="650">
             <posx>0</posx>
@@ -422,8 +439,8 @@
             <hinttext> </hinttext>
             <font>font13</font>
             <textoffsetx>30</textoffsetx>
-            <texturefocus border="10">script.plex/home/selected.png</texturefocus>
-            <texturenofocus>-</texturenofocus>
+            <texturefocus colordiffuse="FFFFFFFF" border="18">script.plex/white-outline-rounded.png</texturefocus>
+            <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
             <pulseonselect>no</pulseonselect>
         </control>
         <control type="label" id="651">
@@ -457,42 +474,42 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>77</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>154</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>231</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>308</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>385</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
         <!-- IMAGES ROW 2 -->
@@ -504,42 +521,42 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>77</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>154</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>231</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>308</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>385</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
         <!-- IMAGES ROW 3 -->
@@ -551,42 +568,42 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>77</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>154</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>231</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>308</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>385</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
         <!-- IMAGES ROW 4 -->
@@ -598,42 +615,42 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>77</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>154</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>231</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>308</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>385</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
         <!-- IMAGES ROW 5 -->
@@ -645,42 +662,42 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>77</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>154</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>231</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>308</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>385</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
         <!-- IMAGES ROW 6 -->
@@ -692,42 +709,42 @@
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>77</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>154</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>231</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>308</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>385</posx>
                 <posy>0</posy>
                 <width>74</width>
                 <height>{{ vscale(74) }}</height>
-                <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
             </control>
         </control>
 
@@ -740,8 +757,7 @@
                 <posy>0</posy>
                 <control type="button" id="1001">
                     <visible allowhiddenfocus="true">true</visible>
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1001)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -755,8 +771,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>A</label>
                 </control>
             </control>
@@ -764,8 +780,7 @@
                 <posx>77</posx>
                 <posy>0</posy>
                 <control type="button" id="1002">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1002)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -779,8 +794,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>B</label>
                 </control>
             </control>
@@ -788,8 +803,7 @@
                 <posx>154</posx>
                 <posy>0</posy>
                 <control type="button" id="1003">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1003)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -803,8 +817,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>C</label>
                 </control>
             </control>
@@ -812,8 +826,7 @@
                 <posx>231</posx>
                 <posy>0</posy>
                 <control type="button" id="1004">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1004)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -827,8 +840,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>D</label>
                 </control>
             </control>
@@ -836,8 +849,7 @@
                 <posx>308</posx>
                 <posy>0</posy>
                 <control type="button" id="1005">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1005)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -851,8 +863,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>E</label>
                 </control>
             </control>
@@ -860,8 +872,7 @@
                 <posx>385</posx>
                 <posy>0</posy>
                 <control type="button" id="1006">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1006)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -876,8 +887,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>F</label>
                 </control>
             </control>
@@ -890,8 +901,7 @@
                 <posx>0</posx>
                 <posy>0</posy>
                 <control type="button" id="1007">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1007)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -905,8 +915,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>G</label>
                 </control>
             </control>
@@ -914,8 +924,7 @@
                 <posx>77</posx>
                 <posy>0</posy>
                 <control type="button" id="1008">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1008)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -929,8 +938,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>H</label>
                 </control>
             </control>
@@ -938,8 +947,7 @@
                 <posx>154</posx>
                 <posy>0</posy>
                 <control type="button" id="1009">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1009)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -953,8 +961,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>I</label>
                 </control>
             </control>
@@ -962,8 +970,7 @@
                 <posx>231</posx>
                 <posy>0</posy>
                 <control type="button" id="1010">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1010)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -977,8 +984,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>J</label>
                 </control>
             </control>
@@ -986,8 +993,7 @@
                 <posx>308</posx>
                 <posy>0</posy>
                 <control type="button" id="1011">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1011)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1001,8 +1007,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>K</label>
                 </control>
             </control>
@@ -1010,8 +1016,7 @@
                 <posx>385</posx>
                 <posy>0</posy>
                 <control type="button" id="1012">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1012)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1026,8 +1031,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>L</label>
                 </control>
             </control>
@@ -1040,8 +1045,7 @@
                 <posx>0</posx>
                 <posy>0</posy>
                 <control type="button" id="1013">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1013)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1055,8 +1059,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>M</label>
                 </control>
             </control>
@@ -1064,8 +1068,7 @@
                 <posx>77</posx>
                 <posy>0</posy>
                 <control type="button" id="1014">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1014)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1079,8 +1082,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>N</label>
                 </control>
             </control>
@@ -1088,8 +1091,7 @@
                 <posx>154</posx>
                 <posy>0</posy>
                 <control type="button" id="1015">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1015)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1103,8 +1105,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>O</label>
                 </control>
             </control>
@@ -1112,8 +1114,7 @@
                 <posx>231</posx>
                 <posy>0</posy>
                 <control type="button" id="1016">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1016)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1127,8 +1128,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>P</label>
                 </control>
             </control>
@@ -1136,8 +1137,7 @@
                 <posx>308</posx>
                 <posy>0</posy>
                 <control type="button" id="1017">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1017)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1151,8 +1151,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>Q</label>
                 </control>
             </control>
@@ -1160,8 +1160,7 @@
                 <posx>385</posx>
                 <posy>0</posy>
                 <control type="button" id="1018">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1018)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1176,8 +1175,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>R</label>
                 </control>
             </control>
@@ -1190,8 +1189,7 @@
                 <posx>0</posx>
                 <posy>0</posy>
                 <control type="button" id="1019">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1019)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1205,8 +1203,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>S</label>
                 </control>
             </control>
@@ -1214,8 +1212,7 @@
                 <posx>77</posx>
                 <posy>0</posy>
                 <control type="button" id="1020">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1020)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1229,8 +1226,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>T</label>
                 </control>
             </control>
@@ -1238,8 +1235,7 @@
                 <posx>154</posx>
                 <posy>0</posy>
                 <control type="button" id="1021">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1021)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1253,8 +1249,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>U</label>
                 </control>
             </control>
@@ -1262,8 +1258,7 @@
                 <posx>231</posx>
                 <posy>0</posy>
                 <control type="button" id="1022">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1022)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1277,8 +1272,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>V</label>
                 </control>
             </control>
@@ -1286,8 +1281,7 @@
                 <posx>308</posx>
                 <posy>0</posy>
                 <control type="button" id="1023">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1023)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1301,8 +1295,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>W</label>
                 </control>
             </control>
@@ -1310,8 +1304,7 @@
                 <posx>385</posx>
                 <posy>0</posy>
                 <control type="button" id="1024">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1024)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1326,8 +1319,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>X</label>
                 </control>
             </control>
@@ -1340,8 +1333,7 @@
                 <posx>0</posx>
                 <posy>0</posy>
                 <control type="button" id="1025">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1025)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1355,8 +1347,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>Y</label>
                 </control>
             </control>
@@ -1364,8 +1356,7 @@
                 <posx>77</posx>
                 <posy>0</posy>
                 <control type="button" id="1026">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1026)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1379,8 +1370,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>Z</label>
                 </control>
             </control>
@@ -1388,8 +1379,7 @@
                 <posx>154</posx>
                 <posy>0</posy>
                 <control type="button" id="1027">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1027)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1403,8 +1393,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>0[B][/B]</label>
                 </control>
             </control>
@@ -1412,8 +1402,7 @@
                 <posx>231</posx>
                 <posy>0</posy>
                 <control type="button" id="1028">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1028)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1427,8 +1416,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>1[B][/B]</label>
                 </control>
             </control>
@@ -1436,8 +1425,7 @@
                 <posx>308</posx>
                 <posy>0</posy>
                 <control type="button" id="1029">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1029)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1451,8 +1439,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>2[B][/B]</label>
                 </control>
             </control>
@@ -1460,8 +1448,7 @@
                 <posx>385</posx>
                 <posy>0</posy>
                 <control type="button" id="1030">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1030)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1476,8 +1463,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>3[B][/B]</label>
                 </control>
             </control>
@@ -1490,8 +1477,7 @@
                 <posx>0</posx>
                 <posy>0</posy>
                 <control type="button" id="1031">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1031)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1505,8 +1491,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>4[B][/B]</label>
                 </control>
             </control>
@@ -1514,8 +1500,7 @@
                 <posx>77</posx>
                 <posy>0</posy>
                 <control type="button" id="1032">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1032)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1529,8 +1514,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>5[B][/B]</label>
                 </control>
             </control>
@@ -1538,8 +1523,7 @@
                 <posx>154</posx>
                 <posy>0</posy>
                 <control type="button" id="1033">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1033)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1553,8 +1537,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>6[B][/B]</label>
                 </control>
             </control>
@@ -1562,8 +1546,7 @@
                 <posx>231</posx>
                 <posy>0</posy>
                 <control type="button" id="1034">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1034)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1577,8 +1560,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>7[B][/B]</label>
                 </control>
             </control>
@@ -1586,8 +1569,7 @@
                 <posx>308</posx>
                 <posy>0</posy>
                 <control type="button" id="1035">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1035)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1601,8 +1583,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>8[B][/B]</label>
                 </control>
             </control>
@@ -1610,8 +1592,7 @@
                 <posx>385</posx>
                 <posy>0</posy>
                 <control type="button" id="1036">
-                    <animation effect="zoom" start="100" end="120" time="100" center="37,{{ vscale(37) }}" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="37,{{ vscale(37) }}" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="106" time="110" center="37,{{ vscale(37) }}" reversible="true" condition="Control.HasFocus(1036)">Conditional</animation>
                     <hitrect x="0" y="0" w="75" h="75" />
                     <posx>-40</posx>
                     <posy>{{ vscale(-40) }}</posy>
@@ -1626,8 +1607,8 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <focusedcolor>FF000000</focusedcolor>
-                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                    <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                     <label>9[B][/B]</label>
                 </control>
             </control>
@@ -1646,29 +1627,28 @@
             <posy>0</posy>
             <width>151</width>
             <height>{{ vscale(60) }}</height>
-            <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
         </control>
         <control type="image">
             <posx>154</posx>
             <posy>0</posy>
             <width>151</width>
             <height>{{ vscale(60) }}</height>
-            <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
         </control>
         <control type="image">
             <posx>308</posx>
             <posy>0</posy>
             <width>151</width>
             <height>{{ vscale(60) }}</height>
-            <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
+                <texture border="18" colordiffuse="802A2A2C">script.plex/white-square-rounded.png</texture>
         </control>
 
         <control type="group">
             <posx>0</posx>
             <posy>0</posy>
             <control type="button" id="951">
-                <animation effect="zoom" start="100" end="120" time="100" center="75.5,{{ vscale(30) }}" reversible="false">Focus</animation>
-                <animation effect="zoom" start="120" end="100" time="100" center="75.5,{{ vscale(30) }}" reversible="false">UnFocus</animation>
+                <animation effect="zoom" start="100" end="106" time="110" center="75.5,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(951)">Conditional</animation>
                 <hitrect x="0" y="0" w="151" h="60" />
                 <posx>-40</posx>
                 <posy>{{ vscale(-40) }}</posy>
@@ -1681,8 +1661,8 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <focusedcolor>FF000000</focusedcolor>
-                <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                 <label>$ADDON[script.plexmod 32322]</label>
             </control>
         </control>
@@ -1690,8 +1670,7 @@
             <posx>154</posx>
             <posy>0</posy>
             <control type="button" id="952">
-                <animation effect="zoom" start="100" end="120" time="100" center="75.5,{{ vscale(30) }}" reversible="false">Focus</animation>
-                <animation effect="zoom" start="120" end="100" time="100" center="75.5,{{ vscale(30) }}" reversible="false">UnFocus</animation>
+                <animation effect="zoom" start="100" end="106" time="110" center="75.5,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(952)">Conditional</animation>
                 <hitrect x="0" y="0" w="151" h="60" />
                 <posx>-40</posx>
                 <posy>{{ vscale(-40) }}</posy>
@@ -1704,8 +1683,8 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <focusedcolor>FF000000</focusedcolor>
-                <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                 <label>$ADDON[script.plexmod 32432]</label>
             </control>
         </control>
@@ -1713,8 +1692,7 @@
             <posx>308</posx>
             <posy>0</posy>
             <control type="button" id="953">
-                <animation effect="zoom" start="100" end="120" time="100" center="75.5,{{ vscale(30) }}" reversible="false">Focus</animation>
-                <animation effect="zoom" start="120" end="100" time="100" center="75.5,{{ vscale(30) }}" reversible="false">UnFocus</animation>
+                <animation effect="zoom" start="100" end="106" time="110" center="75.5,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(953)">Conditional</animation>
                 <hitrect x="0" y="0" w="151" h="60" />
                 <posx>-40</posx>
                 <posy>{{ vscale(-40) }}</posy>
@@ -1728,8 +1706,8 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <focusedcolor>FF000000</focusedcolor>
-                <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
-                <texturenofocus>-</texturenofocus>
+                    <texturefocus colordiffuse="FFF5F5F5" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
+                <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
                 <label>$ADDON[script.plexmod 32433]</label>
             </control>
         </control>
@@ -1762,7 +1740,7 @@
                 <posy>0</posy>
                 <width>39</width>
                 <height>{{ vscale(39) }}</height>
-                <texture colordiffuse="FFE5A00D">script.plex/indicators/spinner.png</texture>
+                <texture colordiffuse="FFF5F5F5">script.plex/indicators/spinner.png</texture>
             </control>
         </control>
     </control>
@@ -1824,7 +1802,7 @@
             <align>left</align>
             <aligny>center</aligny>
             <textcolor>FFFFFFFF</textcolor>
-            <label>[UPPERCASE]$INFO[Window.Property(hub.{{ hub_id }})][/UPPERCASE]</label>
+            <label>$INFO[Window.Property(hub.{{ hub_id }})]</label>
         </control>
         <control type="list" id="{{ hub_id }}">
             <posx>0</posx>
@@ -1857,7 +1835,7 @@
         <posy>0</posy>
         <width>700</width>
         <height>{{ vscale(1080) }}</height>
-        <texture colordiffuse="FF2D2D2D">script.plex/white-square.png</texture>
+        <texture colordiffuse="F21A1A1C">script.plex/white-square.png</texture>
     </control>
     <control type="label">
         <scroll>false</scroll>
@@ -1869,7 +1847,7 @@
         <align>left</align>
         <aligny>center</aligny>
         <textcolor>FFFFFFFF</textcolor>
-        <label>[UPPERCASE]$ADDON[script.plexmod 35004][/UPPERCASE]</label>
+        <label>$ADDON[script.plexmod 35004]</label>
     </control>
     <control type="list" id="2050">
         <posx>40</posx>
@@ -1907,14 +1885,14 @@
                 <posy>0</posy>
                 <width>580</width>
                 <height>{{ vscale(50) }}</height>
-                <texture border="10">script.plex/home/selected.png</texture>
+                <texture border="18" colordiffuse="FFF5F5F5">script.plex/white-square-rounded.png</texture>
             </control>
             <control type="image">
                 <posx>20</posx>
                 <posy>{{ vscale(13) }}</posy>
                 <width>24</width>
                 <height>{{ vscale(24) }}</height>
-                <texture colordiffuse="FFFFFFFF">$INFO[ListItem.Property(icon)]</texture>
+                <texture colordiffuse="FF111111">$INFO[ListItem.Property(icon)]</texture>
             </control>
             <control type="label">
                 <posx>60</posx>
@@ -1924,7 +1902,7 @@
                 <font>font13</font>
                 <align>left</align>
                 <aligny>center</aligny>
-                <textcolor>FFFFFFFF</textcolor>
+                <textcolor>FF111111</textcolor>
                 <label>$INFO[ListItem.Label]</label>
             </control>
         </focusedlayout>

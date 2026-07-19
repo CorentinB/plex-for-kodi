@@ -62,9 +62,15 @@ class OptionsDialog(kodigui.BaseDialog):
 
     def setup_buttons(self):
         self.setProperty('enable_buttons', '1')
-        if self.delayButtons:
-            util.MONITOR.waitForAbort(0.1)
-            self.setFocusId(self.BUTTON_IDS[self.select])
+        # Let the newly visible grouplist apply its XML default first, then
+        # place focus on the caller's requested choice. Otherwise control 1001
+        # can win the first-frame race even when ``select`` points elsewhere.
+        util.MONITOR.waitForAbort(0.1)
+        buttons = (self.button0, self.button1, self.button2)
+        select = self.select if 0 <= self.select < len(buttons) else 0
+        if not buttons[select]:
+            select = next((index for index, label in enumerate(buttons) if label), 0)
+        self.setFocusId(self.BUTTON_IDS[select])
 
     def onAction(self, action):
         controlID = self.getFocusId()
