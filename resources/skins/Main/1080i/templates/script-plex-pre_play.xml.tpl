@@ -75,7 +75,7 @@
             <usecontrolcoords>true</usecontrolcoords>
 
             {% with attr = theme.pre_play.buttons & template = "includes/themed_button.xml.tpl" & preplay_style = True %}
-                {% include template with name="play" & id=302 & visible="String.IsEmpty(Window.Property(unavailable)) + String.IsEmpty(Window.Property(disable_playback))" %}
+                {% include template with name="play" & id=302 & visible="String.IsEmpty(Window.Property(unavailable)) + String.IsEmpty(Window.Property(disable_playback))" & action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106 %}
                 {% include "includes/wl_dynamic_buttons.xml.tpl" %}
                 {% include template with name="info" & id=304 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
                 {% include template with name="trailer" & id=303 & visible="!String.IsEmpty(Window.Property(trailer.button))" & action_label="$ADDON[script.plexmod 32201]" & action_width=250 & action_label_width=178 %}

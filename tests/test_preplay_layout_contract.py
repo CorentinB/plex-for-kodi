@@ -228,6 +228,34 @@ class PrePlayLayoutContractTests(unittest.TestCase):
 
         self.assertIn("<width>1600</width>", template)
 
+    def test_movie_primary_action_uses_the_rectangular_preplay_style(self):
+        template = _read(PREPLAY_TEMPLATE)
+        button_template = _read(
+            os.path.join(
+                ROOT,
+                "resources",
+                "skins",
+                "Main",
+                "1080i",
+                "templates",
+                "includes",
+                "themed_button.xml.tpl",
+            )
+        )
+
+        play_include = template[
+            template.index('name="play"'):template.index("%}", template.index('name="play"'))
+        ]
+        pill_branch = button_template[
+            button_template.index('{% if name in ('):
+            button_template.index("{% elif preplay_style %}")
+        ]
+
+        self.assertIn('action_label="$LOCALIZE[208]"', play_include)
+        self.assertIn("action_width=178", play_include)
+        self.assertIn("action_label_width=106", play_include)
+        self.assertIn("and not preplay_style", pill_branch)
+
     def test_every_tvos_action_has_explicit_remote_navigation(self):
         button_template = _read(
             os.path.join(

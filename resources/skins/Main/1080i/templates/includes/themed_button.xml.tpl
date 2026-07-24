@@ -1,7 +1,7 @@
 {% if preplay_style or episode_style or library_style or playlist_style or music_artist_style or seasons_style %}
 <control type="group">
     {% if visible %}<visible{% if allowhiddenfocus %} allowhiddenfocus="true"{% endif %}>{{ visible }}</visible>{% endif %}
-    {% if name in ("play", "play_plus", "wait", "upcoming") %}
+    {% if name in ("play", "play_plus", "wait", "upcoming") and not preplay_style %}
     <animation effect="zoom" start="100" end="106" time="110" center="89,{{ vscale(39) }}" reversible="true" condition="Control.HasFocus({{ id }})">Conditional</animation>
     <width>178</width>
     <height>{{ vscale(78) }}</height>
