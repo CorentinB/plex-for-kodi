@@ -356,6 +356,8 @@ class BaseWindow(XMLBase, xbmcgui.WindowXML, BaseFunctions):
             if background:
                 return self.windowSetBackground(background)
 
+        return self.windowSetBackground(BG_NA)
+
     def windowSetBackground(self, value):
         if not util.addonSettings.dbgCrossfade:
             if not value:

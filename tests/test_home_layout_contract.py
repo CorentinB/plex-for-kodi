@@ -515,6 +515,154 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertIn('msgid "Discover: {}"', entry)
         self.assertIn('msgstr "Découvrir : {}"', entry)
 
+    def test_down_commits_new_section_before_hub_navigation(self):
+        window = _read_file(HOME_WINDOW)
+        on_action = window.split("def onAction(self, action):", 1)[1]
+        on_action = on_action.split("def onClick(self, controlID):", 1)[0]
+
+        commit = (
+            "if (action == xbmcgui.ACTION_MOVE_DOWN\n"
+            "                        and self._commitSectionBeforeHubNavigation()):\n"
+            "                    return"
+        )
+        self.assertIn(commit, on_action)
+        self.assertLess(
+            on_action.index(commit),
+            on_action.index("self.checkSectionItem(action=action)"),
+        )
+
+    def test_down_recovers_when_native_focus_reaches_stale_hub(self):
+        window = _read_file(HOME_WINDOW)
+        on_action = window.split("def onAction(self, action):", 1)[1]
+        on_action = on_action.split("def onClick(self, controlID):", 1)[0]
+
+        recovery = (
+            "if (action == xbmcgui.ACTION_MOVE_DOWN\n"
+            "                    and (controlID == self.RESUME_BUTTON_ID or 399 < controlID < 500)\n"
+            "                    and self._commitSectionBeforeHubNavigation()):\n"
+            "                return"
+        )
+        self.assertIn(recovery, on_action)
+        self.assertLess(
+            on_action.index(recovery),
+            on_action.index("if controlID == self.SERVER_BUTTON_ID:"),
+        )
+
+    def test_section_commit_cancels_debounce_and_focuses_loaded_hub(self):
+        class SectionList(object):
+            def __init__(self, item):
+                self.item = item
+
+            def getSelectedItem(self):
+                return self.item
+
+        class Window(object):
+            _commitSectionBeforeHubNavigation = _home_method(
+                "_commitSectionBeforeHubNavigation"
+            )
+
+            def __init__(self, selected, current):
+                self.sectionList = SectionList(
+                    types.SimpleNamespace(dataSource=selected)
+                )
+                self.lastSection = current
+                self.sectionChangeTimeout = 42
+                self.committed = []
+                self._pendingSectionHubFocus = None
+                self.focusRequests = []
+
+            def _sectionReallyChanged(self, section):
+                self.committed.append(section)
+
+            def _focusPendingSectionHub(self, section):
+                self.focusRequests.append(section)
+
+        current = object()
+        selected = object()
+        window = Window(selected, current)
+
+        self.assertTrue(window._commitSectionBeforeHubNavigation())
+        self.assertIsNone(window.sectionChangeTimeout)
+        self.assertEqual(window.committed, [selected])
+        self.assertIs(window._pendingSectionHubFocus, selected)
+        self.assertEqual(window.focusRequests, [selected])
+
+        unchanged = Window(current, current)
+        self.assertFalse(unchanged._commitSectionBeforeHubNavigation())
+        self.assertEqual(unchanged.sectionChangeTimeout, 42)
+        self.assertEqual(unchanged.committed, [])
+        self.assertIsNone(unchanged._pendingSectionHubFocus)
+        self.assertEqual(unchanged.focusRequests, [])
+
+    def test_pending_section_down_focus_waits_for_real_hub_controls(self):
+        class Window(object):
+            _focusPendingSectionHub = _home_method("_focusPendingSectionHub")
+
+            def __init__(self, section):
+                self._pendingSectionHubFocus = section
+                self.lastSection = section
+                self.hubFocusIndexes = (0, 1)
+                self.hubControls = ([], [])
+                self.focused = 0
+
+            def focusFirstValidHub(self):
+                self.focused += 1
+
+        section = object()
+        window = Window(section)
+
+        self.assertFalse(window._focusPendingSectionHub(section))
+        self.assertIs(window._pendingSectionHubFocus, section)
+        self.assertEqual(window.focused, 0)
+
+        window.hubControls = ([object()], [])
+        self.assertTrue(window._focusPendingSectionHub(section))
+        self.assertIsNone(window._pendingSectionHubFocus)
+        self.assertEqual(window.focused, 1)
+
+        self.assertFalse(window._focusPendingSectionHub(section))
+        self.assertEqual(window.focused, 1)
+
+    def test_valid_hub_focus_always_synchronizes_its_selected_item(self):
+        class Window(object):
+            SECTION_LIST_ID = 101
+            focusFirstValidHub = _home_method(
+                "focusFirstValidHub",
+                {"util": types.SimpleNamespace(DEBUG_LOG=lambda *args: None)},
+            )
+
+            def __init__(self):
+                self.hubFocusIndexes = (0,)
+                self.hubControls = ([object()],)
+                self.lastFocusID = 400
+                self.focused = []
+                self.checked = []
+
+            def setFocusId(self, control_id):
+                self.focused.append(control_id)
+
+            def checkHubItem(self, control_id):
+                self.checked.append(control_id)
+
+        window = Window()
+        window.focusFirstValidHub()
+
+        self.assertEqual(window.focused, [])
+        self.assertEqual(window.checked, [400])
+
+    def test_completed_hub_draw_fulfills_pending_section_down_focus(self):
+        window = _read_file(HOME_WINDOW)
+        show_hubs = window.split(
+            "    def _showHubs(self, section=None, update=False, force=False, reselect_pos_dict=None):",
+            1,
+        )[1].split("    def showHub(", 1)[0]
+
+        self.assertIn("self._focusPendingSectionHub(section)", show_hubs)
+        self.assertLess(
+            show_hubs.index("self.lastHubs = hubs.identifier"),
+            show_hubs.index("self._focusPendingSectionHub(section)"),
+        )
+
     def test_native_home_uses_one_safe_left_edge(self):
         home = _read("script-plex-home.xml.tpl")
         content = home.split("{% endblock content %}", 1)[0]

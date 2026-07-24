@@ -619,6 +619,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         self._homeHeroLogoCache = {}
         self._homeHeroLogoPending = set()
         self._homeHeroLogoKey = ''
+        self._pendingSectionHubFocus = None
         self.sectionChangeThread = None
         self.sectionChangeTimeout = 0
         self.lastFocusID = None
@@ -2228,7 +2229,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 if self.lastFocusID != 400+index:
                     util.DEBUG_LOG("Focusing hub: %i" % (400 + index))
                     self.setFocusId(400+index)
-                    self.checkHubItem(400+index)
+                self.checkHubItem(400+index)
                 return
 
         if startIndex is not None:
@@ -2484,7 +2485,15 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                     else:
                         self.serverRefresh(section=show_section)
                         return
+                if (action == xbmcgui.ACTION_MOVE_DOWN
+                        and self._commitSectionBeforeHubNavigation()):
+                    return
                 self.checkSectionItem(action=action)
+
+            if (action == xbmcgui.ACTION_MOVE_DOWN
+                    and (controlID == self.RESUME_BUTTON_ID or 399 < controlID < 500)
+                    and self._commitSectionBeforeHubNavigation()):
+                return
 
             if controlID == self.SERVER_BUTTON_ID:
                 if action == xbmcgui.ACTION_SELECT_ITEM:
@@ -3525,6 +3534,33 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             self.librarySettings["order"] = [i.dataSource.key for i in self.sectionList.items if i.dataSource]
             self.saveLibrarySettings()
 
+    def _commitSectionBeforeHubNavigation(self):
+        item = self.sectionList.getSelectedItem()
+        if not item or not item.dataSource or item.dataSource == self.lastSection:
+            return False
+
+        self._pendingSectionHubFocus = item.dataSource
+        self.sectionChangeTimeout = None
+        self._sectionReallyChanged(item.dataSource)
+        self._focusPendingSectionHub(item.dataSource)
+        return True
+
+    def _focusPendingSectionHub(self, section):
+        pending = self._pendingSectionHubFocus
+        if pending is None:
+            return False
+        if pending != self.lastSection:
+            self._pendingSectionHubFocus = None
+            return False
+        if pending != section:
+            return False
+        if not any(self.hubControls[index] for index in self.hubFocusIndexes):
+            return False
+
+        self._pendingSectionHubFocus = None
+        self.focusFirstValidHub()
+        return True
+
     def checkSectionItem(self, force=False, action=None):
         item = self.sectionList.getSelectedItem()
         if not item:
@@ -3811,6 +3847,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             while self.block_section_change:
                 util.MONITOR.waitFor()
 
+            if self._pendingSectionHubFocus not in (None, section):
+                self._pendingSectionHubFocus = None
             self._setHubFocus()
             self._initialHomeHeroSet = False
 
@@ -4311,6 +4349,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                     self.focusFirstValidHub(focus)
                 except Exception:
                     util.ERROR("Home: failed to restore focus after hub cleanup")
+        self._focusPendingSectionHub(section)
         self.storeLastBG()
 
     def showHub(self, hub, items=None, is_home=False, reselect_pos=None, hub_index=None):

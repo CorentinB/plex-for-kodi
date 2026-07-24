@@ -453,6 +453,13 @@ class LibraryLayoutContractTests(unittest.TestCase):
         self.assertIn("if background:", window)
         self.assertIn("return self.windowSetBackground(background)", window)
 
+    def test_dynamic_backgrounds_clear_stale_art_when_item_has_no_images(self):
+        window = _read(KODIGUI_WINDOW)
+        update = window.split("    def updateBackgroundFrom(self, ds):", 1)[1]
+        update = update.split("    def windowSetBackground(self, value):", 1)[0]
+
+        self.assertIn("return self.windowSetBackground(BG_NA)", update)
+
 
 if __name__ == "__main__":
     unittest.main()
