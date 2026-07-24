@@ -10,7 +10,7 @@
         <posy>{{ vscale(7) }}</posy>
         <width>168</width>
         <height>{{ vscale(64) }}</height>
-        <texture>script.plex/indicators/circle-152.png</texture>
+        <texture border="6">script.plex/white-square-6px.png</texture>
         <colordiffuse>{% if light_plate %}26FFFFFF{% else %}78000000{% endif %}</colordiffuse>
     </control>
     <control type="image">
@@ -19,7 +19,7 @@
         <posy>{{ vscale(7) }}</posy>
         <width>168</width>
         <height>{{ vscale(64) }}</height>
-        <texture>script.plex/indicators/circle-152.png</texture>
+        <texture border="6">script.plex/white-square-6px.png</texture>
         <colordiffuse>F2FFFFFF</colordiffuse>
     </control>
     <control type="image">
@@ -170,7 +170,7 @@
         <posy>{{ vscale(7) }}</posy>
         <width>64</width>
         <height>{{ vscale(64) }}</height>
-        <texture>script.plex/indicators/circle-152.png</texture>
+        <texture border="6">script.plex/white-square-6px.png</texture>
         <colordiffuse>{% if light_plate %}26FFFFFF{% else %}78000000{% endif %}</colordiffuse>
     </control>
     <control type="image">
@@ -179,7 +179,7 @@
         <posy>{{ vscale(7) }}</posy>
         <width>64</width>
         <height>{{ vscale(64) }}</height>
-        <texture>script.plex/indicators/circle-152.png</texture>
+        <texture border="6">script.plex/white-square-6px.png</texture>
         <colordiffuse>F2FFFFFF</colordiffuse>
     </control>
     <control type="image">

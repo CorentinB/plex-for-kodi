@@ -449,6 +449,7 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
         self.lastItem = None
         self.lastFocusID = None
         self.lastNonOptionsFocusID = None
+        self.focusViewTypeOnRefill = False
         self.refill = False
         # Bumped every time doRefill() rebuilds showPanelControl. Used to detect that
         # the panel (and its ListItems) was replaced while a modal child window was open,
@@ -521,12 +522,15 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
             self.showPanelControl.newControl(self)
             self.keyListControl.newControl(self)
             self.showPanelControl.selectItem(0)
+            self.focusViewTypeOnRefill = False
             self.setFocusId(self.VIEWTYPE_BUTTON_ID)
             self.setBoolProperty("initialized", True)
         else:
             self.doRefill()
 
     def doRefill(self):
+        focus_view_type = self.focusViewTypeOnRefill
+        self.focusViewTypeOnRefill = False
         # The previous panel's ListItems are about to be freed and replaced; bump the
         # generation so any caller holding a stale ListItem reference can detect it.
         self._listGeneration += 1
@@ -561,6 +565,8 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
         self.refill = False
         if self.getProperty('no.content') or self.getProperty('no.content.filtered'):
             self.setFocusId(self.HOME_BUTTON_ID)
+        elif focus_view_type:
+            self.setFocusId(self.VIEWTYPE_BUTTON_ID)
         else:
             self.setFocusId(self.POSTERS_PANEL_ID)
 
@@ -1164,6 +1170,7 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
                 task.cancel()
                 self.refill = True
 
+        self.focusViewTypeOnRefill = True
         with self.lock:
             self.showPanelControl.invalidate()
             win = self.nextWindow()

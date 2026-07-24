@@ -223,7 +223,8 @@ class PrePlayLayoutContractTests(unittest.TestCase):
             'name in ("play", "play_plus", "wait", "upcoming")',
             button_template,
         )
-        self.assertIn("script.plex/indicators/circle-152.png", button_template)
+        self.assertIn("script.plex/white-square-6px.png", button_template)
+        self.assertNotIn("script.plex/indicators/circle-152.png", button_template)
         self.assertIn('!Control.HasFocus({{ id }})', button_template)
         self.assertIn('<textcolor>FFFFFFFF</textcolor>', button_template)
         self.assertLess(template.index('name="play"'), template.index('name="info"'))

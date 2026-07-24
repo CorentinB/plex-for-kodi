@@ -5,6 +5,7 @@ import unittest
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LIBRARY_PYTHON = os.path.join(ROOT, "lib", "windows", "library.py")
 POSTERS_TEMPLATE = os.path.join(
     ROOT,
     "resources",
@@ -23,6 +24,16 @@ LIBRARY_NAVIGATION = os.path.join(
     "templates",
     "includes",
     "library_button_navigation.xml.tpl",
+)
+THEMED_BUTTON = os.path.join(
+    ROOT,
+    "resources",
+    "skins",
+    "Main",
+    "1080i",
+    "templates",
+    "includes",
+    "themed_button.xml.tpl",
 )
 COMPACT_POSTERS_TEMPLATE = os.path.join(
     ROOT,
@@ -223,15 +234,63 @@ class LibraryLayoutContractTests(unittest.TestCase):
 
     def test_library_actions_use_the_tvos_style_and_explicit_navigation(self):
         template = _read(POSTERS_TEMPLATE)
+        buttons = _read(THEMED_BUTTON)
         navigation = _read(LIBRARY_NAVIGATION)
+
+        library_play_start = buttons.index('{% if name in ("play",')
+        library_play_end = buttons.index(
+            "{% elif preplay_style or episode_style",
+            library_play_start,
+        )
+        library_play = buttons[library_play_start:library_play_end]
+        library_icons_start = buttons.index(
+            '    {% else %}\n    <animation effect="zoom"',
+            library_play_end,
+        )
+        library_icons_end = buttons.index("    {% endif %}", library_icons_start)
+        library_icons = buttons[library_icons_start:library_icons_end]
 
         self.assertIn('library_style = True', template)
         self.assertIn('<posx>155</posx>', template)
         self.assertIn('<itemgap>14</itemgap>', template)
+        self.assertIn("script.plex/white-square-6px.png", library_play)
+        self.assertNotIn("circle-152.png", library_play)
+        self.assertIn("script.plex/white-square-6px.png", library_icons)
+        self.assertNotIn("circle-152.png", library_icons)
+        self.assertIn("<width>78</width>", library_icons)
         self.assertIn('<onup>200</onup>', navigation)
         self.assertIn('<ondown>101</ondown>', navigation)
         for control_id in (301, 302, 303, 304, 600):
             self.assertIn(str(control_id), navigation)
+
+    def test_view_type_cycle_restores_the_action_after_a_required_refill(self):
+        source = _read(LIBRARY_PYTHON)
+        first_init = source[
+            source.index("    def onFirstInit(self):"):
+            source.index("    def doRefill(self):")
+        ]
+        refill = source[
+            source.index("    def doRefill(self):"):
+            source.index("    def onReInit(self):")
+        ]
+        view_type = source[
+            source.index("    def viewTypeButtonClicked(self):"):
+            source.index("    def sortShowPanel(", source.index("    def viewTypeButtonClicked(self):"))
+        ]
+
+        self.assertIn("self.focusViewTypeOnRefill = False", source)
+        self.assertIn("self.focusViewTypeOnRefill = False", first_init)
+        self.assertIn("self.focusViewTypeOnRefill = True", view_type)
+        self.assertLess(
+            view_type.index("self.focusViewTypeOnRefill = True"),
+            view_type.index("self.nextWindow()"),
+        )
+        self.assertIn("focus_view_type = self.focusViewTypeOnRefill", refill)
+        self.assertIn("self.focusViewTypeOnRefill = False", refill)
+        self.assertIn(
+            "elif focus_view_type:\n            self.setFocusId(self.VIEWTYPE_BUTTON_ID)",
+            refill,
+        )
 
     def test_compact_posters_share_tvos_actions_and_rounded_focus_art(self):
         template = _read(COMPACT_POSTERS_TEMPLATE)
