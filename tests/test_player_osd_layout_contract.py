@@ -21,18 +21,46 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
         self.assertGreaterEqual(seek.count("theme.assets.buttons.focusBase"), 12)
         self.assertIn("script.plex/buttons/player/modern-focused/vs10.png", seek)
 
-    def test_osd_uses_a_floating_rounded_control_shelf(self):
+    def test_osd_uses_an_unframed_hierarchical_transport_rail(self):
         seek = SEEK.read_text()
-        self.assertIn('<width>1360</width>', seek)
-        self.assertIn('<width>780</width>', seek)
-        self.assertIn('colordiffuse="E60B0B0B" border="34"', seek)
-        self.assertIn("script.plex/white-square-rounded.png", seek)
+        transport = seek[seek.index('<control type="group" id="801">'):seek.index('<control type="group" id="500">')]
+        self.assertNotIn('<width>1360</width>', transport)
+        self.assertNotIn('<width>780</width>', transport)
+        self.assertNotIn('colordiffuse="E60B0B0B" border="34"', transport)
+        self.assertIn('<control type="group" id="423">', transport)
+        self.assertIn('<control type="group" id="425">', transport)
+        self.assertEqual(transport.count('<width>38</width>'), 2)
+        self.assertIn('<itemgap>-26</itemgap>', transport)
+
+    def test_osd_names_the_focused_action_without_permanent_button_labels(self):
+        seek = SEEK.read_text()
+        labels = seek[seek.index('<control type="group" id="440">'):seek.index('<control type="grouplist" id="400">')]
+        for control_id in (401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 412, 413):
+            self.assertIn('Control.HasFocus({})'.format(control_id), labels)
+        self.assertIn('$ADDON[script.plexmod 32925]', labels)
+        self.assertIn('$ADDON[script.plexmod 32396]', labels)
+        self.assertIn('$ADDON[script.plexmod 35036]', labels)
+        self.assertIn('$LOCALIZE[36044]', labels)
+        self.assertIn('$LOCALIZE[36045]', labels)
+
+    def test_osd_keeps_time_progress_action_and_transport_in_separate_bands(self):
+        seek = SEEK.read_text()
+        self.assertIn('<posy>{{ vscale(320) }}r</posy>', seek)
+        self.assertIn('<posy>{{ vscale(190) }}r</posy>', seek)
+        self.assertIn('<posy>592</posy>', seek)
+        self.assertIn('<posy>{{ vscale(910) }}</posy>', seek)
+        self.assertIn('<posy>{{ vscale(122) }}r</posy>', seek)
+        self.assertIn('BAR_Y = 871', SEEK_PYTHON.read_text())
+        self.assertIn('BAR_BOTTOM = 919', SEEK_PYTHON.read_text())
 
     def test_play_left_skips_controls_that_are_not_visible(self):
         seek = SEEK.read_text()
         self.assertIn('<onleft condition="!String.IsEmpty(Window.Property(nav.ffwdrwd))">405</onleft>', seek)
         self.assertIn('!String.IsEmpty(Window.Property(pq.hasprev)) + !String.IsEmpty(Window.Property(nav.prevnext))', seek)
         self.assertIn('String.IsEmpty(Window.Property(pq.hasprev)) | String.IsEmpty(Window.Property(nav.prevnext))', seek)
+        self.assertIn('<onleft condition="Control.IsVisible(413)">413</onleft>', seek)
+        self.assertIn('<onleft condition="!Control.IsVisible(413) + Control.IsVisible(412)">412</onleft>', seek)
+        self.assertIn('<onleft>407</onleft>', seek)
 
     def test_seek_previews_and_chapters_are_rounded(self):
         seek = SEEK.read_text()
@@ -84,7 +112,7 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
     def test_osd_title_rail_is_stable_safe_and_localized(self):
         seek = SEEK.read_text()
         python = SEEK_PYTHON.read_text()
-        title_rail = seek[seek.index('<posy>{{ vscale(40) }}</posy>'):seek.index('<posy>{{ vscale(115) }}r</posy>')]
+        title_rail = seek[seek.index('<posy>{{ vscale(40) }}</posy>'):seek.index('<posy>{{ vscale(320) }}r</posy>')]
         self.assertEqual(title_rail.count('<scroll>false</scroll>'), 3)
         self.assertNotIn('<scroll>true</scroll>', title_rail)
         self.assertIn('Window.Property(ep.season)', title_rail)
@@ -100,7 +128,13 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
         self.assertIn('class SeekMarkerHarness(kodigui.BaseDialog)', harness)
         self.assertIn('self.setProperty("show.markerSkip", "1")', harness)
         self.assertIn('self.setProperty("show.OSD", "1")', harness)
+        self.assertIn('"quick_subtitles"', harness)
+        self.assertIn('profile = "minimal"', harness)
+        self.assertIn('profile = "default"', harness)
+        self.assertIn('self.setProperty("time.current", "28:14")', harness)
+        self.assertIn('self.getControl(501).addItems', harness)
         self.assertIn('focus_id = 406', harness)
+        self.assertIn('self._publish("open", focus_id)', harness)
         self.assertIn('"Passer le générique (10)"', harness)
         self.assertIn("# The production button is deliberately inert", harness)
         self.assertNotIn("Player.Open", harness)

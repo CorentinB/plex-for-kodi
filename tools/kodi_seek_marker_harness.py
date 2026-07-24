@@ -40,6 +40,7 @@ class SeekMarkerHarness(kodigui.BaseDialog):
     def __init__(self, *args, **kwargs):
         self.label = kwargs.pop("label", "")
         self.mode = kwargs.pop("mode", "marker")
+        self.profile = kwargs.pop("profile", "all")
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
 
     def _publish(self, state, focus=None):
@@ -55,8 +56,31 @@ class SeekMarkerHarness(kodigui.BaseDialog):
             self.setProperty("has.playlist", "1")
             self.setProperty("pq.hasprev", "1")
             self.setProperty("pq.hasnext", "1")
-            for name in ("repeat", "shuffle", "prevnext", "ffwdrwd", "playlist", "vs10"):
+            self.setProperty("time.current", "28:14")
+            self.setProperty("time.left", "-17:32")
+            self.setProperty("media.show_ends", "1")
+            self.setProperty("time.ends_label", "Fin à")
+            self.setProperty("time.end", "21:46")
+            controls = {
+                "minimal": (),
+                "default": ("quick_subtitles",),
+                "all": (
+                    "repeat",
+                    "shuffle",
+                    "prevnext",
+                    "ffwdrwd",
+                    "playlist",
+                    "quick_subtitles",
+                    "vs10",
+                ),
+            }[self.profile]
+            for name in controls:
                 self.setProperty("nav." + name, "1")
+            self.getControl(201).setWidth(1120)
+            self.getControl(206).setWidth(1440)
+            self.getControl(501).addItems(
+                [xbmcgui.ListItem(label="") for _ in range(12)]
+            )
             focus_id = 406
         else:
             self.setProperty("show.markerSkip", "1")
@@ -65,6 +89,7 @@ class SeekMarkerHarness(kodigui.BaseDialog):
         self._publish("open")
         xbmc.sleep(100)
         self.setFocusId(focus_id)
+        self._publish("open", focus_id)
 
     def onFocus(self, control_id):
         self._publish("open", control_id)
@@ -85,8 +110,14 @@ def main():
     try:
         arguments = {argument.lower() for argument in sys.argv[1:]}
         mode = "osd" if "osd" in arguments else "marker"
+        if "minimal" in arguments:
+            profile = "minimal"
+        elif "default" in arguments:
+            profile = "default"
+        else:
+            profile = "all"
         label = "Passer le générique (10)" if "credits" in arguments else "Passer l'intro"
-        SeekMarkerHarness.open(label=label, mode=mode, aggressive=True)
+        SeekMarkerHarness.open(label=label, mode=mode, profile=profile, aggressive=True)
     except Exception:
         xbmc.log("script.plexmod: seek marker harness failed", xbmc.LOGERROR)
         raise

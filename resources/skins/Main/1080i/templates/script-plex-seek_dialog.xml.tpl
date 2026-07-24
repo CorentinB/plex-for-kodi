@@ -117,7 +117,7 @@
 
     <control type="group">
         <posx>0</posx>
-        <posy>{{ vscale(115) }}r</posy>
+        <posy>{{ vscale(320) }}r</posy>
         <control type="label">
             <visible>!String.IsEmpty(Window.Property(direct.play)) + [String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))]</visible>
             <posx>60</posx>
@@ -219,7 +219,7 @@
 
     <control type="group">
         <posx>0</posx>
-        <posy>{{ vscale(140) }}r</posy>
+        <posy>{{ vscale(190) }}r</posy>
         <control type="image">
             <visible>String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))</visible>
             <posx>0</posx>
@@ -446,7 +446,7 @@
     <visible>!String.IsEmpty(Window.Property(has.bif)) + !String.IsEmpty(Window.Property(bif.image)) + String.IsEmpty(Window.Property(show.chapters)) + [Control.HasFocus(100) | Control.HasFocus(501) | !String.IsEmpty(Window.Property(button.seek))] + [String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))] </visible>
     <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
     <posx>0</posx>
-    <posy>752</posy>
+    <posy>592</posy>
     <control type="image">
         <posx>0</posx>
         <posy>0</posy>
@@ -476,33 +476,177 @@
     <visible>!String.IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(osdsubtitlesettings) + !Window.IsVisible(subtitlesearch) + !Window.IsActive(playerprocessinfo) + !Window.IsActive(selectdialog) + !Window.IsVisible(osdcmssettings)</visible>
     <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
 
-    <control type="image">
-        <visible>!String.IsEmpty(Window.Property(nav.repeat)) | !String.IsEmpty(Window.Property(nav.shuffle)) | !String.IsEmpty(Window.Property(nav.prevnext)) | !String.IsEmpty(Window.Property(nav.ffwdrwd)) | !String.IsEmpty(Window.Property(nav.playlist)) | !String.IsEmpty(Window.Property(nav.vs10))</visible>
-        <posx>280</posx>
-        <posy>{{ vscale(126) }}r</posy>
-        <width>1360</width>
-        <height>{{ vscale(108) }}</height>
-        <texture colordiffuse="E60B0B0B" border="34">script.plex/white-square-rounded.png</texture>
-    </control>
-    <control type="image">
-        <visible>String.IsEmpty(Window.Property(nav.repeat)) + String.IsEmpty(Window.Property(nav.shuffle)) + String.IsEmpty(Window.Property(nav.prevnext)) + String.IsEmpty(Window.Property(nav.ffwdrwd)) + String.IsEmpty(Window.Property(nav.playlist)) + String.IsEmpty(Window.Property(nav.vs10))</visible>
-        <posx>570</posx>
-        <posy>{{ vscale(126) }}r</posy>
-        <width>780</width>
-        <height>{{ vscale(108) }}</height>
-        <texture colordiffuse="E60B0B0B" border="34">script.plex/white-square-rounded.png</texture>
+    <control type="group" id="440">
+        <posx>0</posx>
+        <posy>{{ vscale(910) }}</posy>
+        <control type="label">
+            <visible>Control.HasFocus(401)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$ADDON[script.plexmod 32934]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(402)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$ADDON[script.plexmod 32935]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(403)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$ADDON[script.plexmod 32925]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(404)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$LOCALIZE[210]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(405)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>-10 s</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(406) + !Player.Paused + !Player.Forwarding + !Player.Rewinding</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$LOCALIZE[36045]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(406) + [Player.Paused | Player.Forwarding | Player.Rewinding]</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$LOCALIZE[208]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(407)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$LOCALIZE[36044]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(408)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>+30 s</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(409)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$LOCALIZE[209]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(410)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$ADDON[script.plexmod 35036]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(412)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>$ADDON[script.plexmod 32396]</label>
+        </control>
+        <control type="label">
+            <visible>Control.HasFocus(413)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>{{ vscale(38) }}</height>
+            <font>font10</font>
+            <align>center</align>
+            <aligny>center</aligny>
+            <textcolor>D9FFFFFF</textcolor>
+            <label>VS10</label>
+        </control>
     </control>
 
     <control type="grouplist" id="400">
         <defaultcontrol>406</defaultcontrol>
         <hitrect x="460" y="998" w="1000" h="55" />
-        <posx>360</posx>
-        <posy>{{ vscale(116) }}r</posy>
-        <width>1200</width>
+        <posx>120</posx>
+        <posy>{{ vscale(122) }}r</posy>
+        <width>1680</width>
         <height>{{ vscale(124) }}</height>
         <align>center</align>
         <onup>100</onup>
-        <itemgap>-40</itemgap>
+        <itemgap>-26</itemgap>
         <orientation>horizontal</orientation>
         <scrolltime tween="quadratic" easing="out">200</scrolltime>
         <usecontrolcoords>true</usecontrolcoords>
@@ -518,7 +662,12 @@
                 <height>{{ vscale(101) }}</height>
                 <onup>100</onup>
                 <onright>402</onright>
-                <onleft>412</onleft>
+                <onleft condition="Control.IsVisible(413)">413</onleft>
+                <onleft condition="!Control.IsVisible(413) + Control.IsVisible(412)">412</onleft>
+                <onleft condition="!Control.IsVisible(413) + !Control.IsVisible(412) + Control.IsVisible(410)">410</onleft>
+                <onleft condition="!Control.IsVisible(413) + !Control.IsVisible(412) + !Control.IsVisible(410) + Control.IsVisible(409)">409</onleft>
+                <onleft condition="!Control.IsVisible(413) + !Control.IsVisible(412) + !Control.IsVisible(410) + !Control.IsVisible(409) + Control.IsVisible(408)">408</onleft>
+                <onleft>407</onleft>
                 <ondown>501</ondown>
                 <font>font12</font>
                 <texturefocus>script.plex/transparent-6px.png</texturefocus>
@@ -626,6 +775,10 @@
             <label> </label>
         </control>
 
+        <control type="group" id="423">
+            <width>38</width>
+            <height>{{ vscale(101) }}</height>
+        </control>
 
         <control type="button" id="404">
             <visible>!String.IsEmpty(Window.Property(pq.hasprev)) + !String.IsEmpty(Window.Property(nav.prevnext))</visible>
@@ -784,6 +937,10 @@
             <label> </label>
         </control>
 
+        <control type="group" id="425">
+            <width>38</width>
+            <height>{{ vscale(101) }}</height>
+        </control>
 
         <control type="button" id="410">
             <visible>[!String.IsEmpty(Window.Property(pq.hasnext)) | !String.IsEmpty(Window.Property(pq.hasprev))] + !String.IsEmpty(Window.Property(nav.playlist))</visible>
@@ -846,7 +1003,7 @@
 
     <control type="group">
         <posx>0</posx>
-        <posy>940</posy>
+        <posy>890</posy>
         <control type="button" id="100">
             <hitrect x="0" y="-19" w="1920" h="48" />
             <posx>0</posx>
@@ -869,7 +1026,7 @@
 
         <visible>String.IsEmpty(Window.Property(mouse.mode)) + String.IsEmpty(Window.Property(hide.bigseek)) + [Control.HasFocus(501) | Control.HasFocus(100)] + [!String.IsEmpty(Window.Property(show.chapters)) | String.IsEmpty(Window.Property(has.chapters))]</visible>
         <posx>-8</posx>
-        <posy>917</posy>
+        <posy>867</posy>
         <control type="image">
             <posx>-200</posx>
             <posy>5</posy>
@@ -1113,7 +1270,7 @@
 <control type="group" id="202">
     <visible>[Control.HasFocus(100) | Control.HasFocus(501) | !String.IsEmpty(Window.Property(button.seek))] + [String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))]</visible>
     <posx>0</posx>
-    <posy>896</posy>
+    <posy>846</posy>
     <control type="group" id="203">
         <posx>-50</posx>
         <posy>0</posy>

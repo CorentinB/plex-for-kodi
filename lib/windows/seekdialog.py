@@ -136,9 +136,9 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
     NO_OSD_BUTTON_ID = 800
 
     BAR_X = 0
-    BAR_Y = 921
+    BAR_Y = 871
     BAR_RIGHT = 1920
-    BAR_BOTTOM = 969
+    BAR_BOTTOM = 919
 
     NAVBAR_BTN_SIZE = 60
 
@@ -1860,14 +1860,6 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
             self.setProperty('time.add', timeAdd)
 
         self.setBoolProperty('direct.play', self.isDirectPlay)
-
-        if not self.getProperty('nav.playlist') and self.getProperty('nav.quick_subtitles'):
-            # offset the subtitle button
-            self.getControl(self.SUBTITLE_BUTTON_ID).setPosition(30, 0)
-
-        if not self.getProperty('nav.prevnext'):
-            if self.getProperty('nav.ffwdrwd'):
-                self.getControl(self.SKIP_BACK_BUTTON_ID).setPosition(30, 0)
 
         pq = self.handler.playlist
         if pq:
