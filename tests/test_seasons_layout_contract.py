@@ -41,6 +41,30 @@ class SeasonsLayoutContractTests(unittest.TestCase):
         self.assertNotIn("creator_label.upper()", source)
         self.assertNotIn("T(32419, 'Cast').upper()", source)
 
+    def test_show_ratings_follow_the_primary_metadata_instead_of_floating_right(self):
+        template = SEASONS.read_text()
+        metadata_start = template.index(
+            '<label>$INFO[Window.Property(duration)]'
+        )
+        metadata_group_start = template.rfind(
+            '<control type="grouplist">', 0, metadata_start
+        )
+        metadata_group_end = template.index(
+            "</control>", template.index(
+                "<label>$INFO[Window.Property(rating2)]</label>",
+                metadata_start,
+            )
+        )
+        metadata_group = template[metadata_group_start:metadata_group_end]
+
+        self.assertIn("<posx>0</posx>", metadata_group)
+        self.assertIn("<align>left</align>", metadata_group)
+        self.assertIn("<width>auto</width>", metadata_group)
+        self.assertIn("Window.Property(rating.image)", metadata_group)
+        self.assertIn("Window.Property(rating2.image)", metadata_group)
+        self.assertNotIn("<posx>1325</posx>", template)
+        self.assertNotIn("<align>right</align>", metadata_group)
+
     def test_show_sections_share_the_movie_and_episode_heading_hierarchy(self):
         template = SEASONS.read_text()
 

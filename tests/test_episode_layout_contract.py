@@ -255,6 +255,22 @@ class EpisodeLayoutContractTests(unittest.TestCase):
         self.assertNotIn('<scroll>true</scroll>', stream_row)
         self.assertNotIn('<width>1360</width>', stream_row)
 
+    def test_episode_summary_has_a_bounded_row_below_the_actions(self):
+        template = _read(EPISODES_TEMPLATE)
+        summary_label = (
+            "<label>$INFO[Container(400).ListItem.Property(summary)]</label>"
+        )
+        summary_end = template.index(summary_label) + len(summary_label)
+        summary_start = template.rfind(
+            '<control type="textbox">', 0, summary_end
+        )
+        summary = template[summary_start:summary_end]
+
+        self.assertIn("<posy>{{ vscale(420) }}</posy>", summary)
+        self.assertIn("<height>{{ vscale(110) }}</height>", summary)
+        self.assertLess(315 + 90, 420)
+        self.assertLess(420 + 110, 565)
+
     def test_episode_metadata_and_section_titles_use_sentence_case(self):
         template = _read(EPISODES_TEMPLATE)
         source = _read(EPISODES_PYTHON)

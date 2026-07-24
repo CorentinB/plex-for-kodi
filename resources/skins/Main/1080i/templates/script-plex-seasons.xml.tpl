@@ -57,40 +57,37 @@
             <scroll>false</scroll>
             <label>$INFO[Window.Property(title)]</label>
         </control>
-        <control type="label">
+        <control type="grouplist">
             <posx>0</posx>
             <posy>{{ vscale(76) }}</posy>
-            <width>1320</width>
+            <width>1540</width>
             <height>{{ vscale(38) }}</height>
-            <font>font13</font>
             <align>left</align>
-            <aligny>center</aligny>
-            <textcolor>E8FFFFFF</textcolor>
-            <scroll>false</scroll>
-            <label>$INFO[Window.Property(duration)]$INFO[Window.Property(info),  •  ]$INFO[Window.Property(date),  •  ]$INFO[Window.Property(content.rating),  •  ]</label>
-        </control>
-
-        <control type="grouplist">
-            <visible>!String.IsEmpty(Window.Property(rating)) | !String.IsEmpty(Window.Property(rating2))</visible>
-            <posx>1325</posx>
-            <posy>{{ vscale(78) }}</posy>
-            <width>275</width>
-            <height>{{ vscale(34) }}</height>
-            <align>right</align>
             <itemgap>10</itemgap>
             <orientation>horizontal</orientation>
             <usecontrolcoords>true</usecontrolcoords>
+            <control type="label">
+                <width>auto</width>
+                <height>{{ vscale(38) }}</height>
+                <font>font13</font>
+                <align>left</align>
+                <aligny>center</aligny>
+                <textcolor>E8FFFFFF</textcolor>
+                <scroll>false</scroll>
+                <label>$INFO[Window.Property(duration)]$INFO[Window.Property(info),  •  ]$INFO[Window.Property(date),  •  ]$INFO[Window.Property(content.rating),  •  ]</label>
+            </control>
             <control type="image">
                 <visible>!String.IsEmpty(Window.Property(rating))</visible>
+                <posy>{{ vscale(5) }}</posy>
                 <width>42</width>
                 <height>{{ vscale(28) }}</height>
                 <texture fallback="script.plex/ratings/other/image.rating.png">$INFO[Window.Property(rating.image)]</texture>
-                <aspectratio align="right">keep</aspectratio>
+                <aspectratio>keep</aspectratio>
             </control>
             <control type="label">
                 <visible>!String.IsEmpty(Window.Property(rating))</visible>
                 <width>auto</width>
-                <height>{{ vscale(30) }}</height>
+                <height>{{ vscale(38) }}</height>
                 <font>font12</font>
                 <align>left</align>
                 <aligny>center</aligny>
@@ -99,15 +96,16 @@
             </control>
             <control type="image">
                 <visible>!String.IsEmpty(Window.Property(rating2))</visible>
+                <posy>{{ vscale(5) }}</posy>
                 <width>34</width>
                 <height>{{ vscale(28) }}</height>
                 <texture fallback="script.plex/ratings/other/image.rating.png">$INFO[Window.Property(rating2.image)]</texture>
-                <aspectratio align="right">keep</aspectratio>
+                <aspectratio>keep</aspectratio>
             </control>
             <control type="label">
                 <visible>!String.IsEmpty(Window.Property(rating2))</visible>
                 <width>auto</width>
-                <height>{{ vscale(30) }}</height>
+                <height>{{ vscale(38) }}</height>
                 <font>font12</font>
                 <align>left</align>
                 <aligny>center</aligny>

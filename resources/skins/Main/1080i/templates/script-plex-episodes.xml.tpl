@@ -476,9 +476,9 @@
         </control>
         <control type="textbox">
             <posx>740</posx>
-            <posy>{{ vscale(340) }}</posy>
+            <posy>{{ vscale(420) }}</posy>
             <width>1084</width>
-            <height>{{ vscale(172) }}</height>
+            <height>{{ vscale(110) }}</height>
             <font>font12</font>
             <align>left</align>
             <textcolor>FFFFFFFF</textcolor>
