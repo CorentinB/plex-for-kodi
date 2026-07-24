@@ -7,7 +7,75 @@ from lib import util
 from . import busy
 
 
+_WATCHLIST_UNRESOLVED = object()
+
+
+def _open_resolved_watchlist_item(obj, kwargs):
+    from .mixins import watchlist
+
+    next_kwargs = dict(kwargs)
+    choose_source = next_kwargs.pop('choose_watchlist_source', False)
+    sources = busy.widthDialog(
+        watchlist.find_watchlist_sources,
+        None,
+        obj,
+        delay=True,
+    )
+    if not sources:
+        return _WATCHLIST_UNRESOLVED
+
+    current_server = plexapp.SERVERMANAGER.selectedServer
+    if choose_source:
+        source = watchlist.prompt_watchlist_source(
+            sources,
+            next_kwargs.get('dialog_props'),
+        )
+        if source is None:
+            return ''
+    else:
+        source = watchlist.select_preferred_source(
+            sources,
+            current_server and current_server.uuid,
+        )
+
+    metadata = source[1]
+    try:
+        server = plexapp.SERVERMANAGER.getServer(metadata["server_uuid"])
+    except KeyError:
+        server = None
+    if server is None:
+        return _WATCHLIST_UNRESOLVED
+
+    next_kwargs.pop('from_watchlist', None)
+    next_kwargs.pop('external_item', None)
+    next_kwargs.pop('watchlist_entry', None)
+    next_kwargs.pop('server', None)
+    next_kwargs['is_watchlisted'] = True
+    next_kwargs['directly_from_watchlist'] = True
+    next_kwargs.setdefault('came_from', watchlist.GUIDToRatingKey(obj.guid))
+
+    server_differs = current_server and server.uuid != current_server.uuid
+    try:
+        if server_differs:
+            util.LOG("Temporarily changing server source to: {}", server.name)
+            plexapp.util.APP.trigger('change:tempServer', server=server)
+        return open(metadata["rating_key"], server=server, **next_kwargs)
+    finally:
+        if server_differs:
+            util.LOG("Reverting to server source: {}", current_server.name)
+            plexapp.util.APP.trigger('change:tempServer', server=current_server)
+
+
 def open(obj, **kwargs):
+    if (
+        kwargs.get('from_watchlist', False)
+        and kwargs.get('external_item', False)
+        and kwargs.get('watchlist_entry', False)
+    ):
+        command = _open_resolved_watchlist_item(obj, kwargs)
+        if command is not _WATCHLIST_UNRESOLVED:
+            return command
+
     if isinstance(obj, playqueue.PlayQueue):
         if busy.widthDialog(obj.waitForInitialization, None):
             if obj.type == 'audio':

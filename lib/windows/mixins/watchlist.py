@@ -8,6 +8,121 @@ from lib.windows import dropdown
 from plexnet import plexapp, plexobjects, util as pnUtil, exceptions
 
 
+def _source_bitrate(source):
+    try:
+        return int(source[1].get("bitrate") or 0)
+    except (AttributeError, TypeError, ValueError):
+        return 0
+
+
+def select_preferred_source(availability, preferred_server_uuid=None):
+    if not availability:
+        return None
+
+    preferred = [
+        source
+        for source in availability
+        if source[1].get("server_uuid") == preferred_server_uuid
+    ]
+    return max(preferred or availability, key=_source_bitrate)
+
+
+def source_description(meta):
+    if meta["type"] == "movie":
+        resolution = meta.get("resolution") or ""
+        resolution = "{}p".format(resolution) if resolution and "k" not in resolution.lower() else resolution.upper()
+        bitrate = meta.get("bitrate")
+        return '{} ({})'.format(
+            resolution,
+            pnUtil.bitrateToString(int(bitrate) * 1024),
+        ) if bitrate else resolution
+
+    season_count = int(meta.get("season_count") or 0)
+    season_str = T(34006, '{} season') if season_count == 1 else T(34003, '{} seasons')
+    return season_str.format(season_count)
+
+
+def availability_for_server(server, guid, media_type):
+    res = server.query("/library/all", guid=guid, type=plexobjects.searchType(media_type))
+    if not res or not res.get("size", 0):
+        return []
+
+    found = []
+    for child in res:
+        if child.tag not in ("Directory", "Video"):
+            continue
+
+        rating_key = child.get("ratingKey")
+        if not rating_key:
+            continue
+
+        metadata = {
+            "rating_key": rating_key,
+            "resolution": None,
+            "bitrate": None,
+            "season_count": None,
+            "available": child.get("originallyAvailableAt"),
+            "server_uuid": str(server.uuid),
+            "type": media_type,
+            "library_title": child.get("librarySectionTitle"),
+        }
+        if media_type == "movie":
+            best_bitrate = -1
+            for media in child:
+                if media.tag != "Media":
+                    continue
+                try:
+                    bitrate = int(media.get("bitrate") or 0)
+                except (TypeError, ValueError):
+                    bitrate = 0
+                if metadata["bitrate"] is None or bitrate > best_bitrate:
+                    metadata["resolution"] = media.get("videoResolution")
+                    metadata["bitrate"] = media.get("bitrate")
+                    best_bitrate = bitrate
+        else:
+            metadata["season_count"] = child.get("childCount")
+        found.append((server.name, metadata))
+
+    if media_type == "movie" and len(found) > 1:
+        found.sort(key=_source_bitrate, reverse=True)
+    return found
+
+
+def find_watchlist_sources(item, servers=None):
+    sources = []
+    servers = list(servers if servers is not None else pnUtil.SERVERMANAGER.connectedServers)
+    for server in servers:
+        try:
+            sources.extend(availability_for_server(server, item.guid, item.type))
+        except Exception:
+            util.ERROR()
+    return sources
+
+
+def prompt_watchlist_source(availability, dialog_props=None):
+    options = []
+    for index, (server_name, metadata) in enumerate(availability):
+        options.append({
+            'key': index,
+            'display': '{0}/{2}, {1} '.format(
+                server_name,
+                source_description(metadata),
+                metadata["library_title"],
+            ),
+        })
+
+    choice = dropdown.showDropdown(
+        options=options,
+        pos=(660, 441),
+        close_direction='none',
+        set_dropdown_prop=False,
+        header=T(34004, 'Choose server'),
+        dialog_props=dialog_props,
+        align_items="left",
+    )
+    return availability[choice['key']] if choice else None
+
+
 class WatchlistCheckBaseTask(backgroundthread.Task):
     def setup(self, server_uuid, guid, callback):
         self.server_uuid = server_uuid
@@ -36,35 +151,8 @@ class AvailabilityCheckTask(WatchlistCheckBaseTask):
                 return
 
             server = self.getServer()
-            res = server.query("/library/all", guid=self.guid, type=plexobjects.searchType(self.media_type))
-            if res and res.get("size", 0):
-                # find ratingKey
-                found = []
-                for child in res:
-                    if child.tag in ("Directory", "Video"):
-                        rk = child.get("ratingKey")
-                        if rk:
-                            metadata = {"rating_key": rk, "resolution": None, "bitrate": None, "season_count": None,
-                                        "available": None, "server_uuid": str(self.server_uuid), "type": self.media_type,
-                                        "library_title": child.get("librarySectionTitle")}
-
-                            # find resolution for movies
-                            if self.media_type == "movie":
-                                for _child in child:
-                                    if _child.tag == "Media":
-                                        metadata["resolution"] = _child.get("videoResolution")
-                                        metadata["bitrate"] = _child.get("bitrate")
-                                        break
-                            else:
-                                metadata["season_count"] = child.get("childCount")
-                            metadata["available"] = child.get("originallyAvailableAt")
-                            found.append((server.name, metadata))
-
-                if found:
-                    # sort by quality
-                    if self.media_type == "movie" and len(found) > 1:
-                        found.sort(key=lambda item: int(item[1]["bitrate"]), reverse=True)
-
+            found = availability_for_server(server, self.guid, self.media_type)
+            if found:
                 self.callback(found)
                 return
             self.callback(None)
@@ -180,40 +268,16 @@ class WatchlistUtilsMixin(object):
 
     @wl_wrap
     def wl_item_verbose(self, meta):
-        if meta["type"] == "movie":
-            res = "{}p".format(meta['resolution']) if not "k" in meta['resolution'] else meta['resolution'].upper()
-            sub = '{} ({})'.format(res, pnUtil.bitrateToString(int(meta['bitrate']) * 1024))
-        else:
-            season_str = T(34006, '{} season') if int(meta["season_count"]) == 1 else T(34003, '{} seasons')
-            sub = season_str.format(meta['season_count'])
-        return sub
+        return source_description(meta)
 
     @wl_wrap
     def wl_item_opener(self, ref, item_open_callback, selected_item=None):
         if len(self.wl_availability) > 1 and not selected_item:
-            # choose
-            options = []
-            for idx, tup in enumerate(self.wl_availability):
-                server, meta = tup
-                verbose = self.wl_item_verbose(meta)
-                options.append({'key': idx,
-                                'display': '{0}/{2}, {1} '.format(server, verbose, meta["library_title"])
-                              })
-
-            choice = dropdown.showDropdown(
-                options=options,
-                pos=(660, 441),
-                close_direction='none',
-                set_dropdown_prop=False,
-                header=T(34004, 'Choose server'),
-                dialog_props=self.dialogProps,
-                align_items="left"
-            )
-
-            if not choice:
+            selected_source = prompt_watchlist_source(self.wl_availability, self.dialogProps)
+            if not selected_source:
                 return
 
-            return self.wl_item_opener(ref, item_open_callback, selected_item=self.wl_availability[choice['key']][1])
+            return self.wl_item_opener(ref, item_open_callback, selected_item=selected_source[1])
 
         item_meta = selected_item or self.wl_availability[0][1]
         rk = item_meta.get("rating_key", None)

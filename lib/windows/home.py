@@ -2974,6 +2974,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         if mli.dataSource.is_watchlist:
             extra_kwargs['from_watchlist'] = True
             extra_kwargs['external_item'] = True
+            extra_kwargs['watchlist_entry'] = True
 
             if mli.dataSource.TYPE in ("season", "episode"):
                 # we need to change the datasource if someone clicks an episode in a discover hub (watchlist), to go
@@ -3281,6 +3282,15 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 if not already_on_home:
                     options.append({'key': 'add_to_home', 'display': 'Add to Home: {}'.format(hub_title)})
 
+        if getattr(ds, 'is_watchlist', False):
+            if options:
+                options.append(dropdown.SEPARATOR)
+            options.append({
+                'key': 'choose_watchlist_source',
+                'display': T(34004, 'Choose server'),
+            })
+            has_prev = True
+
         if ds.TYPE in ('episode', 'season', 'movie', 'show'):
             if has_prev:
                 options.append(dropdown.SEPARATOR)
@@ -3356,6 +3366,18 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             new_order = max((h.get('order', 0) for h in hubs_list), default=-1) + 1
             hubs_list.append({'catalog_id': catalog_id, 'order': new_order})
             self.saveHubSettings()
+            return
+
+        elif choice["key"] == "choose_watchlist_source":
+            command = opener.open(
+                ds,
+                from_watchlist=True,
+                external_item=True,
+                watchlist_entry=True,
+                choose_watchlist_source=True,
+                dialog_props=self.carriedProps,
+            )
+            self.processCommand(command)
             return
 
         elif choice["key"] in ("mark_watched", "mark_unwatched"):

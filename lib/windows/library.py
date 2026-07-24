@@ -701,6 +701,10 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
                         (ds.TYPE in ("show", "season") and 0 < ds.unViewedLeafCount < ds.leafCount)):
                     options.append({'key': 'mark_unwatched', 'display': T(32318, "Mark Unplayed")})
             else:
+                options.append({
+                    'key': 'choose_watchlist_source',
+                    'display': T(34004, 'Choose server'),
+                })
                 options.append({'key': 'remove_from_watchlist', 'display': T(34011, "Remove from watchlist")})
 
             title = mli.label
@@ -722,7 +726,15 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
                 align_items="left",
             )
 
-            if choice and choice["key"] in ("mark_watched", "mark_unwatched", "remove_from_watchlist"):
+            if choice and choice["key"] == "choose_watchlist_source":
+                self.processCommand(opener.open(
+                    ds,
+                    from_watchlist=True,
+                    external_item=True,
+                    watchlist_entry=True,
+                    choose_watchlist_source=True,
+                ))
+            elif choice and choice["key"] in ("mark_watched", "mark_unwatched", "remove_from_watchlist"):
                 if util.getSetting('home_confirm_actions'):
                     button = optionsdialog.show(
                         T(32319, "Mark Played") if choice["key"] == "mark_watched"
@@ -1385,6 +1397,7 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
             extra_kwargs['from_watchlist'] = True
             extra_kwargs['directly_from_watchlist'] = True
             extra_kwargs['external_item'] = True
+            extra_kwargs['watchlist_entry'] = True
 
         if mli.dataSource.TYPE == 'collection':
             prevItemType = self.librarySettings.getItemType() or ITEM_TYPE
@@ -1393,8 +1406,18 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
         elif self.section.TYPE == 'show' or mli.dataSource.TYPE == 'show' or mli.dataSource.TYPE == 'season' or mli.dataSource.TYPE == 'episode':
             if ITEM_TYPE == 'episode' or mli.dataSource.TYPE == 'episode' or mli.dataSource.TYPE == 'season':
                 self.openItem(mli.dataSource)
+            elif sectionType == 'movies_shows':
+                self.processCommand(opener.open(
+                    mli.dataSource,
+                    parent_list=self.showPanelControl,
+                    **extra_kwargs
+                ))
             else:
-                self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl, **extra_kwargs))
+                self.processCommand(opener.handleOpen(
+                    subitems.ShowWindow,
+                    media_item=mli.dataSource,
+                    parent_list=self.showPanelControl,
+                ))
             if mli.dataSource.TYPE != 'season': # NOTE: A collection with Seasons doesn't have the leafCount/viewedLeafCount until you actually go into the season so we can't update the unwatched count here
                 updateUnwatchedAndProgress = True
         elif self.section.TYPE == 'movie' or mli.dataSource.TYPE == 'movie':
@@ -1413,7 +1436,18 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
                 self.processCommand(opener.handleOpen(LibraryWindow, windows=self._windows, default_window=self._next, section=section, filter_=self.filter, subDir=True))
                 self.librarySettings.setItemType(self.librarySettings.getItemType() or ITEM_TYPE)
             else:
-                self.processCommand(opener.handleOpen(preplay.PrePlayWindow if not sectionType == 'movies_shows' else preplay.PrePlayWindowWL, video=datasource, parent_list=self.showPanelControl, **extra_kwargs))
+                if sectionType == 'movies_shows':
+                    self.processCommand(opener.open(
+                        datasource,
+                        parent_list=self.showPanelControl,
+                        **extra_kwargs
+                    ))
+                else:
+                    self.processCommand(opener.handleOpen(
+                        preplay.PrePlayWindow,
+                        video=datasource,
+                        parent_list=self.showPanelControl,
+                    ))
                 updateUnwatchedAndProgress = True
         elif self.section.TYPE == 'artist' or mli.dataSource.TYPE == 'artist' or mli.dataSource.TYPE == 'album' or mli.dataSource.TYPE == 'track':
             if ITEM_TYPE == 'album' or mli.dataSource.TYPE == 'album' or mli.dataSource.TYPE == 'track':
