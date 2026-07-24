@@ -75,7 +75,7 @@
             <usecontrolcoords>true</usecontrolcoords>
 
             {% with attr = theme.pre_play.buttons & template = "includes/themed_button.xml.tpl" & preplay_style = True %}
-                {% include template with name="play" & id=302 & visible="String.IsEmpty(Window.Property(unavailable)) + String.IsEmpty(Window.Property(disable_playback))" & action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106 %}
+                {% include template with name="play" & id=302 & visible="String.IsEmpty(Window.Property(unavailable)) + String.IsEmpty(Window.Property(disable_playback))" & action_label="$INFO[Window.Property(play.action.label)]" & action_width=220 & action_label_width=148 %}
                 {% include "includes/wl_dynamic_buttons.xml.tpl" %}
                 {% include template with name="info" & id=304 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
                 {% include template with name="trailer" & id=303 & visible="!String.IsEmpty(Window.Property(trailer.button))" & action_label="$ADDON[script.plexmod 32201]" & action_width=250 & action_label_width=178 %}
@@ -86,6 +86,27 @@
             {% endwith %}
 
         </control>
+        <!-- RESUME PROGRESS -->
+        <control type="group">
+            <visible>!String.IsEmpty(Window.Property(remainingTime)) + String.IsEmpty(Window.Property(unavailable)) + String.IsEmpty(Window.Property(disable_playback))</visible>
+            <posx>155</posx>
+            <posy>{{ vscale(479) }}</posy>
+            <width>220</width>
+            <height>{{ vscale(6) }}</height>
+            <control type="image">
+                <width>220</width>
+                <height>{{ vscale(6) }}</height>
+                <texture border="3">script.plex/white-square-rounded.png</texture>
+                <colordiffuse>3DFFFFFF</colordiffuse>
+            </control>
+            <control type="image" id="250">
+                <width>1</width>
+                <height>{{ vscale(6) }}</height>
+                <texture border="3">script.plex/white-square-rounded.png</texture>
+                <colordiffuse>FFE5A00D</colordiffuse>
+            </control>
+        </control>
+        <!-- /RESUME PROGRESS -->
     {% endblock %}
 
     {% block details %}
@@ -451,15 +472,6 @@
                     <label>$INFO[Window.Property(summary.short)]</label>
                 </control>
             {% endblock %}
-            <control type="image" id="250">
-                <animation effect="zoom" start="0,100" end="100,100" time="1000" center="-1,561" reversible="false" tween="circle" easing="out">WindowOpen</animation>
-                <posx>-1</posx>
-                <posy>{{ vscale(585) }}</posy>
-                <width>1</width>
-                <height>{{ vscale(8) }}</height>
-                <texture>script.plex/white-square.png</texture>
-                <colordiffuse>FFCC7B19</colordiffuse>
-            </control>
             <!-- /HERO COPY -->
         </control>
     {% endblock %}

@@ -113,6 +113,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
 
     OPTIONS_GROUP_ID = 200
     PROGRESS_IMAGE_ID = 250
+    PREPLAY_PROGRESS_WIDTH = 220
 
     HOME_BUTTON_ID = 201
     SEARCH_BUTTON_ID = 202
@@ -187,6 +188,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
         self.setBoolProperty("is_watchlisted", self.is_watchlisted)
 
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
+        self.progressImageControl.setVisible(False)
         self.setup()
         self.initialized = True
 
@@ -205,6 +207,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
         self.themeMusicReinit(self.video)
         self.initialized = False
         if util.getSetting("slow_connection"):
+            self.progressImageControl.setVisible(False)
             self.progressImageControl.setWidth(1)
             self.setProperty('remainingTime', T(32914, "Loading"))
         self.video.reload(checkFiles=1, fromMediaChoice=self.video.mediaChoice is not None, skip_cache=True, **VIDEO_RELOAD_KW)
@@ -728,6 +731,10 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
         self.setProperty('preplay.background.blurred', blurred_background)
         self.setProperty('title', self.video.title)
         self.setProperty('duration', self.video.duration and util.durationToText(self.video.duration.asInt()))
+        if self.video.viewOffset.asInt():
+            self.setProperty('play.action.label', T(32316, 'Resume'))
+        else:
+            self.setProperty('play.action.label', xbmc.getLocalizedString(208))
         summary = self.video.summary.strip().replace('\t', ' ')
         self.setProperty('summary', summary)
         self.setProperty('summary.short', _short_text(summary, limit=220))
@@ -801,11 +808,15 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
 
             self.setProperty('unavailable', all(not v.isAccessible() for v in self.video.media()) and '1' or '')
 
-            if self.video.viewOffset.asInt():
-                width = self.video.viewOffset.asInt() and (1 + int((self.video.viewOffset.asInt() / self.video.duration.asFloat()) * self.width)) or 1
+            self.progressImageControl.setVisible(False)
+            if self.video.viewOffset.asInt() and self.video.duration.asFloat():
+                progress = min(
+                    1.0,
+                    self.video.viewOffset.asInt() / self.video.duration.asFloat(),
+                )
+                width = max(1, int(progress * self.PREPLAY_PROGRESS_WIDTH))
                 self.progressImageControl.setWidth(width)
-            else:
-                self.progressImageControl.setWidth(1)
+                self.progressImageControl.setVisible(True)
 
             if self.video.viewOffset.asInt():
                 self.setProperty('remainingTime', T(33615, "{time} left").format(time=self.video.remainingTimeString))

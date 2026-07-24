@@ -82,6 +82,48 @@ class PrePlayLayoutContractTests(unittest.TestCase):
         self.assertIn("<autoscroll>false</autoscroll>", template)
         self.assertNotIn('autoscroll delay="2000"', template)
 
+    def test_resume_progress_is_attached_to_the_primary_action(self):
+        template = _read(PREPLAY_TEMPLATE)
+        source = _read(PREPLAY_PYTHON)
+
+        progress_start = template.index("<!-- RESUME PROGRESS -->")
+        progress_end = template.index("<!-- /RESUME PROGRESS -->", progress_start)
+        progress = template[progress_start:progress_end]
+        source_start = source.index(
+            "            self.progressImageControl.setVisible(False)",
+            source.index("    def setInfo("),
+        )
+        source_end = source.index(
+            "            if self.video.viewOffset.asInt():",
+            source_start,
+        )
+        progress_source = source[source_start:source_end]
+
+        self.assertIn("<posx>155</posx>", progress)
+        self.assertIn("<posy>{{ vscale(479) }}</posy>", progress)
+        self.assertIn("<width>220</width>", progress)
+        self.assertIn('id="250"', progress)
+        self.assertIn("PREPLAY_PROGRESS_WIDTH = 220", source)
+        self.assertIn("self.progressImageControl.setVisible(False)", progress_source)
+        self.assertIn("self.progressImageControl.setVisible(True)", progress_source)
+        self.assertIn("* self.PREPLAY_PROGRESS_WIDTH", progress_source)
+        self.assertNotIn("* self.width", progress_source)
+        self.assertNotIn("<posx>-1</posx>", template)
+        self.assertIn(
+            'action_label="$INFO[Window.Property(play.action.label)]"',
+            template,
+        )
+        self.assertIn("action_width=220", template)
+        self.assertIn("action_label_width=148", template)
+        self.assertIn(
+            "self.setProperty('play.action.label', T(32316, 'Resume'))",
+            source,
+        )
+        self.assertIn(
+            "self.setProperty('play.action.label', xbmc.getLocalizedString(208))",
+            source,
+        )
+
     def test_technical_metadata_uses_individual_badges(self):
         template = _read(PREPLAY_TEMPLATE)
         source = _read(PREPLAY_PYTHON)
@@ -255,9 +297,12 @@ class PrePlayLayoutContractTests(unittest.TestCase):
             )
         ]
 
-        self.assertIn('action_label="$LOCALIZE[208]"', play_include)
-        self.assertIn("action_width=178", play_include)
-        self.assertIn("action_label_width=106", play_include)
+        self.assertIn(
+            'action_label="$INFO[Window.Property(play.action.label)]"',
+            play_include,
+        )
+        self.assertIn("action_width=220", play_include)
+        self.assertIn("action_label_width=148", play_include)
         self.assertIn("and not preplay_style", pill_branch)
 
     def test_close_waits_for_related_tasks_before_clearing_the_paginator(self):
