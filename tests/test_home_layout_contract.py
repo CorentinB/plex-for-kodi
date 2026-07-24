@@ -663,6 +663,48 @@ class HomeLayoutContractTests(unittest.TestCase):
             show_hubs.index("self._focusPendingSectionHub(section)"),
         )
 
+    def test_playlist_hub_uses_localized_title_when_server_title_is_empty(self):
+        class Hub(object):
+            def getCleanHubIdentifier(self, is_home=False):
+                return "playlists.audio"
+
+        class Window(object):
+            showHub = _home_method(
+                "showHub",
+                {"PLAYLIST_HUB_TITLES": {"playlists.audio": "Audio Playlists"}},
+            )
+
+            def getHubRenderFlags(self, hub, identifier):
+                return {
+                    "with_progress": False,
+                    "with_art": False,
+                    "ar16x9": False,
+                    "text2lines": False,
+                }
+
+            def _showHub(self, hub, **kwargs):
+                self.render_kwargs = kwargs
+
+        window = Window()
+        self.assertTrue(window.showHub(Hub(), hub_index=0))
+        self.assertEqual(window.render_kwargs.get("title"), "Audio Playlists")
+
+    def test_french_catalog_localizes_playlist_hub_titles(self):
+        catalog = _read_file(FRENCH_CATALOG)
+
+        self.assertIn(
+            'msgctxt "#34094"\n'
+            'msgid "Audio Playlists"\n'
+            'msgstr "Listes de lecture audio"',
+            catalog,
+        )
+        self.assertIn(
+            'msgctxt "#34095"\n'
+            'msgid "Video Playlists"\n'
+            'msgstr "Listes de lecture vidéo"',
+            catalog,
+        )
+
     def test_native_home_uses_one_safe_left_edge(self):
         home = _read("script-plex-home.xml.tpl")
         content = home.split("{% endblock content %}", 1)[0]

@@ -4365,6 +4365,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         # Build kwargs from flags
         kwargs = {
             'index': hub_index,
+            'title': PLAYLIST_HUB_TITLES.get(identifier),
             'with_progress': flags['with_progress'],
             'with_art': flags['with_art'],
             'ar16x9': flags['ar16x9'],

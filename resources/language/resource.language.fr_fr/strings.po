@@ -3575,6 +3575,16 @@ msgid "When not run from the Program addons section, our lastused value will not
 msgstr "Conserve la position de Plex dans Kodi même lorsque l’extension n’est pas lancée depuis la section « Extensions de programmes »."
 
 #:
+msgctxt "#34094"
+msgid "Audio Playlists"
+msgstr "Listes de lecture audio"
+
+#:
+msgctxt "#34095"
+msgid "Video Playlists"
+msgstr "Listes de lecture vidéo"
+
+#:
 msgctxt "#35004"
 msgid "History"
 msgstr "Historique"
