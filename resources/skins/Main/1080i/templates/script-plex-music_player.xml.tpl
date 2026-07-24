@@ -102,7 +102,7 @@
     <posx>939</posx>
     <posy>0</posy>
     <control type="label">
-        <posx>0</posx>
+        <posx>820</posx>
         <posy>{{ vscale(738) }}</posy>
         <width>820</width>
         <height>{{ vscale(54) }}</height>
@@ -113,7 +113,7 @@
         <label>$INFO[MusicPlayer.offset(1).Artist]</label>
     </control>
     <control type="label">
-        <posx>0</posx>
+        <posx>820</posx>
         <posy>{{ vscale(794) }}</posy>
         <width>820</width>
         <height>{{ vscale(54) }}</height>

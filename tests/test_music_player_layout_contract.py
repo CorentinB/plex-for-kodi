@@ -38,6 +38,14 @@ class MusicPlayerLayoutContractTests(unittest.TestCase):
         for name in ("play", "pause", "next", "repeat", "shuffle", "pqueue", "more"):
             self.assertIn(name, source)
 
+    def test_up_next_labels_anchor_to_the_right_detail_edge(self):
+        source = TEMPLATE.read_text()
+        artist = source.index("$INFO[MusicPlayer.offset(1).Artist]")
+        title = source.index("$INFO[MusicPlayer.offset(1).Title]")
+        up_next = source[artist - 350 : title + 100]
+
+        self.assertEqual(up_next.count("<posx>820</posx>"), 2)
+
 
 if __name__ == "__main__":
     unittest.main()
