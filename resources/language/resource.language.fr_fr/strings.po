@@ -3437,7 +3437,7 @@ msgstr ""
 #: watchlist discover hub title prefix
 msgctxt "#34019"
 msgid "Discover: {}"
-msgstr ""
+msgstr "Découvrir : {}"
 
 #: 
 msgctxt "#34020"

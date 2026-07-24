@@ -508,6 +508,13 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertIn("header=T(34004, 'Choose server')", window)
         self.assertIn('msgstr "Choisir le serveur"', french)
 
+    def test_watchlist_discover_hub_prefix_is_localized_in_french(self):
+        french = _read_file(FRENCH_CATALOG)
+        entry = french.split('msgctxt "#34019"', 1)[1].split("msgctxt", 1)[0]
+
+        self.assertIn('msgid "Discover: {}"', entry)
+        self.assertIn('msgstr "Découvrir : {}"', entry)
+
     def test_native_home_uses_one_safe_left_edge(self):
         home = _read("script-plex-home.xml.tpl")
         content = home.split("{% endblock content %}", 1)[0]
