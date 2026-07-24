@@ -715,6 +715,23 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertIn("<posx>160</posx>\n            <posy>0</posy>\n            <width>1680</width>", content)
         self.assertIn("<posx>100</posx>\n            <posy>{{ vscale(42) }}</posy>\n            <width>1740</width>", content)
 
+    def test_home_navigation_keeps_the_widest_end_tab_on_screen(self):
+        home = _read("script-plex-home.xml.tpl")
+        start = home.index('<control type="fixedlist" id="101">')
+        end = home.index("</control>", start)
+        nav = home[start:end]
+
+        self.assertIn("<focusposition>1</focusposition>", nav)
+        self.assertIn("<movement>1</movement>", nav)
+
+        focused_right_edge = (
+            160
+            + ((1 + 1) * HERO_MODULE.NAV_SLOT_WIDTH)
+            + HERO_MODULE.NAV_SHIFT_MAX
+            + max(HERO_MODULE.NAV_PLATE_WIDTHS.values())
+        )
+        self.assertLessEqual(focused_right_edge, 1680)
+
     def test_home_tab_content_is_optically_centered(self):
         home = _read("script-plex-home.xml.tpl")
         nav_content = _read("includes", "home_nav_content.xml.tpl")

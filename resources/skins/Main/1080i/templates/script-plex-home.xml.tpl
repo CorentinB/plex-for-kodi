@@ -198,8 +198,8 @@
             <ondown condition="String.IsEmpty(Window.Property(home.resume.visible))">400</ondown>
             <scrolltime>200</scrolltime>
             <orientation>horizontal</orientation>
-            <focusposition>2</focusposition>
-            <movement>3</movement>
+            <focusposition>1</focusposition>
+            <movement>1</movement>
             <pagecontrol>102</pagecontrol>
             <!-- ITEM LAYOUT ########################################## -->
             <itemlayout width="192">
