@@ -81,11 +81,29 @@ class SeasonsLayoutContractTests(unittest.TestCase):
         self.assertIn("or seasons_style", buttons)
         self.assertEqual(
             buttons.count('{% include "includes/seasons_button_navigation.xml.tpl" %}'),
-            2,
+            3,
         )
         self.assertIn("<ondown>400</ondown>", navigation)
         for control_id in (301, 302, 303, 304, 308, 309, 2302, 2303, 2304, 2305):
             self.assertIn(str(control_id), navigation)
+
+    def test_show_actions_are_labelled_rectangles(self):
+        template = SEASONS.read_text()
+        buttons = BUTTONS.read_text()
+
+        self.assertIn(
+            "{% elif preplay_style or episode_style or seasons_style %}",
+            buttons,
+        )
+        self.assertIn("<width>1600</width>", template)
+        for label in (
+            'action_label="$LOCALIZE[208]"',
+            'action_label="$LOCALIZE[29915]"',
+            'action_label="$ADDON[script.plexmod 32935]"',
+            'action_label="$ADDON[script.plexmod 32307]"',
+        ):
+            self.assertIn(label, template)
+        self.assertIn("action_width=300 & action_label_width=228", template)
 
     def test_every_lower_show_section_uses_the_same_rail_and_rounded_art(self):
         template = SEASONS.read_text()

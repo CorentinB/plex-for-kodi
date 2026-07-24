@@ -35,6 +35,16 @@ EPISODE_NAVIGATION = os.path.join(
     "includes",
     "episode_button_navigation.xml.tpl",
 )
+THEMED_BUTTON = os.path.join(
+    ROOT,
+    "resources",
+    "skins",
+    "Main",
+    "1080i",
+    "templates",
+    "includes",
+    "themed_button.xml.tpl",
+)
 EPISODE_EXTRAS = os.path.join(
     ROOT,
     "resources",
@@ -92,6 +102,39 @@ class EpisodeLayoutContractTests(unittest.TestCase):
         self.assertIn('<posx>155</posx>', first_group)
         self.assertIn('<itemgap>14</itemgap>', first_group)
 
+    def test_episode_actions_are_labelled_rectangles(self):
+        template = _read(EPISODES_TEMPLATE)
+        buttons = _read(THEMED_BUTTON)
+
+        self.assertIn(
+            "{% elif preplay_style or episode_style or seasons_style %}",
+            buttons,
+        )
+        for group_id in (300, 1300):
+            start = template.index(
+                '<control type="grouplist" id="{}">'.format(group_id)
+            )
+            end = template.index("{% endwith %}", start)
+            self.assertIn("<width>1600</width>", template[start:end])
+        self.assertEqual(template.count('action_label="$LOCALIZE[208]"'), 4)
+        self.assertEqual(template.count('action_label="$LOCALIZE[29915]"'), 2)
+        self.assertEqual(
+            template.count('action_label="$ADDON[script.plexmod 35064]"'),
+            2,
+        )
+        self.assertEqual(
+            template.count('action_label="$ADDON[script.plexmod 32307]"'),
+            2,
+        )
+        self.assertEqual(
+            template.count('action_label="$ADDON[script.plexmod 32935]"'),
+            2,
+        )
+        self.assertEqual(
+            template.count("action_width=300 & action_label_width=228"),
+            2,
+        )
+
     def test_episode_actions_have_an_explicit_dpad_graph(self):
         navigation = _read(EPISODE_NAVIGATION)
 
@@ -103,6 +146,7 @@ class EpisodeLayoutContractTests(unittest.TestCase):
             self.assertIn(str(control_id), navigation)
 
     def test_episode_cards_are_rounded_and_use_restrained_white_focus(self):
+        template = _read(EPISODES_TEMPLATE)
         card = _read(EPISODE_CARD)
 
         self.assertIn('<itemlayout width="420">', card)
@@ -113,6 +157,14 @@ class EpisodeLayoutContractTests(unittest.TestCase):
         art = card.index('$INFO[ListItem.Property(thumb.fallback)]', focus)
         self.assertLess(focus, art)
         self.assertNotIn('script.plex/white-outline-rounded.png', card)
+        self.assertNotIn('$INFO[ListItem.Label]', card)
+        self.assertNotIn('$INFO[ListItem.Label2]', card)
+
+        episode_section_start = template.index('<!-- EPISODES -->')
+        episode_section_end = template.index('<!-- Seasons -->', episode_section_start)
+        episode_section = template[episode_section_start:episode_section_end]
+        self.assertIn('<height>{{ vscale(330) }}</height>', episode_section)
+        self.assertIn('<height>{{ vscale(320) }}</height>', episode_section)
         self.assertNotIn('script.plex/home/selected.png', card)
         self.assertNotIn('<scroll>Control.HasFocus(400)</scroll>', card)
 
@@ -239,7 +291,7 @@ class EpisodeLayoutContractTests(unittest.TestCase):
                 section,
             )
 
-        for offset in ('-400', '-380', '-400', '-360'):
+        for offset in ('-330', '-380', '-400', '-360'):
             self.assertIn(
                 '<effect type="slide" end="0,{{{{ vscale({}) }}}}"'.format(offset),
                 template,

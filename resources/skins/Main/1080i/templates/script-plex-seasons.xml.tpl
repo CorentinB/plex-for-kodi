@@ -224,7 +224,7 @@
             <defaultcontrol always="true">302</defaultcontrol>
             <posx>0</posx>
             <posy>{{ vscale(330) }}</posy>
-            <width>1280</width>
+            <width>1600</width>
             <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>400</ondown>
@@ -234,12 +234,12 @@
             <scrolltime>160</scrolltime>
             <usecontrolcoords>true</usecontrolcoords>
             {% with attr = theme.seasons.buttons & template = "includes/themed_button.xml.tpl" & seasons_style = True %}
-                {% include template with name="play" & id=302 & visible="String.IsEmpty(Window.Property(disable_playback))" %}
+                {% include template with name="play" & id=302 & visible="String.IsEmpty(Window.Property(disable_playback))" & action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106 %}
                 {% include "includes/wl_dynamic_buttons.xml.tpl" %}
-                {% include template with name="info" & id=301 %}
+                {% include template with name="info" & id=301 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
                 {% include "includes/wl_add_remove_buttons.xml.tpl" %}
-                {% include template with name="shuffle" & id=303 & visible="String.IsEmpty(Window.Property(disable_playback))" %}
-                {% include template with name="more" & id=304 & visible="String.IsEmpty(Window.Property(disable_playback))" %}
+                {% include template with name="shuffle" & id=303 & visible="String.IsEmpty(Window.Property(disable_playback))" & action_label="$ADDON[script.plexmod 32935]" & action_width=300 & action_label_width=228 %}
+                {% include template with name="more" & id=304 & visible="String.IsEmpty(Window.Property(disable_playback))" & action_label="$ADDON[script.plexmod 32307]" & action_width=140 & action_label_width=68 %}
             {% endwith %}
         </control>
     </control>

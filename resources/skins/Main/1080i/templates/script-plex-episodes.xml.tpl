@@ -31,7 +31,7 @@
     <animation effect="slide" end="0,{{ vscale(-125) }}" time="200" tween="quadratic" easing="out" condition="!String.IsEmpty(Window.Property(on.extras))">Conditional</animation>
 
     <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
-        <effect type="slide" end="0,{{ vscale(-400) }}" time="200" tween="quadratic" easing="out"/>
+        <effect type="slide" end="0,{{ vscale(-330) }}" time="200" tween="quadratic" easing="out"/>
     </animation>
 
     <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
@@ -70,7 +70,7 @@
             <defaultcontrol always="true">301</defaultcontrol>
             <posx>155</posx>
             <posy>{{ vscale(315) }}</posy>
-            <width>657</width>
+            <width>1600</width>
             <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>400</ondown>
@@ -83,15 +83,16 @@
             {% with attr = theme.episodes.buttons & template = "includes/themed_button.xml.tpl" & episode_style = True %}
                 {% include template with name="play" & id=301 &
                     enable="!String.IsEmpty(Window.Property(current_item.loaded))" & visible="!String.IsEmpty(Window.Property(current_item.loaded))" &
-                    allowhiddenfocus=True
+                    allowhiddenfocus=True & action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106
                 %}
                 {% include template with name="play" & id=306 &
-                                    visible="String.IsEmpty(Window.Property(current_item.loaded))"
+                                    visible="String.IsEmpty(Window.Property(current_item.loaded))" &
+                                    action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106
                 %}
-                {% include template with name="info" & id=304 %}
-                {% include template with name="settings" & id=305 %}
-                {% include template with name="more" & id=303 %}
-                {% include template with name="shuffle" & id=302 %}
+                {% include template with name="info" & id=304 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
+                {% include template with name="settings" & id=305 & action_label="$ADDON[script.plexmod 35064]" & action_width=175 & action_label_width=103 %}
+                {% include template with name="more" & id=303 & action_label="$ADDON[script.plexmod 32307]" & action_width=140 & action_label_width=68 %}
+                {% include template with name="shuffle" & id=302 & action_label="$ADDON[script.plexmod 32935]" & action_width=300 & action_label_width=228 %}
             {% endwith %}
         </control>
         <control type="grouplist" id="1300">
@@ -100,7 +101,7 @@
             <defaultcontrol always="true">1301</defaultcontrol>
             <posx>155</posx>
             <posy>{{ vscale(315) }}</posy>
-            <width>657</width>
+            <width>1600</width>
             <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>400</ondown>
@@ -113,16 +114,17 @@
             {% with attr = theme.episodes.buttons_1300 & template = "includes/themed_button.xml.tpl" & episode_style = True %}
                 {% include template with name="play" & id=1301 &
                     enable="!String.IsEmpty(Window.Property(current_item.loaded))" & visible="!String.IsEmpty(Window.Property(current_item.loaded))" &
-                    allowhiddenfocus=True
+                    allowhiddenfocus=True & action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106
                 %}
                 {% include template with name="play" & id=1306 &
-                                    visible="String.IsEmpty(Window.Property(current_item.loaded))"
+                                    visible="String.IsEmpty(Window.Property(current_item.loaded))" &
+                                    action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106
                 %}
-                {% include template with name="info" & id=1304 %}
-                {% include template with name="media" & id=1307 %}
-                {% include template with name="settings" & id=1305 %}
-                {% include template with name="more" & id=1303 %}
-                {% include template with name="shuffle" & id=1302 %}
+                {% include template with name="info" & id=1304 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
+                {% include template with name="media" & id=1307 & action_label="$ADDON[script.plexmod 35063]" & action_width=180 & action_label_width=108 %}
+                {% include template with name="settings" & id=1305 & action_label="$ADDON[script.plexmod 35064]" & action_width=175 & action_label_width=103 %}
+                {% include template with name="more" & id=1303 & action_label="$ADDON[script.plexmod 32307]" & action_width=140 & action_label_width=68 %}
+                {% include template with name="shuffle" & id=1302 & action_label="$ADDON[script.plexmod 32935]" & action_width=300 & action_label_width=228 %}
             {% endwith %}
 
         </control>
@@ -514,7 +516,7 @@
         <control type="group" id="500">
             <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),0)">Conditional</animation>
             <visible>Integer.IsGreater(Container(400).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
-            <height>{{ vscale(400) }}</height>
+            <height>{{ vscale(330) }}</height>
             <width>1920</width>
             <control type="label">
                 <posx>160</posx>
@@ -531,7 +533,7 @@
                 <posx>100</posx>
                 <posy>{{ vscale(30) }}</posy>
                 <width>1740</width>
-                <height>{{ vscale(390) }}</height>
+                <height>{{ vscale(320) }}</height>
                 <onup condition="Control.IsVisible(300)">300</onup>
                 <onup condition="Control.IsVisible(1300)">1300</onup>
                 <ondown>401</ondown>

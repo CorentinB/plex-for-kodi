@@ -1,7 +1,7 @@
 {% if preplay_style or episode_style or library_style or playlist_style or music_artist_style or seasons_style %}
 <control type="group">
     {% if visible %}<visible{% if allowhiddenfocus %} allowhiddenfocus="true"{% endif %}>{{ visible }}</visible>{% endif %}
-    {% if name in ("play", "play_plus", "wait", "upcoming") and not preplay_style %}
+    {% if name in ("play", "play_plus", "wait", "upcoming") and not preplay_style and not episode_style and not seasons_style %}
     <animation effect="zoom" start="100" end="106" time="110" center="89,{{ vscale(39) }}" reversible="true" condition="Control.HasFocus({{ id }})">Conditional</animation>
     <width>178</width>
     <height>{{ vscale(78) }}</height>
@@ -83,7 +83,7 @@
         <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
         <label> </label>
     </control>
-    {% elif preplay_style %}
+    {% elif preplay_style or episode_style or seasons_style %}
     <width>{{ action_width }}</width>
     <height>{{ vscale(78) }}</height>
     <control type="image">
@@ -144,7 +144,13 @@
     </control>
     <control type="button" id="{{ id }}">
         {% if enable %}<enable>{{ enable }}</enable>{% endif %}
-        {% include "includes/preplay_button_navigation.xml.tpl" %}
+        {% if preplay_style %}
+            {% include "includes/preplay_button_navigation.xml.tpl" %}
+        {% elif episode_style %}
+            {% include "includes/episode_button_navigation.xml.tpl" %}
+        {% elif seasons_style %}
+            {% include "includes/seasons_button_navigation.xml.tpl" %}
+        {% endif %}
         <width>{{ action_width }}</width>
         <height>{{ vscale(78) }}</height>
         <texturefocus>script.plex/transparent-6px.png</texturefocus>

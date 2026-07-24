@@ -201,7 +201,9 @@ class PrePlayLayoutContractTests(unittest.TestCase):
             )
         )
 
-        start = button_template.index("{% elif preplay_style %}")
+        start = button_template.index(
+            "{% elif preplay_style or episode_style or seasons_style %}"
+        )
         end = button_template.index(
             "{% else %}\n    <animation effect=\"zoom\"",
             start,
@@ -248,7 +250,9 @@ class PrePlayLayoutContractTests(unittest.TestCase):
         ]
         pill_branch = button_template[
             button_template.index('{% if name in ('):
-            button_template.index("{% elif preplay_style %}")
+            button_template.index(
+                "{% elif preplay_style or episode_style or seasons_style %}"
+            )
         ]
 
         self.assertIn('action_label="$LOCALIZE[208]"', play_include)

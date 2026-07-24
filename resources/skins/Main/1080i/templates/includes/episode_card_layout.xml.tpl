@@ -35,26 +35,6 @@
                 </control>
             </control>
             {% include "includes/watched_indicator.xml.tpl" with xoff=385 & uw_size=48 & wbw_w=52 & scale="medium" %}
-            <control type="label">
-                <scroll>false</scroll>
-                <posy>{{ vscale(227) }}</posy>
-                <width>385</width>
-                <height>{{ vscale(36) }}</height>
-                <font>font10</font>
-                <align>center</align>
-                <textcolor>FFFFFFFF</textcolor>
-                <label>$INFO[ListItem.Label]</label>
-            </control>
-            <control type="label">
-                <scroll>false</scroll>
-                <posy>{{ vscale(263) }}</posy>
-                <width>385</width>
-                <height>{{ vscale(34) }}</height>
-                <font>font10</font>
-                <align>center</align>
-                <textcolor>AAFFFFFF</textcolor>
-                <label>$INFO[ListItem.Label2]</label>
-            </control>
             <control type="group">
                 <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
                 <control type="image">
@@ -145,26 +125,6 @@
                     </control>
                 </control>
                 {% include "includes/watched_indicator.xml.tpl" with xoff=385 & uw_size=48 & wbw_w=52 & scale="medium" %}
-                <control type="label">
-                    <scroll>false</scroll>
-                    <posy>{{ vscale(227) }}</posy>
-                    <width>385</width>
-                    <height>{{ vscale(36) }}</height>
-                    <font>font10</font>
-                    <align>center</align>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Label]</label>
-                </control>
-                <control type="label">
-                    <scroll>false</scroll>
-                    <posy>{{ vscale(263) }}</posy>
-                    <width>385</width>
-                    <height>{{ vscale(34) }}</height>
-                    <font>font10</font>
-                    <align>center</align>
-                    <textcolor>AAFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Label2]</label>
-                </control>
                 <control type="group">
                     <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
                     <control type="image">
