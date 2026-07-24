@@ -466,7 +466,12 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
     # Hub base ID - hubs are dynamically generated starting from this ID
     HUB_BASE_ID = 400
     RESUME_BUTTON_ID = 205
-    SINGLE_RESUME_HUBS = frozenset(('continueWatching', 'home.continue'))
+    SINGLE_RESUME_HUBS = frozenset((
+        'continueWatching',
+        'home.continue',
+        'movie.inprogress',
+        'tv.inprogress',
+    ))
 
     def getHubDisplayType(self, hub, identifier):
         """Determine the display type for a hub: 'poster', 'ar16x9', or 'square'.

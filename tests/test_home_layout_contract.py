@@ -184,7 +184,12 @@ def _show_hub_window(control, last_focus=400, any_item_action=False):
     class Window(object):
         HUB_BASE_ID = 400
         RESUME_BUTTON_ID = 205
-        SINGLE_RESUME_HUBS = frozenset(("continueWatching", "home.continue"))
+        SINGLE_RESUME_HUBS = frozenset((
+            "continueWatching",
+            "home.continue",
+            "movie.inprogress",
+            "tv.inprogress",
+        ))
         _showHub = _home_method("_showHub", namespace)
         _syncHomeHeroSelection = _home_method("_syncHomeHeroSelection")
         _singleResumeItem = _home_method("_singleResumeItem")
@@ -230,7 +235,12 @@ def _resume_window(items=None, focused=101):
     class Window(object):
         HUB_BASE_ID = 400
         RESUME_BUTTON_ID = 205
-        SINGLE_RESUME_HUBS = frozenset(("continueWatching", "home.continue"))
+        SINGLE_RESUME_HUBS = frozenset((
+            "continueWatching",
+            "home.continue",
+            "movie.inprogress",
+            "tv.inprogress",
+        ))
 
         def __init__(self):
             self.hubControls = [_HubControl(items)]
@@ -321,6 +331,14 @@ class HomeLayoutContractTests(unittest.TestCase):
             ),
             item,
         )
+        self.assertIs(
+            window._singleResumeItem(
+                window.hubControls[0],
+                "tv.inprogress",
+                False,
+            ),
+            item,
+        )
         self.assertIsNone(
             window._singleResumeItem(
                 window.hubControls[0],
@@ -334,6 +352,26 @@ class HomeLayoutContractTests(unittest.TestCase):
                 "home.test",
                 False,
             )
+        )
+
+    def test_single_movie_resume_supports_library_inprogress_hub(self):
+        item = _HubListItem(
+            _HubMedia(
+                "Resume movie",
+                "1",
+                media_type="movie",
+                in_progress=True,
+            )
+        )
+        window = _resume_window([item])
+
+        self.assertIs(
+            window._singleResumeItem(
+                window.hubControls[0],
+                "movie.inprogress",
+                False,
+            ),
+            item,
         )
 
     def test_single_resume_rejects_multiple_or_unstarted_items(self):
