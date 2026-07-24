@@ -75,6 +75,20 @@ class PrePlayLayoutContractTests(unittest.TestCase):
         self.assertIn("<font>font60</font>", template)
         self.assertGreaterEqual(template.count("<visible>false</visible>"), 3)
 
+    def test_detail_title_uses_the_full_safe_width_before_the_clock(self):
+        template = _read(PREPLAY_TEMPLATE)
+        title_label = template.index(
+            "<label>$INFO[Window.Property(title)]</label>"
+        )
+        title_start = template.rindex("<control type=\"label\">", 0, title_label)
+        title_end = template.index("</control>", title_start)
+        title = template[title_start:title_end]
+
+        self.assertIn("<posx>160</posx>", title)
+        self.assertIn("<width>1400</width>", title)
+        self.assertIn("<font>font60</font>", title)
+        self.assertIn("<scroll>false</scroll>", title)
+
     def test_detail_summary_is_bounded_and_never_scrolls(self):
         template = _read(PREPLAY_TEMPLATE)
 
@@ -581,7 +595,7 @@ class PrePlayLayoutContractTests(unittest.TestCase):
         self.assertNotIn("[UPPERCASE]", template)
         title_start = template.index('<label>$INFO[Window.Property(title)]</label>')
         title = template[template.rfind('<control type="label">', 0, title_start):title_start]
-        self.assertIn('<width>1120</width>', title)
+        self.assertIn('<width>1400</width>', title)
         self.assertIn('<scroll>false</scroll>', title)
         self.assertNotIn('<scroll>true</scroll>', title)
 
