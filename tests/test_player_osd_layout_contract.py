@@ -45,11 +45,18 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
 
     def test_osd_keeps_time_progress_action_and_transport_in_separate_bands(self):
         seek = SEEK.read_text()
+        action_labels = seek[
+            seek.index('<control type="group" id="440">'):
+            seek.index('<control type="grouplist" id="400">')
+        ]
         self.assertIn('<posy>{{ vscale(320) }}r</posy>', seek)
         self.assertIn('<posy>{{ vscale(190) }}r</posy>', seek)
         self.assertIn('<posy>592</posy>', seek)
-        self.assertIn('<posy>{{ vscale(910) }}</posy>', seek)
-        self.assertIn('<posy>{{ vscale(122) }}r</posy>', seek)
+        self.assertIn('<posx>60</posx>', action_labels)
+        self.assertIn('<posy>{{ vscale(92) }}</posy>', action_labels)
+        self.assertGreaterEqual(action_labels.count('<width>1580</width>'), 12)
+        self.assertGreaterEqual(action_labels.count('<align>left</align>'), 12)
+        self.assertIn('<posy>{{ vscale(146) }}r</posy>', seek)
         self.assertIn('BAR_Y = 871', SEEK_PYTHON.read_text())
         self.assertIn('BAR_BOTTOM = 919', SEEK_PYTHON.read_text())
 

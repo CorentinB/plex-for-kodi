@@ -477,16 +477,16 @@
     <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
 
     <control type="group" id="440">
-        <posx>0</posx>
-        <posy>{{ vscale(910) }}</posy>
+        <posx>60</posx>
+        <posy>{{ vscale(92) }}</posy>
         <control type="label">
             <visible>Control.HasFocus(401)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$ADDON[script.plexmod 32934]</label>
@@ -495,10 +495,10 @@
             <visible>Control.HasFocus(402)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$ADDON[script.plexmod 32935]</label>
@@ -507,10 +507,10 @@
             <visible>Control.HasFocus(403)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$ADDON[script.plexmod 32925]</label>
@@ -519,10 +519,10 @@
             <visible>Control.HasFocus(404)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$LOCALIZE[210]</label>
@@ -531,10 +531,10 @@
             <visible>Control.HasFocus(405)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>-10 s</label>
@@ -543,10 +543,10 @@
             <visible>Control.HasFocus(406) + !Player.Paused + !Player.Forwarding + !Player.Rewinding</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$LOCALIZE[36045]</label>
@@ -555,10 +555,10 @@
             <visible>Control.HasFocus(406) + [Player.Paused | Player.Forwarding | Player.Rewinding]</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$LOCALIZE[208]</label>
@@ -567,10 +567,10 @@
             <visible>Control.HasFocus(407)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$LOCALIZE[36044]</label>
@@ -579,10 +579,10 @@
             <visible>Control.HasFocus(408)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>+30 s</label>
@@ -591,10 +591,10 @@
             <visible>Control.HasFocus(409)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$LOCALIZE[209]</label>
@@ -603,10 +603,10 @@
             <visible>Control.HasFocus(410)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$ADDON[script.plexmod 35036]</label>
@@ -615,10 +615,10 @@
             <visible>Control.HasFocus(412)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>$ADDON[script.plexmod 32396]</label>
@@ -627,10 +627,10 @@
             <visible>Control.HasFocus(413)</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1580</width>
             <height>{{ vscale(38) }}</height>
             <font>font10</font>
-            <align>center</align>
+            <align>left</align>
             <aligny>center</aligny>
             <textcolor>D9FFFFFF</textcolor>
             <label>VS10</label>
@@ -641,7 +641,7 @@
         <defaultcontrol>406</defaultcontrol>
         <hitrect x="460" y="998" w="1000" h="55" />
         <posx>120</posx>
-        <posy>{{ vscale(122) }}r</posy>
+        <posy>{{ vscale(146) }}r</posy>
         <width>1680</width>
         <height>{{ vscale(124) }}</height>
         <align>center</align>
