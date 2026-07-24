@@ -256,6 +256,26 @@ class PrePlayLayoutContractTests(unittest.TestCase):
         self.assertIn("action_label_width=106", play_include)
         self.assertIn("and not preplay_style", pill_branch)
 
+    def test_close_waits_for_related_tasks_before_clearing_the_paginator(self):
+        source = _read(PREPLAY_PYTHON)
+        close_method = source[
+            source.index("    def doClose(self, **kw):"):
+            source.index("    def onFirstInit(self):")
+        ]
+        fill_related = source[
+            source.index("    def fillRelated(self):"):
+            source.index("    def fillCollections(self):")
+        ]
+
+        self.assertLess(
+            close_method.index("TasksMixin.doClose(self)"),
+            close_method.index("self.relatedPaginator = None"),
+        )
+        self.assertIn(
+            "if not self.relatedPaginator or not self.relatedPaginator.leafCount:",
+            fill_related,
+        )
+
     def test_every_tvos_action_has_explicit_remote_navigation(self):
         button_template = _read(
             os.path.join(

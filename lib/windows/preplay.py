@@ -174,8 +174,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
         self.useBGM = False
 
     def doClose(self, **kw):
-        self.relatedPaginator = None
         TasksMixin.doClose(self)
+        self.relatedPaginator = None
         kodigui.ControlledWindow.doClose(self)
 
     def onFirstInit(self):
@@ -889,7 +889,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
         return True
 
     def fillRelated(self):
-        if not self.relatedPaginator.leafCount:
+        if not self.relatedPaginator or not self.relatedPaginator.leafCount:
             self.relatedListControl.reset()
             return False
 
