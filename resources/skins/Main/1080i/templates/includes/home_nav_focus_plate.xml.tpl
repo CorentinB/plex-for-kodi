@@ -44,3 +44,12 @@
 {% with nav_label_width = 180 & nav_plate_width = 260 & nav_shadow_width = 286 & nav_dot_x = 249 %}
 {% include "includes/home_nav_focus_plate_size.xml.tpl" %}
 {% endwith %}
+{% with nav_label_width = 220 & nav_plate_width = 300 & nav_shadow_width = 326 & nav_dot_x = 289 %}
+{% include "includes/home_nav_focus_plate_size.xml.tpl" %}
+{% endwith %}
+{% with nav_label_width = 260 & nav_plate_width = 340 & nav_shadow_width = 366 & nav_dot_x = 329 %}
+{% include "includes/home_nav_focus_plate_size.xml.tpl" %}
+{% endwith %}
+{% with nav_label_width = 320 & nav_plate_width = 400 & nav_shadow_width = 426 & nav_dot_x = 389 %}
+{% include "includes/home_nav_focus_plate_size.xml.tpl" %}
+{% endwith %}

@@ -475,7 +475,7 @@ class HomeLayoutContractTests(unittest.TestCase):
         content = home.split("{% endblock content %}", 1)[0]
 
         self.assertIn('<control type="fixedlist" id="101">', content)
-        self.assertIn("<posx>160</posx>\n            <posy>{{ vscale(6) }}</posy>\n            <width>1500</width>", content)
+        self.assertIn("<posx>160</posx>\n            <posy>{{ vscale(6) }}</posy>\n            <width>960</width>", content)
         self.assertIn("<posx>160</posx>\n            <posy>{{ vscale(142) }}</posy>\n            <width>1120</width>", content)
         self.assertIn("<posx>160</posx>\n            <posy>0</posy>\n            <width>1680</width>", content)
         self.assertIn("<posx>100</posx>\n            <posy>{{ vscale(42) }}</posy>\n            <width>1740</width>", content)
@@ -507,6 +507,7 @@ class HomeLayoutContractTests(unittest.TestCase):
         )
         self.assertIn('<itemlayout width="192">', nav)
         self.assertIn('<focusedlayout width="192">', nav)
+        self.assertIn('<width>960</width>', nav)
         self.assertEqual(
             nav.count('{% include "includes/home_nav_shift.xml.tpl" %}'),
             2,
@@ -529,15 +530,23 @@ class HomeLayoutContractTests(unittest.TestCase):
             'String.IsEmpty(ListItem.Property(is.home))"',
             nav,
         )
+        self.assertIn(
+            'center="200,{{ vscale(30) }}" reversible="true" '
+            'condition="Control.HasFocus(101) + '
+            '!String.IsEmpty(ListItem.Property(nav.width.320)) + '
+            'String.IsEmpty(ListItem.Property(is.home))"',
+            nav,
+        )
         self.assertNotIn('end="-92,0"', nav)
         self.assertNotIn("<posx>56</posx>", nav)
         self.assertNotIn("<posx>94</posx>", nav)
         self.assertNotIn("<width>auto</width>", nav)
         self.assertIn("nav.width.60", nav_content)
-        for width in (80, 100, 120, 140, 180):
+        for width in (80, 100, 120, 140, 180, 220, 260, 320):
             self.assertIn("nav_label_width = {}".format(width), nav_content)
         self.assertIn("nav.width.{{ nav_label_width }}", nav_size)
-        self.assertIn("nav_label_control_width = 194", nav_content)
+        self.assertIn("nav_label_control_width = 334", nav_content)
+        self.assertNotIn('nav_scroll = "Control.HasFocus(101)"', nav)
         self.assertIn("<align>left</align>", nav_content)
         self.assertIn("<align>left</align>", nav_size)
         self.assertIn("<posx>20</posx>", nav_content)
@@ -551,6 +560,9 @@ class HomeLayoutContractTests(unittest.TestCase):
             (120, 200, 226, 189),
             (140, 220, 246, 209),
             (180, 260, 286, 249),
+            (220, 300, 326, 289),
+            (260, 340, 366, 329),
+            (320, 400, 426, 389),
         )
         for values in plate_contracts:
             self.assertIn(
@@ -1304,7 +1316,7 @@ class HomeLayoutContractTests(unittest.TestCase):
     def test_home_header_uses_one_subtle_reversible_focus_lift(self):
         home = _read("script-plex-home.xml.tpl")
 
-        self.assertEqual(home.count('end="106" time="110"'), 10)
+        self.assertEqual(home.count('end="106" time="110"'), 13)
         for control_id in (202, 203):
             self.assertIn(
                 'reversible="true" condition="Control.HasFocus({})">Conditional'.format(
@@ -1314,7 +1326,7 @@ class HomeLayoutContractTests(unittest.TestCase):
             )
         self.assertEqual(
             home.count('reversible="true" condition="Control.HasFocus(101) + '),
-            7,
+            10,
         )
         for oversized in ('end="108"', 'start="108"', 'end="118"', 'start="118"'):
             self.assertNotIn(oversized, home)

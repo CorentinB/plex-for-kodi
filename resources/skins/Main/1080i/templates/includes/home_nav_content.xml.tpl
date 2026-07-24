@@ -61,3 +61,12 @@
 {% with nav_label_width = 180 & nav_label_control_width = 194 %}
 {% include "includes/home_nav_content_size.xml.tpl" %}
 {% endwith %}
+{% with nav_label_width = 220 & nav_label_control_width = 234 %}
+{% include "includes/home_nav_content_size.xml.tpl" %}
+{% endwith %}
+{% with nav_label_width = 260 & nav_label_control_width = 274 %}
+{% include "includes/home_nav_content_size.xml.tpl" %}
+{% endwith %}
+{% with nav_label_width = 320 & nav_label_control_width = 334 %}
+{% include "includes/home_nav_content_size.xml.tpl" %}
+{% endwith %}

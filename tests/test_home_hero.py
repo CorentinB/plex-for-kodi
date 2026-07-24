@@ -125,6 +125,9 @@ class HomeHeroTests(unittest.TestCase):
         self.assertEqual(nav_label_width("Séries TV"), 100)
         self.assertEqual(nav_label_width("Livres audio"), 140)
         self.assertEqual(nav_label_width("Listes de lecture"), 180)
+        self.assertEqual(nav_label_width("Archives de Manon"), 220)
+        self.assertEqual(nav_label_width("Archives des Tanguy"), 220)
+        self.assertEqual(nav_label_width("Archives des Barreau-Mathieu"), 320)
 
     def test_navigation_offsets_follow_adaptive_plate_widths(self):
         offsets = nav_visual_offsets(
@@ -405,6 +408,27 @@ class HomeHeroTests(unittest.TestCase):
         self.assertEqual(tagline_only["summary"], "In space no one can hear you scream.")
         self.assertEqual(tagline_and_summary["subtitle"], "In space no one can hear you scream.")
         self.assertEqual(tagline_and_summary["summary"], "A crew encounters a lethal organism.")
+
+    def test_paragraph_length_movie_tagline_does_not_duplicate_the_summary_block(self):
+        props = build_hero_properties(
+            FakeMedia(
+                type="movie",
+                TYPE="movie",
+                title="Omaha",
+                tagline=(
+                    "After his wife's passing and then being evicted, a brokenhearted "
+                    "father embarks on a road trip from California to Nebraska with his "
+                    "two children."
+                ),
+                summary="Après une tragédie familiale, un père traverse le pays avec ses enfants.",
+            )
+        )
+
+        self.assertEqual(props["subtitle"], "")
+        self.assertEqual(
+            props["summary"],
+            "Après une tragédie familiale, un père traverse le pays avec ses enfants.",
+        )
 
     def test_all_video_media_types_accept_series_rating_preference(self):
         for media_type in ("show", "season", "episode"):

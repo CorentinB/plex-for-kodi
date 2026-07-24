@@ -20,7 +20,7 @@ HERO_KEYS = (
     "art_blurred",
 )
 
-NAV_LABEL_WIDTHS = (60, 80, 100, 120, 140, 180)
+NAV_LABEL_WIDTHS = (60, 80, 100, 120, 140, 180, 220, 260, 320)
 NAV_PLATE_WIDTHS = {
     60: 140,
     80: 160,
@@ -28,6 +28,9 @@ NAV_PLATE_WIDTHS = {
     120: 200,
     140: 220,
     180: 260,
+    220: 300,
+    260: 340,
+    320: 400,
 }
 NAV_HOME_PLATE_WIDTH = 160
 NAV_SLOT_WIDTH = 192
@@ -53,6 +56,7 @@ COUNTRY_RATING_PREFIXES = frozenset((
 ))
 
 VIDEO_RATING_TYPES = frozenset(("movie", "show", "season", "episode"))
+MOVIE_TAGLINE_MAX_LENGTH = 90
 
 MEDIA_DISPLAY_TYPES = {
     "movie": "poster",
@@ -141,7 +145,7 @@ def nav_label_width(value):
     for width in NAV_LABEL_WIDTHS:
         if estimated <= width:
             return width
-    return 180
+    return NAV_LABEL_WIDTHS[-1]
 
 
 def nav_visual_offsets(label_widths, home_flags=None):
@@ -473,7 +477,7 @@ def build_hero_properties(obj, include_ratings=True):
     if media_type == "movie":
         tagline = _first_text(obj, ("tagline",))
         explicit_summary = _first_text(obj, ("summary",))
-        if tagline and explicit_summary:
+        if tagline and explicit_summary and len(tagline) <= MOVIE_TAGLINE_MAX_LENGTH:
             subtitle = _different_text(tagline, title)
     cast = _joined_tags(_get(obj, "roles", ()), 4)
     art, art_blurred = _art_urls(obj)

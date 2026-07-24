@@ -191,7 +191,7 @@
         <control type="fixedlist" id="101">
             <posx>160</posx>
             <posy>{{ vscale(6) }}</posy>
-            <width>1500</width>
+            <width>960</width>
             <height>{{ vscale(86) }}</height>
             <onup>203</onup>
             <ondown condition="!String.IsEmpty(Window.Property(home.resume.visible))">205</ondown>
@@ -208,7 +208,7 @@
                     {% include "includes/home_nav_shift.xml.tpl" %}
                     <posx>0</posx>
                     <posy>{{ vscale(16) }}</posy>
-                    <width>270</width>
+                    <width>410</width>
                     <height>{{ vscale(60) }}</height>
                     {% with nav_color = "DDFFFFFF" & nav_icon_color = "BBFFFFFF" & nav_scroll = "false" %}
                     {% include "includes/home_nav_content.xml.tpl" %}
@@ -231,10 +231,13 @@
                         <animation effect="zoom" start="100" end="106" time="110" center="100,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.120)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
                         <animation effect="zoom" start="100" end="106" time="110" center="110,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.140)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
                         <animation effect="zoom" start="100" end="106" time="110" center="130,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.180)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="150,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.220)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="170,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.260)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
+                        <animation effect="zoom" start="100" end="106" time="110" center="200,{{ vscale(30) }}" reversible="true" condition="Control.HasFocus(101) + !String.IsEmpty(ListItem.Property(nav.width.320)) + String.IsEmpty(ListItem.Property(is.home))">Conditional</animation>
                         <posx>0</posx>
                         <posy>0</posy>
                         {% include "includes/home_nav_focus_plate.xml.tpl" %}
-                        {% with nav_color = "FF111111" & nav_icon_color = "FF111111" & nav_scroll = "Control.HasFocus(101)" %}
+                        {% with nav_color = "FF111111" & nav_icon_color = "FF111111" & nav_scroll = "false" %}
                         {% include "includes/home_nav_content.xml.tpl" %}
                         {% endwith %}
                     </control>
