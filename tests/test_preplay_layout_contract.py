@@ -202,7 +202,7 @@ class PrePlayLayoutContractTests(unittest.TestCase):
         )
 
         start = button_template.index(
-            "{% elif preplay_style or episode_style or seasons_style %}"
+            "{% elif preplay_style or episode_style or seasons_style or playlist_style or music_artist_style %}"
         )
         end = button_template.index(
             "{% else %}\n    <animation effect=\"zoom\"",
@@ -251,7 +251,7 @@ class PrePlayLayoutContractTests(unittest.TestCase):
         pill_branch = button_template[
             button_template.index('{% if name in ('):
             button_template.index(
-                "{% elif preplay_style or episode_style or seasons_style %}"
+                "{% elif preplay_style or episode_style or seasons_style or playlist_style or music_artist_style %}"
             )
         ]
 

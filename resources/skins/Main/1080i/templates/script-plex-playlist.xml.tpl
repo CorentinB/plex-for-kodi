@@ -91,7 +91,7 @@
             <defaultcontrol always="true">301</defaultcontrol>
             <posx>0</posx>
             <posy>{{ vscale(655) }}</posy>
-            <width>520</width>
+            <width>600</width>
             <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>101</ondown>
@@ -102,9 +102,9 @@
             <scrolltime>160</scrolltime>
             <usecontrolcoords>true</usecontrolcoords>
             {% with template = "includes/themed_button.xml.tpl" & playlist_style = True & light_plate = True %}
-                {% include template with name="play" & id=301 %}
-                {% include template with name="shuffle" & id=302 %}
-                {% include template with name="more" & id=303 & visible="!String.IsEmpty(Window.Property(show.options)) | Player.HasAudio" %}
+                {% include template with name="play" & id=301 & action_label="$LOCALIZE[208]" & action_width=140 & action_label_width=68 %}
+                {% include template with name="shuffle" & id=302 & action_label="$ADDON[script.plexmod 32935]" & action_width=300 & action_label_width=228 %}
+                {% include template with name="more" & id=303 & visible="!String.IsEmpty(Window.Property(show.options)) | Player.HasAudio" & action_label="$ADDON[script.plexmod 32307]" & action_width=130 & action_label_width=58 %}
             {% endwith %}
         </control>
         {% endblock buttons %}

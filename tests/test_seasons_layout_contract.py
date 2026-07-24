@@ -92,7 +92,7 @@ class SeasonsLayoutContractTests(unittest.TestCase):
         buttons = BUTTONS.read_text()
 
         self.assertIn(
-            "{% elif preplay_style or episode_style or seasons_style %}",
+            "{% elif preplay_style or episode_style or seasons_style or playlist_style or music_artist_style %}",
             buttons,
         )
         self.assertIn("<width>1600</width>", template)

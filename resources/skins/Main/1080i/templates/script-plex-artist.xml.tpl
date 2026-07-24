@@ -113,7 +113,7 @@
             <defaultcontrol always="true">302</defaultcontrol>
             <posx>0</posx>
             <posy>{{ vscale(275) }}</posy>
-            <width>520</width>
+            <width>780</width>
             <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>400</ondown>
@@ -123,10 +123,10 @@
             <scrolltime>160</scrolltime>
             <usecontrolcoords>true</usecontrolcoords>
             {% with template = "includes/themed_button.xml.tpl" & music_artist_style = True %}
-                {% include template with name="play" & id=302 %}
-                {% include template with name="info" & id=301 %}
-                {% include template with name="shuffle" & id=303 %}
-                {% include template with name="more" & id=304 %}
+                {% include template with name="play" & id=302 & action_label="$LOCALIZE[208]" & action_width=140 & action_label_width=68 %}
+                {% include template with name="info" & id=301 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
+                {% include template with name="shuffle" & id=303 & action_label="$ADDON[script.plexmod 32935]" & action_width=300 & action_label_width=228 %}
+                {% include template with name="more" & id=304 & action_label="$ADDON[script.plexmod 32307]" & action_width=130 & action_label_width=58 %}
             {% endwith %}
         </control>
     </control>

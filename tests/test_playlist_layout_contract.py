@@ -78,6 +78,12 @@ class PlaylistLayoutContractTests(unittest.TestCase):
         navigation = _read(NAVIGATION)
 
         self.assertIn('playlist_style = True', template)
+        self.assertIn('<width>600</width>', template)
+        self.assertIn('action_label="$LOCALIZE[208]"', template)
+        self.assertIn('action_label="$ADDON[script.plexmod 32935]"', template)
+        self.assertIn('action_width=300 & action_label_width=228', template)
+        self.assertIn('action_label="$ADDON[script.plexmod 32307]"', template)
+        self.assertIn('action_width=130 & action_label_width=58', template)
         self.assertIn('<ondown>101</ondown>', navigation)
         self.assertIn('<onright>101</onright>', navigation)
         self.assertIn('<onleft>301</onleft>', navigation)

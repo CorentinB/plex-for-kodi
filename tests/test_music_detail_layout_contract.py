@@ -85,7 +85,7 @@ class MusicDetailLayoutContractTests(unittest.TestCase):
             button.count(
                 '{% include "includes/music_artist_button_navigation.xml.tpl" %}'
             ),
-            2,
+            3,
         )
         self.assertIn("<ondown>400</ondown>", navigation)
         for left, current, right in (
@@ -97,6 +97,29 @@ class MusicDetailLayoutContractTests(unittest.TestCase):
             section = navigation[navigation.index("id == {}".format(current)) :]
             self.assertIn("<onleft>{}</onleft>".format(left), section)
             self.assertIn("<onright>{}</onright>".format(right), section)
+
+    def test_music_detail_actions_use_labelled_rectangles(self):
+        artist = ARTIST.read_text()
+        album = ALBUM.read_text()
+        button = THEMED_BUTTON.read_text()
+
+        self.assertIn(
+            "or playlist_style or music_artist_style",
+            button,
+        )
+        self.assertIn(
+            "and not playlist_style and not music_artist_style",
+            button,
+        )
+        for source in (artist, album):
+            self.assertIn('action_label="$LOCALIZE[208]"', source)
+            self.assertIn('action_label="$ADDON[script.plexmod 32935]"', source)
+            self.assertIn("action_width=300 & action_label_width=228", source)
+            self.assertIn('action_label="$ADDON[script.plexmod 32307]"', source)
+            self.assertIn("action_width=130 & action_label_width=58", source)
+        self.assertIn('action_label="$LOCALIZE[29915]"', artist)
+        self.assertIn("<width>780</width>", artist)
+        self.assertIn("<width>600</width>", album)
 
     def test_album_uses_tvos_actions_rounded_art_and_white_track_focus(self):
         source = ALBUM.read_text()
