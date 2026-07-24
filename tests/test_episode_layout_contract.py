@@ -271,6 +271,35 @@ class EpisodeLayoutContractTests(unittest.TestCase):
         self.assertLess(315 + 90, 420)
         self.assertLess(420 + 110, 565)
 
+    def test_episode_ratings_share_the_primary_facts_rail(self):
+        template = _read(EPISODES_TEMPLATE)
+        facts_label = template.index(
+            "<label>$INFO[Container(400).ListItem.Property(duration)]"
+        )
+        facts_start = template.rindex(
+            '<control type="grouplist">', 0, facts_label
+        )
+        facts_end = template.index(
+            '<control type="grouplist">', facts_label
+        )
+        facts = template[facts_start:facts_end]
+
+        rating = facts.index(
+            "$INFO[Container(400).ListItem.Property(rating)]"
+        )
+        technical = facts.index(
+            "$INFO[Container(400).ListItem.Property(video.res)]"
+        )
+        self.assertLess(rating, technical)
+        self.assertIn(
+            "$INFO[Container(400).ListItem.Property(rating2)]", facts
+        )
+        self.assertIn(
+            "$INFO[Container(400).ListItem.Property(rating.stars)]", facts
+        )
+        self.assertNotIn("<posx>1560</posx>", template)
+        self.assertNotIn("<posx>1726</posx>", template)
+
     def test_episode_metadata_and_section_titles_use_sentence_case(self):
         template = _read(EPISODES_TEMPLATE)
         source = _read(EPISODES_PYTHON)

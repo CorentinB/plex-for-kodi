@@ -205,14 +205,6 @@
                 <label>$INFO[Container(400).ListItem.Property(remainingTime)]</label>
             </control>
         </control>
-        <control type="image">
-            <visible>!String.IsEmpty(Container(400).ListItem.Property(rating.stars))</visible>
-            <posx>1726</posx>
-            <posy>6</posy>
-            <width>134</width>
-            <height>{{ vscale(22) }}</height>
-            <texture>script.plex/stars/$INFO[Container(400).ListItem.Property(rating.stars)].png</texture>
-        </control>
         <control type="label">
             <posx>740</posx>
             <posy>{{ vscale(50) }}</posy>
@@ -224,52 +216,6 @@
             <scroll>false</scroll>
             <textcolor>FFFFFFFF</textcolor>
             <label>$INFO[Container(400).ListItem.Property(show.title)]</label>
-        </control>
-
-        <control type="grouplist">
-            <visible>!String.IsEmpty(Container(400).ListItem.Property(rating)) | !String.IsEmpty(Container(400).ListItem.Property(rating2))</visible>
-            <posx>1560</posx>
-            <posy>{{ vscale(50) }}</posy>
-            <width>300</width>
-            <height>{{ vscale(32) }}</height>
-            <align>right</align>
-            <itemgap>15</itemgap>
-            <orientation>horizontal</orientation>
-            <usecontrolcoords>true</usecontrolcoords>
-            <control type="image">
-                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating))</visible>
-                <posy>2</posy>
-                <width>63</width>
-                <height>{{ vscale(30) }}</height>
-                <texture fallback="script.plex/ratings/other/image.rating.png">$INFO[Container(400).ListItem.Property(rating.image)]</texture>
-                <aspectratio align="right">keep</aspectratio>
-            </control>
-            <control type="label">
-                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating))</visible>
-                <width>auto</width>
-                <height>{{ vscale(30) }}</height>
-                <font>font12</font>
-                <align>left</align>
-                <textcolor>FFFFFFFF</textcolor>
-                <label>$INFO[Container(400).ListItem.Property(rating)]</label>
-            </control>
-            <control type="image">
-                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating2))</visible>
-                <posy>2</posy>
-                <width>40</width>
-                <height>{{ vscale(30) }}</height>
-                <texture fallback="script.plex/ratings/other/image.rating.png">$INFO[Container(400).ListItem.Property(rating2.image)]</texture>
-                <aspectratio align="right">keep</aspectratio>
-            </control>
-            <control type="label">
-                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating2))</visible>
-                <width>auto</width>
-                <height>{{ vscale(30) }}</height>
-                <font>font12</font>
-                <align>left</align>
-                <textcolor>FFFFFFFF</textcolor>
-                <label>$INFO[Container(400).ListItem.Property(rating2)]</label>
-            </control>
         </control>
 
         <control type="grouplist">
@@ -321,6 +267,47 @@
                 <align>left</align>
                 <textcolor>FFFFFFFF</textcolor>
                 <label>$INFO[Container(400).ListItem.Property(duration)]$INFO[Container(400).ListItem.Property(genre), &#8226; ]$INFO[Container(400).ListItem.Property(year), &#8226; ]$INFO[Container(400).ListItem.Property(content.rating), &#8226; ]</label>
+            </control>
+            <control type="image">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating))</visible>
+                <posy>2</posy>
+                <width>63</width>
+                <height>{{ vscale(30) }}</height>
+                <texture fallback="script.plex/ratings/other/image.rating.png">$INFO[Container(400).ListItem.Property(rating.image)]</texture>
+                <aspectratio align="right">keep</aspectratio>
+            </control>
+            <control type="label">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating))</visible>
+                <width>auto</width>
+                <height>{{ vscale(30) }}</height>
+                <font>font12</font>
+                <align>left</align>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Container(400).ListItem.Property(rating)]</label>
+            </control>
+            <control type="image">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating2))</visible>
+                <posy>2</posy>
+                <width>40</width>
+                <height>{{ vscale(30) }}</height>
+                <texture fallback="script.plex/ratings/other/image.rating.png">$INFO[Container(400).ListItem.Property(rating2.image)]</texture>
+                <aspectratio align="right">keep</aspectratio>
+            </control>
+            <control type="label">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating2))</visible>
+                <width>auto</width>
+                <height>{{ vscale(30) }}</height>
+                <font>font12</font>
+                <align>left</align>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Container(400).ListItem.Property(rating2)]</label>
+            </control>
+            <control type="image">
+                <visible>!String.IsEmpty(Container(400).ListItem.Property(rating.stars))</visible>
+                <width>134</width>
+                <height>{{ vscale(22) }}</height>
+                <texture>script.plex/stars/$INFO[Container(400).ListItem.Property(rating.stars)].png</texture>
+                <aspectratio align="left">keep</aspectratio>
             </control>
             <control type="button">
                 <visible>!String.IsEmpty(Container(400).ListItem.Property(video.res))</visible>
