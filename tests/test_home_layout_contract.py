@@ -1326,6 +1326,17 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertNotIn("tvos-row-top-scrim.png", home)
         self.assertNotIn("<colordiffuse>78000000</colordiffuse>", home)
 
+    def test_deferred_hubs_use_compact_busy_indicator_without_message_card(self):
+        home = _read("script-plex-home.xml.tpl")
+
+        self.assertIn(
+            "<visible>!String.IsEmpty(Window.Property(busy)) | "
+            "!String.IsEmpty(Window.Property(loading.content))</visible>",
+            home,
+        )
+        self.assertNotIn("$ADDON[script.plexmod 34020]", home)
+        self.assertNotIn("$ADDON[script.plexmod 34021]", home)
+
     def test_home_chrome_uses_neutral_focus_and_real_transparent_textures(self):
         home = _read("script-plex-home.xml.tpl")
         invalid_texture_sentinels = (

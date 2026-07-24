@@ -9,7 +9,7 @@ TEMPLATES = ROOT / "resources" / "skins" / "Main" / "1080i" / "templates"
 class EmptyStateLayoutContractTests(unittest.TestCase):
     def test_primary_empty_states_use_rounded_readable_panels(self):
         expectations = {
-            "script-plex-home.xml.tpl": 2,
+            "script-plex-home.xml.tpl": 1,
             "library.xml.tpl": 2,
             "script-plex-person.xml.tpl": 1,
         }
