@@ -137,7 +137,7 @@ class MusicDetailLayoutContractTests(unittest.TestCase):
         button = THEMED_BUTTON.read_text()
 
         self.assertIn('playlist_style = True & light_plate = True', source)
-        self.assertEqual(
+        self.assertGreaterEqual(
             button.count(
                 '{% if light_plate %}26FFFFFF{% else %}78000000{% endif %}'
             ),

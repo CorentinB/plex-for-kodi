@@ -65,7 +65,7 @@
             <defaultcontrol>302</defaultcontrol>
             <posx>155</posx>
             <posy>{{ vscale(405) }}</posy>
-            <width>1220</width>
+            <width>1600</width>
             <height>{{ vscale(90) }}</height>
             <onup>200</onup>
             <ondown>400</ondown>
@@ -77,12 +77,12 @@
             {% with attr = theme.pre_play.buttons & template = "includes/themed_button.xml.tpl" & preplay_style = True %}
                 {% include template with name="play" & id=302 & visible="String.IsEmpty(Window.Property(unavailable)) + String.IsEmpty(Window.Property(disable_playback))" %}
                 {% include "includes/wl_dynamic_buttons.xml.tpl" %}
-                {% include template with name="info" & id=304 %}
-                {% include template with name="trailer" & id=303 & visible="!String.IsEmpty(Window.Property(trailer.button))" %}
+                {% include template with name="info" & id=304 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
+                {% include template with name="trailer" & id=303 & visible="!String.IsEmpty(Window.Property(trailer.button))" & action_label="$ADDON[script.plexmod 32201]" & action_width=250 & action_label_width=178 %}
                 {% include "includes/wl_add_remove_buttons.xml.tpl" %}
-                {% include template with name="media" & id=307 & visible="!String.IsEmpty(Window.Property(media.multiple))" %}
-                {% include template with name="settings" & id=305 & visible="String.IsEmpty(Window.Property(disable_playback))" %}
-                {% include template with name="more" & id=306 & visible="String.IsEmpty(Window.Property(disable_playback))" %}
+                {% include template with name="media" & id=307 & visible="!String.IsEmpty(Window.Property(media.multiple))" & action_label="$ADDON[script.plexmod 35063]" & action_width=180 & action_label_width=108 %}
+                {% include template with name="settings" & id=305 & visible="String.IsEmpty(Window.Property(disable_playback))" & action_label="$ADDON[script.plexmod 35064]" & action_width=175 & action_label_width=103 %}
+                {% include template with name="more" & id=306 & visible="String.IsEmpty(Window.Property(disable_playback))" & action_label="$ADDON[script.plexmod 32307]" & action_width=140 & action_label_width=68 %}
             {% endwith %}
 
         </control>

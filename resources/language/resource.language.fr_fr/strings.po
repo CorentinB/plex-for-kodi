@@ -3809,6 +3809,16 @@ msgctxt "#35062"
 msgid "Photos"
 msgstr "Photos"
 
+#:
+msgctxt "#35063"
+msgid "Version"
+msgstr "Version"
+
+#:
+msgctxt "#35064"
+msgid "Playback"
+msgstr "Lecture"
+
 msgctxt "#34102"
 msgid "Categories"
 msgstr "Catégories"

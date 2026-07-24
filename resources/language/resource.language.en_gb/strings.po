@@ -3409,3 +3409,11 @@ msgstr ""
 msgctxt "#35062"
 msgid "Photos"
 msgstr ""
+
+msgctxt "#35063"
+msgid "Version"
+msgstr ""
+
+msgctxt "#35064"
+msgid "Playback"
+msgstr ""

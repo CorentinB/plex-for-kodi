@@ -177,11 +177,56 @@ class PrePlayLayoutContractTests(unittest.TestCase):
 
         self.assertIn("preplay_style = True", template)
         self.assertIn('$LOCALIZE[208]', button_template)
-        self.assertIn('name in ("play", "play_plus")', button_template)
+        self.assertIn(
+            'name in ("play", "play_plus", "wait", "upcoming")',
+            button_template,
+        )
         self.assertIn("script.plex/indicators/circle-152.png", button_template)
         self.assertIn('!Control.HasFocus({{ id }})', button_template)
         self.assertIn('<textcolor>FFFFFFFF</textcolor>', button_template)
         self.assertLess(template.index('name="play"'), template.index('name="info"'))
+
+    def test_detail_secondary_actions_are_labelled_rounded_rectangles(self):
+        template = _read(PREPLAY_TEMPLATE)
+        button_template = _read(
+            os.path.join(
+                ROOT,
+                "resources",
+                "skins",
+                "Main",
+                "1080i",
+                "templates",
+                "includes",
+                "themed_button.xml.tpl",
+            )
+        )
+
+        start = button_template.index("{% elif preplay_style %}")
+        end = button_template.index(
+            "{% else %}\n    <animation effect=\"zoom\"",
+            start,
+        )
+        secondary = button_template[start:end]
+
+        self.assertIn("script.plex/white-square-6px.png", secondary)
+        self.assertIn("{{ action_label }}", secondary)
+        self.assertIn("{{ action_width }}", secondary)
+        self.assertIn("{{ action_label_width }}", secondary)
+        self.assertNotIn("circle-152.png", secondary)
+
+        action_labels = {
+            "info": "$LOCALIZE[29915]",
+            "trailer": "$ADDON[script.plexmod 32201]",
+            "media": "$ADDON[script.plexmod 35063]",
+            "settings": "$ADDON[script.plexmod 35064]",
+            "more": "$ADDON[script.plexmod 32307]",
+        }
+        for name, label in action_labels.items():
+            include = template.index('name="{}"'.format(name))
+            include_end = template.index("%}", include)
+            self.assertIn(label, template[include:include_end])
+
+        self.assertIn("<width>1600</width>", template)
 
     def test_every_tvos_action_has_explicit_remote_navigation(self):
         button_template = _read(
@@ -202,7 +247,7 @@ class PrePlayLayoutContractTests(unittest.TestCase):
             button_template.count(
                 '{% include "includes/preplay_button_navigation.xml.tpl" %}'
             ),
-            2,
+            3,
         )
         self.assertIn("<onup>200</onup>", navigation)
         self.assertIn("<ondown>400</ondown>", navigation)

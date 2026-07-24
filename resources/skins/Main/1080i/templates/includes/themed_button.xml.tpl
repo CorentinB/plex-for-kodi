@@ -1,7 +1,7 @@
 {% if preplay_style or episode_style or library_style or playlist_style or music_artist_style or seasons_style %}
 <control type="group">
     {% if visible %}<visible{% if allowhiddenfocus %} allowhiddenfocus="true"{% endif %}>{{ visible }}</visible>{% endif %}
-    {% if name in ("play", "play_plus") %}
+    {% if name in ("play", "play_plus", "wait", "upcoming") %}
     <animation effect="zoom" start="100" end="106" time="110" center="89,{{ vscale(39) }}" reversible="true" condition="Control.HasFocus({{ id }})">Conditional</animation>
     <width>178</width>
     <height>{{ vscale(78) }}</height>
@@ -48,7 +48,7 @@
         <align>center</align>
         <aligny>center</aligny>
         <textcolor>FFFFFFFF</textcolor>
-        <label>$LOCALIZE[208]</label>
+        <label>{% if name == "wait" %}$ADDON[script.plexmod 32914]{% elif name == "upcoming" %}$ADDON[script.plexmod 32312]{% else %}$LOCALIZE[208]{% endif %}</label>
     </control>
     <control type="label">
         <visible>Control.HasFocus({{ id }})</visible>
@@ -60,7 +60,7 @@
         <align>center</align>
         <aligny>center</aligny>
         <textcolor>FF111111</textcolor>
-        <label>$LOCALIZE[208]</label>
+        <label>{% if name == "wait" %}$ADDON[script.plexmod 32914]{% elif name == "upcoming" %}$ADDON[script.plexmod 32312]{% else %}$LOCALIZE[208]{% endif %}</label>
     </control>
     <control type="button" id="{{ id }}">
         {% if enable %}<enable>{{ enable }}</enable>{% endif %}
@@ -78,6 +78,74 @@
             {% include "includes/library_button_navigation.xml.tpl" %}
         {% endif %}
         <width>178</width>
+        <height>{{ vscale(78) }}</height>
+        <texturefocus>script.plex/transparent-6px.png</texturefocus>
+        <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
+        <label> </label>
+    </control>
+    {% elif preplay_style %}
+    <width>{{ action_width }}</width>
+    <height>{{ vscale(78) }}</height>
+    <control type="image">
+        <visible>!Control.HasFocus({{ id }})</visible>
+        <posy>{{ vscale(7) }}</posy>
+        <width>{{ action_width }}</width>
+        <height>{{ vscale(64) }}</height>
+        <texture border="6">script.plex/white-square-6px.png</texture>
+        <colordiffuse>{% if light_plate %}26FFFFFF{% else %}78000000{% endif %}</colordiffuse>
+    </control>
+    <control type="image">
+        <visible>Control.HasFocus({{ id }})</visible>
+        <posy>{{ vscale(7) }}</posy>
+        <width>{{ action_width }}</width>
+        <height>{{ vscale(64) }}</height>
+        <texture border="6">script.plex/white-square-6px.png</texture>
+        <colordiffuse>F2FFFFFF</colordiffuse>
+    </control>
+    <control type="image">
+        <visible>!Control.HasFocus({{ id }})</visible>
+        <posx>2</posx>
+        <posy>{{ vscale(1) }}</posy>
+        <width>64</width>
+        <height>{{ vscale(76) }}</height>
+        <texture colordiffuse="E6FFFFFF">{{ theme.assets.buttons.base }}{{ name }}.png</texture>
+    </control>
+    <control type="image">
+        <visible>Control.HasFocus({{ id }})</visible>
+        <posx>2</posx>
+        <posy>{{ vscale(1) }}</posy>
+        <width>64</width>
+        <height>{{ vscale(76) }}</height>
+        <texture colordiffuse="FF111111">{{ theme.assets.buttons.base }}{{ name }}.png</texture>
+    </control>
+    <control type="label">
+        <visible>!Control.HasFocus({{ id }})</visible>
+        <posx>64</posx>
+        <posy>0</posy>
+        <width>{{ action_label_width }}</width>
+        <height>{{ vscale(78) }}</height>
+        <font>font10</font>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textcolor>E6FFFFFF</textcolor>
+        <label>{{ action_label }}</label>
+    </control>
+    <control type="label">
+        <visible>Control.HasFocus({{ id }})</visible>
+        <posx>64</posx>
+        <posy>0</posy>
+        <width>{{ action_label_width }}</width>
+        <height>{{ vscale(78) }}</height>
+        <font>font10</font>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textcolor>FF111111</textcolor>
+        <label>{{ action_label }}</label>
+    </control>
+    <control type="button" id="{{ id }}">
+        {% if enable %}<enable>{{ enable }}</enable>{% endif %}
+        {% include "includes/preplay_button_navigation.xml.tpl" %}
+        <width>{{ action_width }}</width>
         <height>{{ vscale(78) }}</height>
         <texturefocus>script.plex/transparent-6px.png</texturefocus>
         <texturenofocus>script.plex/transparent-6px.png</texturenofocus>
