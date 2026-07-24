@@ -46,6 +46,25 @@ class MusicPlayerLayoutContractTests(unittest.TestCase):
 
         self.assertEqual(up_next.count("<posx>820</posx>"), 2)
 
+    def test_track_progress_has_a_visible_rail_below_the_time(self):
+        source = TEMPLATE.read_text()
+        time = source.index(
+            "$INFO[Player.Time]$INFO[MusicPlayer.Duration, / ]"
+        )
+        progress_start = source.index('<control type="progress">', time)
+        progress_end = source.index("</control>", progress_start)
+        progress = source[progress_start:progress_end]
+
+        self.assertIn("<posx>0</posx>", progress)
+        self.assertIn("<posy>{{ vscale(650) }}</posy>", progress)
+        self.assertIn("<width>820</width>", progress)
+        self.assertIn(
+            '<texturebg colordiffuse="38FFFFFF">'
+            "script.plex/white-square-6px.png</texturebg>",
+            progress,
+        )
+        self.assertIn("<info>Player.Progress</info>", progress)
+
 
 if __name__ == "__main__":
     unittest.main()

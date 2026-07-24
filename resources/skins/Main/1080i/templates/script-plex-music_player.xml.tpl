@@ -96,6 +96,16 @@
         <textcolor>FFFFFFFF</textcolor>
         <label>$INFO[Player.Time]$INFO[MusicPlayer.Duration, / ]</label>
     </control>
+    <control type="progress">
+        <description>Track progress</description>
+        <posx>0</posx>
+        <posy>{{ vscale(650) }}</posy>
+        <width>820</width>
+        <height>{{ vscale(6) }}</height>
+        <texturebg colordiffuse="38FFFFFF">script.plex/white-square-6px.png</texturebg>
+        <midtexture colordiffuse="FFFFFFFF">script.plex/white-square-6px.png</midtexture>
+        <info>Player.Progress</info>
+    </control>
 </control>
 
 <control type="group">
