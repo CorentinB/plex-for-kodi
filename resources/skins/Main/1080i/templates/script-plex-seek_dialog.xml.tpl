@@ -117,7 +117,7 @@
 
     <control type="group">
         <posx>0</posx>
-        <posy>{{ vscale(320) }}r</posy>
+        <posy>{{ vscale(288) }}r</posy>
         <control type="label">
             <visible>!String.IsEmpty(Window.Property(direct.play)) + [String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))]</visible>
             <posx>60</posx>
@@ -218,42 +218,42 @@
     </control>
 
     <control type="group">
-        <posx>0</posx>
+        <posx>60</posx>
         <posy>{{ vscale(190) }}r</posy>
         <control type="image">
             <visible>String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))</visible>
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
-            <height>{{ vscale(10) }}</height>
-            <texture>script.plex/white-square.png</texture>
-            <colordiffuse>A0000000</colordiffuse>
+            <width>1800</width>
+            <height>{{ vscale(8) }}</height>
+            <texture border="4">script.plex/white-square-rounded.png</texture>
+            <colordiffuse>52FFFFFF</colordiffuse>
         </control>
         <control type="image" id="206">
             <visible>!String.IsEmpty(Window.Property(show.buffer)) + [String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))]</visible>
             <posx>0</posx>
-            <posy>2</posy>
+            <posy>1</posy>
             <width>1</width>
             <height>{{ vscale(6) }}</height>
-            <texture>script.plex/white-square.png</texture>
-            <colordiffuse>EE4E4842</colordiffuse>
+            <texture border="3">script.plex/white-square-rounded.png</texture>
+            <colordiffuse>70FFFFFF</colordiffuse>
         </control>
         <control type="image" id="201">
             <visible>String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))</visible>
             <posx>0</posx>
-            <posy>2</posy>
+            <posy>1</posy>
             <width>1</width>
             <height>{{ vscale(6) }}</height>
-            <texture>script.plex/white-square.png</texture>
+            <texture border="3">script.plex/white-square-rounded.png</texture>
             <colordiffuse>FFFFFFFF</colordiffuse>
         </control>
         <control type="image" id="200">
             <visible>[Control.HasFocus(100) | !String.IsEmpty(Window.Property(button.seek))] + [String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))]</visible>
             <posx>0</posx>
-            <posy>2</posy>
+            <posy>1</posy>
             <width>1</width>
             <height>{{ vscale(6) }}</height>
-            <texture>script.plex/white-square.png</texture>
+            <texture border="3">script.plex/white-square-rounded.png</texture>
             <colordiffuse>FFFFFFFF</colordiffuse>
         </control>
     </control>
@@ -1002,13 +1002,13 @@
     </control>
 
     <control type="group">
-        <posx>0</posx>
+        <posx>60</posx>
         <posy>890</posy>
         <control type="button" id="100">
-            <hitrect x="0" y="-19" w="1920" h="48" />
+            <hitrect x="0" y="-34" w="1800" h="63" />
             <posx>0</posx>
             <posy>0</posy>
-            <width>1920</width>
+            <width>1800</width>
             <height>{{ vscale(10) }}</height>
             <onup>501</onup>
             <ondown>400</ondown>
@@ -1025,12 +1025,12 @@
         <!-- /CHAPTERS -->
 
         <visible>String.IsEmpty(Window.Property(mouse.mode)) + String.IsEmpty(Window.Property(hide.bigseek)) + [Control.HasFocus(501) | Control.HasFocus(100)] + [!String.IsEmpty(Window.Property(show.chapters)) | String.IsEmpty(Window.Property(has.chapters))]</visible>
-        <posx>-8</posx>
+        <posx>52</posx>
         <posy>867</posy>
         <control type="image">
             <posx>-200</posx>
             <posy>5</posy>
-            <width>2320</width>
+            <width>2200</width>
             <height>{{ vscale(6) }}</height>
             <texture>script.plex/white-square.png</texture>
             <colordiffuse>A0000000</colordiffuse>
@@ -1040,7 +1040,7 @@
         <control type="image">
             <posx>0</posx>
             <posy>-175</posy>
-            <width>1928</width>
+            <width>1808</width>
             <height>200</height>
             <texture>script.plex/white-square.png</texture>
             <colordiffuse>A0000000</colordiffuse>
@@ -1075,7 +1075,7 @@
             <hitrect x="-20" y="-20" w="10" h="10" />
             <posx>0</posx>
             <posy>0</posy>
-            <width>1928</width>
+            <width>1808</width>
             <height>{{ vscale(16) }}</height>
             <ondown>100</ondown>
             <onfocus>SetProperty(hide.bigseek,)</onfocus>
@@ -1083,7 +1083,7 @@
             <orientation>horizontal</orientation>
             <preloaditems>4</preloaditems>
             <!-- ITEM LAYOUT ########################################## -->
-            <itemlayout width="160" condition="String.IsEmpty(Window.Property(has.chapters))">
+            <itemlayout width="150" condition="String.IsEmpty(Window.Property(has.chapters))">
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>
@@ -1095,7 +1095,7 @@
             </itemlayout>
 
             <!-- FOCUSED LAYOUT ####################################### -->
-            <focusedlayout width="160" condition="String.IsEmpty(Window.Property(has.chapters))">
+            <focusedlayout width="150" condition="String.IsEmpty(Window.Property(has.chapters))">
                 <control type="image">
                     <visible>!Control.HasFocus(501)</visible>
                     <posx>0</posx>
@@ -1269,7 +1269,7 @@
 </control>
 <control type="group" id="202">
     <visible>[Control.HasFocus(100) | Control.HasFocus(501) | !String.IsEmpty(Window.Property(button.seek))] + [String.IsEmpty(Window.Property(no.osd.hide_info)) | !String.IsEmpty(Window.Property(show.OSD))]</visible>
-    <posx>0</posx>
+    <posx>60</posx>
     <posy>846</posy>
     <control type="group" id="203">
         <posx>-50</posx>

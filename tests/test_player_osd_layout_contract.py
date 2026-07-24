@@ -49,7 +49,7 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
             seek.index('<control type="group" id="440">'):
             seek.index('<control type="grouplist" id="400">')
         ]
-        self.assertIn('<posy>{{ vscale(320) }}r</posy>', seek)
+        self.assertIn('<posy>{{ vscale(288) }}r</posy>', seek)
         self.assertIn('<posy>{{ vscale(190) }}r</posy>', seek)
         self.assertIn('<posy>592</posy>', seek)
         self.assertIn('<posx>60</posx>', action_labels)
@@ -57,8 +57,27 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
         self.assertGreaterEqual(action_labels.count('<width>1580</width>'), 12)
         self.assertGreaterEqual(action_labels.count('<align>left</align>'), 12)
         self.assertIn('<posy>{{ vscale(146) }}r</posy>', seek)
-        self.assertIn('BAR_Y = 871', SEEK_PYTHON.read_text())
+        self.assertIn('BAR_Y = 856', SEEK_PYTHON.read_text())
         self.assertIn('BAR_BOTTOM = 919', SEEK_PYTHON.read_text())
+
+    def test_osd_timeline_is_inset_visible_and_uses_one_coordinate_system(self):
+        seek = SEEK.read_text()
+        python = SEEK_PYTHON.read_text()
+        timeline_y = seek.index('<posy>{{ vscale(190) }}r</posy>')
+        timeline = seek[
+            seek.rindex('<control type="group">', 0, timeline_y):
+            seek.index('</control>\n<control type="button" id="800">')
+        ]
+
+        self.assertIn('<posx>60</posx>', timeline)
+        self.assertIn('<width>1800</width>', timeline)
+        self.assertIn('<height>{{ vscale(8) }}</height>', timeline)
+        self.assertIn('<colordiffuse>52FFFFFF</colordiffuse>', timeline)
+        self.assertIn('SEEK_IMAGE_WIDTH = 1800', python)
+        self.assertIn('BAR_X = 60', python)
+        self.assertIn('BAR_RIGHT = 1860', python)
+        self.assertIn('self.BAR_X + w', python)
+        self.assertIn('self.BAR_X - 8 + pxOffset', python)
 
     def test_play_left_skips_controls_that_are_not_visible(self):
         seek = SEEK.read_text()
@@ -119,7 +138,7 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
     def test_osd_title_rail_is_stable_safe_and_localized(self):
         seek = SEEK.read_text()
         python = SEEK_PYTHON.read_text()
-        title_rail = seek[seek.index('<posy>{{ vscale(40) }}</posy>'):seek.index('<posy>{{ vscale(320) }}r</posy>')]
+        title_rail = seek[seek.index('<posy>{{ vscale(40) }}</posy>'):seek.index('<posy>{{ vscale(288) }}r</posy>')]
         self.assertEqual(title_rail.count('<scroll>false</scroll>'), 3)
         self.assertNotIn('<scroll>true</scroll>', title_rail)
         self.assertIn('Window.Property(ep.season)', title_rail)

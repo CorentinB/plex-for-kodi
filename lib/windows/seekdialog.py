@@ -113,7 +113,7 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
     SELECTION_INDICATOR_TEXT = 205
     CACHE_IMAGE_ID = 206
     BIF_IMAGE_ID = 300
-    SEEK_IMAGE_WIDTH = 1920
+    SEEK_IMAGE_WIDTH = 1800
 
     REPEAT_BUTTON_ID = 401
     SHUFFLE_BUTTON_ID = 402
@@ -135,9 +135,9 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
     SKIP_MARKER_BUTTON_ID = 791
     NO_OSD_BUTTON_ID = 800
 
-    BAR_X = 0
-    BAR_Y = 871
-    BAR_RIGHT = 1920
+    BAR_X = 60
+    BAR_Y = 856
+    BAR_RIGHT = 1860
     BAR_BOTTOM = 919
 
     NAVBAR_BTN_SIZE = 60
@@ -1771,10 +1771,10 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
             return
 
         self.bigSeekOffset = self.selectedOffset - closest.dataSource
-        pxOffset = int(self.bigSeekOffset / float(self.duration) * 1920)
+        pxOffset = int(self.bigSeekOffset / float(self.duration) * self.SEEK_IMAGE_WIDTH)
 
         if not self.showChapters:
-            self.bigSeekGroupControl.setPosition(-8 + pxOffset, 917)
+            self.bigSeekGroupControl.setPosition(self.BAR_X - 8 + pxOffset, 917)
         self.bigSeekControl.selectItem(closest.pos())
 
         self._seeking = True
@@ -2109,11 +2109,11 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
 
         bifx = (w - int(ratio * 324)) + self.BAR_X
         # bifx = w
-        self.selectionIndicator.setPosition(w, 896)
+        self.selectionIndicator.setPosition(self.BAR_X + w, 896)
         if w < 51:
             self.selectionBox.setPosition(-50 + (50 - w), 0)
-        elif w > 1869:
-            self.selectionBox.setPosition(-100 + (1920 - w), 0)
+        elif w > self.SEEK_IMAGE_WIDTH - 51:
+            self.selectionBox.setPosition(-100 + (self.SEEK_IMAGE_WIDTH - w), 0)
         else:
             self.selectionBox.setPosition(-50, 0)
 
