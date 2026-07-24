@@ -88,29 +88,6 @@
                         <colordiffuse>FFCC7B19</colordiffuse>
                     </control>
                 </control>
-                <control type="textbox">
-                    <autoscroll>false</autoscroll>
-                    <posx>0</posx>
-                    <posy>{{ vscale(227) }}</posy>
-                    <width>385</width>
-                    <height>{{ vscale(60) }}</height>
-                    <font>font10</font>
-                    <align>center</align>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Label]</label>
-                </control>
-                <control type="textbox">
-                    <autoscroll>false</autoscroll>
-                    <visible>!String.IsEmpty(Window.Property(hub.text2lines.{{ hub_id }}))</visible>
-                    <posx>0</posx>
-                    <posy>{{ vscale(287) }}</posy>
-                    <width>385</width>
-                    <height>{{ vscale(90) }}</height>
-                    <font>font10</font>
-                    <align>center</align>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Label2]</label>
-                </control>
                 {% include "includes/watched_indicator.xml.tpl" with xoff=385 & uw_size=48 & with_count=True & scale="medium" %}
             </control>
         </control>

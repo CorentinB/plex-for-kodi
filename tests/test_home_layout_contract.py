@@ -1,10 +1,20 @@
 from __future__ import absolute_import
 
+import ast
+import importlib.util
+import math
 import os
+import types
 import unittest
+import xml.etree.ElementTree as ElementTree
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HERO_MODULE_PATH = os.path.join(ROOT, "lib", "home_hero.py")
+HERO_SPEC = importlib.util.spec_from_file_location("home_hero_contract", HERO_MODULE_PATH)
+HERO_MODULE = importlib.util.module_from_spec(HERO_SPEC)
+HERO_SPEC.loader.exec_module(HERO_MODULE)
+clear_logo_url_from_metadata = HERO_MODULE.clear_logo_url_from_metadata
 TEMPLATE_ROOT = os.path.join(
     ROOT,
     "resources",
@@ -22,6 +32,15 @@ FRENCH_CATALOG = os.path.join(
     "strings.po",
 )
 
+HOME_HUB_LAYOUTS = (
+    "hub_itemlayout_poster.xml.tpl",
+    "hub_focusedlayout_poster.xml.tpl",
+    "hub_itemlayout_square.xml.tpl",
+    "hub_focusedlayout_square.xml.tpl",
+    "hub_itemlayout_ar16x9.xml.tpl",
+    "hub_focusedlayout_ar16x9.xml.tpl",
+)
+
 
 def _read(*parts):
     with open(os.path.join(TEMPLATE_ROOT, *parts), "r") as handle:
@@ -33,7 +52,404 @@ def _read_file(path):
         return handle.read()
 
 
+def _class_method(class_name, name, namespace=None):
+    tree = ast.parse(_read_file(HOME_WINDOW))
+    method = None
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and node.name == class_name:
+            method = next(
+                (child for child in node.body if isinstance(child, ast.FunctionDef) and child.name == name),
+                None,
+            )
+            break
+    if method is None:
+        raise AssertionError("{}.{} is missing".format(class_name, name))
+
+    method.decorator_list = []
+    module = ast.Module(body=[method], type_ignores=[])
+    ast.fix_missing_locations(module)
+    scope = dict(namespace or {})
+    exec(compile(module, HOME_WINDOW, "exec"), scope)
+    return scope[name]
+
+
+def _home_method(name, namespace=None):
+    return _class_method("HomeWindow", name, namespace)
+
+
+class _HubFlag(object):
+    def __init__(self, value=False):
+        self.value = value
+
+    def asBool(self):
+        return bool(self.value)
+
+    def __bool__(self):
+        return bool(self.value)
+
+
+class _HubMedia(object):
+    def __init__(self, title, rating_key, media_type="movie", in_progress=False):
+        self.title = title
+        self.ratingKey = rating_key
+        self.type = media_type
+        self.TYPE = media_type
+        self.in_progress = in_progress
+        self.cachable = False
+
+
+class _HubListItem(object):
+    def __init__(self, data_source):
+        self.dataSource = data_source
+        self.properties = {}
+
+    def getProperty(self, key):
+        return self.properties.get(key, "")
+
+    def setProperty(self, key, value):
+        self.properties[key] = value
+
+
+class _HubControl(object):
+    def __init__(self, items=None, selected=0):
+        self.items = list(items or ())
+        self.selected = selected
+        self.dataSource = None
+
+    def __iter__(self):
+        return iter(self.items)
+
+    def __getitem__(self, index):
+        return self.items[index]
+
+    def size(self):
+        return len(self.items)
+
+    def reset(self):
+        self.items = []
+        self.selected = 0
+
+    def getSelectedPos(self):
+        return self.selected
+
+    def getSelectedItem(self):
+        if not self.items:
+            return None
+        return self.items[self.selected]
+
+    def selectItem(self, index):
+        self.selected = index
+
+    def replaceItems(self, items):
+        self.items = list(items)
+        if self.items:
+            self.selected = min(self.selected, len(self.items) - 1)
+        else:
+            self.selected = 0
+
+
+class _Hub(object):
+    def __init__(self, items):
+        self.items = list(items)
+        self.title = "Test hub"
+        self.hubIdentifier = "home.test"
+        self.is_watchlist = False
+        self.more = _HubFlag(False)
+
+    def reset(self):
+        return None
+
+
+def _show_hub_window(control, last_focus=400, any_item_action=False):
+    controls = list(control) if isinstance(control, (list, tuple)) else [control]
+    fake_util = types.SimpleNamespace(
+        HUB_ITEM_STATES={},
+        addonSettings=types.SimpleNamespace(continueUseThumb=False),
+        getSetting=lambda key: False,
+    )
+    fake_plexapp = types.SimpleNamespace(
+        util=types.SimpleNamespace(
+            INTERFACE=types.SimpleNamespace(getRCBaseKey=lambda: "test")
+        )
+    )
+    namespace = {
+        "HUB_PAGE_SIZE": 10,
+        "backgroundthread": types.SimpleNamespace(),
+        "kodigui": types.SimpleNamespace(),
+        "math": math,
+        "plexapp": fake_plexapp,
+        "util": fake_util,
+    }
+
+    class Window(object):
+        HUB_BASE_ID = 400
+        RESUME_BUTTON_ID = 205
+        SINGLE_RESUME_HUBS = frozenset(("continueWatching", "home.continue"))
+        _showHub = _home_method("_showHub", namespace)
+        _syncHomeHeroSelection = _home_method("_syncHomeHeroSelection")
+        _singleResumeItem = _home_method("_singleResumeItem")
+        _syncHomeResumeAction = _home_method("_syncHomeResumeAction")
+
+        def __init__(self):
+            self.hubControls = controls
+            self.lastFocusID = last_focus
+            self._anyItemAction = any_item_action
+            self._initialHomeHeroSet = False
+            self.tasks = []
+            self.backgrounds = []
+            self.heroes = []
+            self.properties = {}
+            self.focused = last_focus
+
+        def setProperty(self, key, value):
+            self.properties[key] = value
+
+        def getProperty(self, key):
+            return self.properties.get(key, "")
+
+        def getFocusId(self):
+            return self.focused
+
+        def setFocusId(self, control_id):
+            self.focused = control_id
+
+        def createListItem(self, obj, wide=False):
+            return _HubListItem(obj)
+
+        def updateBackgroundFrom(self, obj):
+            self.backgrounds.append(obj.title)
+            return None
+
+        def setHomeHeroFromDataSource(self, obj):
+            self.heroes.append(obj.title)
+
+    return Window()
+
+
+def _resume_window(items=None, focused=101):
+    class Window(object):
+        HUB_BASE_ID = 400
+        RESUME_BUTTON_ID = 205
+        SINGLE_RESUME_HUBS = frozenset(("continueWatching", "home.continue"))
+
+        def __init__(self):
+            self.hubControls = [_HubControl(items)]
+            self.properties = {}
+            self.focused = focused
+
+        def getProperty(self, key):
+            return self.properties.get(key, "")
+
+        def setProperty(self, key, value):
+            self.properties[key] = value
+
+        def getFocusId(self):
+            return self.focused
+
+        def setFocusId(self, control_id):
+            self.focused = control_id
+
+    Window._singleResumeItem = _home_method("_singleResumeItem")
+    Window._syncHomeResumeAction = _home_method("_syncHomeResumeAction")
+    return Window()
+
+
+def _resume_action_window():
+    class Window(object):
+        SECTION_LIST_ID = 101
+        SERVER_LIST_ID = 260
+        USER_LIST_ID = 250
+        PLAYER_STATUS_BUTTON_ID = 204
+        SEARCH_BUTTON_ID = 203
+        HUB_BASE_ID = 400
+        RESUME_BUTTON_ID = 205
+
+        def __init__(self):
+            first = _HubListItem(
+                _HubMedia("Resume me", "1", in_progress=True)
+            )
+            self.hubControls = [
+                _HubControl([first]),
+                _HubControl(),
+            ]
+            self.properties = {"home.resume.visible": "1"}
+            self.focused = self.SECTION_LIST_ID
+            self.play_calls = []
+            self.hub_focus = []
+            self.synced = []
+            self._ignoreInput = False
+
+        def getProperty(self, key):
+            return self.properties.get(key, "")
+
+        def setFocusId(self, control_id):
+            self.focused = control_id
+
+        def hubItemClicked(self, control_id, auto_play=False):
+            self.play_calls.append((control_id, auto_play))
+
+        def _setHubFocus(self, index=None):
+            self.hub_focus.append(index)
+
+        def _syncHomeHeroSelection(self, index, control, pos=None, force=False):
+            self.synced.append((index, force))
+            return True
+
+    Window._homeResumeVisible = _home_method("_homeResumeVisible")
+    Window._focusHomeResumeItem = _home_method("_focusHomeResumeItem")
+    Window.onClick = _home_method("onClick")
+    return Window()
+
+
 class HomeLayoutContractTests(unittest.TestCase):
+    def test_single_resume_requires_one_unpaginated_in_progress_video(self):
+        item = _HubListItem(
+            _HubMedia(
+                "Resume me",
+                "1",
+                media_type="episode",
+                in_progress=True,
+            )
+        )
+        window = _resume_window([item])
+
+        self.assertIs(
+            window._singleResumeItem(
+                window.hubControls[0],
+                "home.continue",
+                False,
+            ),
+            item,
+        )
+        self.assertIsNone(
+            window._singleResumeItem(
+                window.hubControls[0],
+                "home.continue",
+                True,
+            )
+        )
+        self.assertIsNone(
+            window._singleResumeItem(
+                window.hubControls[0],
+                "home.test",
+                False,
+            )
+        )
+
+    def test_single_resume_rejects_multiple_or_unstarted_items(self):
+        resumable = _HubListItem(
+            _HubMedia("Resume me", "1", in_progress=True)
+        )
+        fresh = _HubListItem(
+            _HubMedia("Fresh", "2", in_progress=False)
+        )
+        window = _resume_window([resumable, fresh])
+
+        self.assertIsNone(
+            window._singleResumeItem(
+                window.hubControls[0],
+                "continueWatching",
+                False,
+            )
+        )
+        self.assertIsNone(
+            _resume_window([fresh])._singleResumeItem(
+                _HubControl([fresh]),
+                "continueWatching",
+                False,
+            )
+        )
+
+    def test_resume_property_is_owned_only_by_first_hub(self):
+        window = _resume_window([
+            _HubListItem(
+                _HubMedia("Resume me", "1", in_progress=True)
+            )
+        ])
+
+        window._syncHomeResumeAction(
+            0,
+            "home.continue",
+            window.hubControls[0],
+            False,
+        )
+        self.assertEqual(window.properties["home.resume.visible"], "1")
+
+        window._syncHomeResumeAction(
+            1,
+            "home.test",
+            _HubControl(),
+            False,
+        )
+        self.assertEqual(window.properties["home.resume.visible"], "1")
+
+        window._syncHomeResumeAction(
+            0,
+            "home.continue",
+            _HubControl(),
+            False,
+        )
+        self.assertEqual(window.properties["home.resume.visible"], "")
+
+    def test_resume_click_delegates_to_first_hub_direct_playback(self):
+        window = _resume_action_window()
+
+        window.onClick(window.RESUME_BUTTON_ID)
+
+        self.assertEqual(
+            window.play_calls,
+            [(window.HUB_BASE_ID, True)],
+        )
+
+    def test_resume_focus_restores_first_item_hero_and_full_composition(self):
+        window = _resume_action_window()
+
+        self.assertTrue(window._focusHomeResumeItem())
+
+        self.assertEqual(window.hub_focus, [None])
+        self.assertEqual(window.synced, [(0, True)])
+
+    def test_resume_directional_navigation_is_owned_by_native_xml(self):
+        home = _read("script-plex-home.xml.tpl")
+        window = _read_file(HOME_WINDOW)
+
+        self.assertEqual(
+            home.count(
+                '<ondown condition="!String.IsEmpty('
+                'Window.Property(home.resume.visible))">205</ondown>'
+            ),
+            2,
+        )
+        self.assertEqual(
+            home.count(
+                '<ondown condition="String.IsEmpty('
+                'Window.Property(home.resume.visible))">400</ondown>'
+            ),
+            2,
+        )
+        resume = home.split(
+            '<control type="button" id="205">',
+            1,
+        )[1].split("</control>", 1)[0]
+        self.assertIn("<ondown>401</ondown>", resume)
+        self.assertIn("{% elif i == 1 %}", home)
+        self.assertIn(
+            '<onup condition="!String.IsEmpty('
+            'Window.Property(home.resume.visible))">205</onup>',
+            home,
+        )
+        self.assertIn('<control type="group" id="206">', home)
+        resume_wrapper = home.split(
+            '<control type="group" id="206">',
+            1,
+        )[1].split("</control>", 1)[0]
+        self.assertIn(
+            'condition="!String.IsEmpty(Window.Property(hub.scrolled))"',
+            resume_wrapper,
+        )
+        self.assertNotIn("_routeHomeResumeAction", window)
+        self.assertNotIn("_returnToHomeResumeAction", window)
+
     def test_server_selection_and_now_playing_remain_remote_reachable(self):
         home = _read("script-plex-home.xml.tpl")
         window = _read_file(HOME_WINDOW)
@@ -60,7 +476,7 @@ class HomeLayoutContractTests(unittest.TestCase):
 
         self.assertIn('<control type="fixedlist" id="101">', content)
         self.assertIn("<posx>160</posx>\n            <posy>{{ vscale(6) }}</posy>\n            <width>1500</width>", content)
-        self.assertIn("<posx>160</posx>\n            <posy>{{ vscale(118) }}</posy>\n            <width>1120</width>", content)
+        self.assertIn("<posx>160</posx>\n            <posy>{{ vscale(142) }}</posy>\n            <width>1120</width>", content)
         self.assertIn("<posx>160</posx>\n            <posy>0</posy>\n            <width>1680</width>", content)
         self.assertIn("<posx>100</posx>\n            <posy>{{ vscale(42) }}</posy>\n            <width>1740</width>", content)
 
@@ -159,14 +575,104 @@ class HomeLayoutContractTests(unittest.TestCase):
         )
         self.assertEqual(
             home.count("String.IsEmpty(Window.Property(home.hero.logo))"),
-            4,
+            9,
         )
-        self.assertIn("<width>560</width>", home)
-        self.assertIn("<width>500</width>", home)
+        self.assertEqual(
+            home.count("$INFO[Window.Property(home.hero.subtitle)]"),
+            2,
+        )
+        self.assertEqual(
+            home.count("!String.IsEmpty(Window.Property(home.hero.subtitle))"),
+            2,
+        )
+        self.assertIn("<width>700</width>", home)
+        self.assertIn("<height>{{ vscale(112) }}</height>", home)
+        self.assertIn("<posy>{{ vscale(-30) }}</posy>", home)
+        self.assertIn("<width>620</width>", home)
+        self.assertIn("<height>{{ vscale(84) }}</height>", home)
         self.assertEqual(
             home.count('<aspectratio align="left" aligny="center">keep</aspectratio>'),
             2,
         )
+        self.assertEqual(home.count("<font>font45_title</font>"), 1)
+        self.assertEqual(home.count("<font>font40_title</font>"), 1)
+
+    def test_home_hero_resolves_missing_provider_logos_in_a_cached_background_task(self):
+        window = _read_file(HOME_WINDOW)
+
+        self.assertIn("class HomeHeroLogoTask(backgroundthread.Task):", window)
+        self.assertIn("plexapp.SERVERMANAGER.getDiscoverServer()", window)
+        self.assertIn("logo_metadata_key(data_source)", window)
+        self.assertIn("self._homeHeroLogoCache", window)
+        self.assertIn("self._homeHeroLogoPending", window)
+        self.assertIn("backgroundthread.BGThreader.addTask(task)", window)
+
+        refresh = window.split("def serverRefresh(self, section=None):", 1)[1]
+        refresh = refresh.split("def ", 1)[0]
+        self.assertIn("self._homeHeroLogoPending.clear()", refresh)
+
+    def test_home_logo_task_retries_in_english_when_localized_metadata_has_no_logo(self):
+        localized = ElementTree.fromstring(
+            '<MediaContainer><Directory><Image type="background" url="/art" />'
+            '</Directory></MediaContainer>'
+        )
+        english = ElementTree.fromstring(
+            '<MediaContainer><Directory><Image type="clearLogo" url="/logo" />'
+            '</Directory></MediaContainer>'
+        )
+        calls = []
+        callbacks = []
+
+        class Server(object):
+            def __init__(self):
+                self.session = types.SimpleNamespace(
+                    headers={
+                        "X-Plex-Language": "fr",
+                        "Accept-Language": "fr-FR,fr",
+                    }
+                )
+
+            def query(self, path, **kwargs):
+                calls.append((path, kwargs))
+                return localized if len(calls) == 1 else english
+
+            def buildUrl(self, path, includeToken=False):
+                return "https://plex.invalid{}".format(path)
+
+        server = Server()
+        fake_util = types.SimpleNamespace(
+            MONITOR=types.SimpleNamespace(waitFor=lambda amount: False),
+            LOG=lambda *args, **kwargs: None,
+            DEBUG_LOG=lambda *args, **kwargs: None,
+        )
+        namespace = {
+            "clear_logo_url_from_metadata": clear_logo_url_from_metadata,
+            "plexapp": types.SimpleNamespace(
+                SERVERMANAGER=types.SimpleNamespace(getDiscoverServer=lambda: server)
+            ),
+            "util": fake_util,
+        }
+
+        class Task(object):
+            run = _class_method("HomeHeroLogoTask", "run", namespace)
+            metadata_key = "show-id"
+            is_current = staticmethod(lambda key: True)
+            callback = staticmethod(lambda key, logo: callbacks.append((key, logo)))
+
+            def isCanceled(self):
+                return False
+
+        Task().run()
+
+        self.assertEqual(len(calls), 2)
+        self.assertNotIn("headers", calls[0][1])
+        self.assertNotIn("headers", calls[1][1])
+        self.assertEqual(
+            server.session.headers,
+            {"X-Plex-Language": "en", "Accept-Language": "en-US,en"},
+        )
+        self.assertEqual(calls[1][1]["params"]["X-Plex-Language"], "en")
+        self.assertEqual(callbacks, [("show-id", "https://plex.invalid/logo")])
 
     def test_home_hero_uses_a_compact_certification_badge_with_metadata_fallback(self):
         home = _read("script-plex-home.xml.tpl")
@@ -182,21 +688,89 @@ class HomeLayoutContractTests(unittest.TestCase):
         )
         self.assertIn("Window.Property(home.hero.content_rating)", metadata)
         self.assertIn("Window.Property(home.hero.content_rating_wide)", metadata)
-        self.assertEqual(metadata.count('<width>86</width>'), 2)
-        self.assertEqual(metadata.count('<width>150</width>'), 2)
+        self.assertEqual(metadata.count('<width>86</width>'), 3)
+        self.assertEqual(metadata.count('<width>150</width>'), 3)
         self.assertIn('<height>{{ vscale(28) }}</height>', metadata)
         self.assertIn('border="8" colordiffuse="C0343436"', metadata)
         self.assertNotIn('white-outline-rounded.png', metadata)
-        self.assertIn('<posx>104</posx>', metadata)
-        self.assertIn('<posx>168</posx>', metadata)
-        self.assertIn(
-            'String.IsEmpty(Window.Property(home.hero.content_rating)) + '
-            '!String.IsEmpty(Window.Property(home.hero.meta))',
-            metadata,
+        self.assertNotIn('<posx>104</posx>', metadata)
+        self.assertNotIn('<posx>168</posx>', metadata)
+        self.assertNotIn('<posx>620</posx>', metadata)
+        self.assertIn('<itemgap>12</itemgap>', metadata)
+        self.assertEqual(metadata.count('<width>auto</width>'), 3)
+        self.assertIn("Window.Property(home.hero.rating)", metadata)
+        self.assertIn("Window.Property(home.hero.rating_image)", metadata)
+        self.assertIn("Window.Property(home.hero.rating2)", metadata)
+        self.assertIn("Window.Property(home.hero.rating2_image)", metadata)
+        self.assertEqual(
+            metadata.count(
+                'fallback="script.plex/ratings/other/image.rating.png"'
+            ),
+            2,
         )
         self.assertEqual(
             metadata.count('<label>$INFO[Window.Property(home.hero.meta)]</label>'),
-            3,
+            1,
+        )
+
+    def test_home_hero_collapses_optional_subtitle_space(self):
+        home = _read("script-plex-home.xml.tpl")
+        metadata = _read("includes", "home_hero_metadata.xml.tpl")
+
+        self.assertIn("hero_meta_empty_shift = -44", home)
+        self.assertIn("hero_meta_empty_shift = -42", home)
+        self.assertIn(
+            'end="0,{{ vscale(hero_meta_empty_shift) }}" time="0" '
+            'condition="String.IsEmpty(Window.Property(home.hero.subtitle))"',
+            metadata,
+        )
+        self.assertIn(
+            'end="0,{{ vscale(-44) }}" time="0" '
+            'condition="String.IsEmpty(Window.Property(home.hero.subtitle))"',
+            home,
+        )
+        self.assertIn(
+            'end="0,{{ vscale(-42) }}" time="0" '
+            'condition="String.IsEmpty(Window.Property(home.hero.subtitle))"',
+            home,
+        )
+
+    def test_home_hero_gives_logo_episode_metadata_and_summary_breathing_room(self):
+        home = _read("script-plex-home.xml.tpl")
+
+        self.assertIn(
+            "<posy>{{ vscale(82) }}</posy>\n"
+            "                <width>880</width>\n"
+            "                <height>{{ vscale(34) }}</height>",
+            home,
+        )
+        self.assertIn(
+            "hero_meta_y = 126 & hero_meta_height = 32 & "
+            "hero_meta_empty_shift = -44 & hero_logo_shift = 28",
+            home,
+        )
+        self.assertIn(
+            "<posy>{{ vscale(168) }}</posy>\n"
+            "                <width>920</width>\n"
+            "                <height>{{ vscale(60) }}</height>",
+            home,
+        )
+        self.assertIn(
+            "<posy>{{ vscale(70) }}</posy>\n"
+            "        <width>880</width>\n"
+            "        <height>{{ vscale(30) }}</height>",
+            home,
+        )
+        self.assertIn(
+            "hero_meta_y = 112 & hero_meta_height = 30 & "
+            "hero_meta_empty_shift = -42 & hero_logo_shift = 26",
+            home,
+        )
+        self.assertIn(
+            "<posy>{{ vscale(154) }}</posy>\n"
+            "        <width>1120</width>\n"
+            "        <height>{{ vscale(56) }}</height>",
+            home,
         )
 
     def test_home_hero_places_clear_art_at_top_right_until_rows_scroll(self):
@@ -411,15 +985,283 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertLessEqual(fourth_art_right, 1840)
         self.assertEqual(fifth_art_left, 1840)
 
-    def test_focused_card_titles_wrap_without_marquee_fragments(self):
-        for name in (
-            "hub_focusedlayout_poster.xml.tpl",
-            "hub_focusedlayout_square.xml.tpl",
-            "hub_focusedlayout_ar16x9.xml.tpl",
-        ):
+    def test_home_hub_cards_are_art_only_without_losing_media_state(self):
+        for name in HOME_HUB_LAYOUTS:
             layout = _read("includes", name)
-            self.assertIn('<control type="textbox">', layout)
-            self.assertNotIn("<scroll>Control.HasFocus", layout)
+            self.assertNotIn("$INFO[ListItem.Label]", layout)
+            self.assertNotIn("$INFO[ListItem.Label2]", layout)
+            self.assertNotIn('<control type="textbox">', layout)
+            self.assertIn("$INFO[ListItem.Thumb]", layout)
+            self.assertIn("ListItem.Property(progress)", layout)
+            self.assertIn("ListItem.Property(is.end)", layout)
+            self.assertIn("ListItem.Property(is.updating)", layout)
+            if "square" in name:
+                self.assertNotIn("includes/watched_indicator.xml.tpl", layout)
+            else:
+                self.assertIn("includes/watched_indicator.xml.tpl", layout)
+
+    def test_home_hub_rows_use_geometry_aware_art_only_rhythm(self):
+        home = _read("script-plex-home.xml.tpl")
+
+        self.assertIn('end="0,{{ vscale(-622) }}"', home)
+        self.assertIn('end="0,{{ vscale(-475) }}"', home)
+        self.assertIn('end="0,{{ vscale(-125) }}"', home)
+        self.assertIn('end="0,{{ vscale(-105) }}"', home)
+        self.assertIn('end="0,{{ vscale(125) }}"', home)
+        self.assertIn('end="0,{{ vscale(105) }}"', home)
+        self.assertIn("for previous_i in range(i)", home)
+        self.assertNotIn("range(core.hub_count - 1)", home)
+        self.assertIn("hub.display.{{ previous_i + 400 }}),ar16x9", home)
+        self.assertIn("hub.display.{{ previous_i + 400 }}),square", home)
+        self.assertIn("grouplist_height = n * 475 + 407", home)
+        self.assertIn("row_y = i * 475 + 407", home)
+        self.assertIn("<height>{{ vscale(475) }}</height>", home)
+        self.assertIn("<height>{{ vscale(435) }}</height>", home)
+        self.assertNotIn('end="0,{{ vscale(-590) }}"', home)
+        self.assertNotIn("n * 555 + 355", home)
+        self.assertNotIn("i * 555 + 355", home)
+
+    def test_single_resume_action_replaces_only_the_first_visual_hub(self):
+        home = _read("script-plex-home.xml.tpl")
+        french = _read_file(FRENCH_CATALOG)
+        self.assertIn('<control type="button" id="205">', home)
+        resume = home.split(
+            '<control type="button" id="205">',
+            1,
+        )[1].split("</control>", 1)[0]
+
+        self.assertIn("$ADDON[script.plexmod 32316]", resume)
+        self.assertIn("<width>260</width>", resume)
+        self.assertIn("<onup>101</onup>", resume)
+        self.assertIn("<ondown>401</ondown>", resume)
+        self.assertIn("<textcolor>FF111111</textcolor>", resume)
+        self.assertIn(
+            '<texturefocus colordiffuse="FFFFFFFF" border="20">'
+            "script.plex/white-square-rounded.png</texturefocus>",
+            resume,
+        )
+        self.assertIn(
+            '<texturenofocus colordiffuse="FFFFFFFF" border="20">'
+            "script.plex/white-square-rounded.png</texturenofocus>",
+            resume,
+        )
+        self.assertEqual(home.count("script.plex/circle-rounded-focus.png"), 1)
+        self.assertEqual(
+            home.count("script.plex/buttons/player/modern/play.png"),
+            1,
+        )
+        self.assertNotIn(
+            "script.plex/buttons/player/modern-focused/play.png",
+            home,
+        )
+        self.assertIn(
+            "String.IsEmpty(Window.Property(home.hero.short_summary))",
+            home,
+        )
+        self.assertIn(
+            "{% if loop.is_first %} + "
+            "String.IsEmpty(Window.Property(home.resume.visible))"
+            "{% endif %}",
+            home,
+        )
+        self.assertIn('end="0,{{ vscale(-410) }}"', home)
+        self.assertIn('end="0,{{ vscale(-305) }}"', home)
+        self.assertIn('end="0,{{ vscale(-285) }}"', home)
+        self.assertIn(
+            '<animation effect="slide" end="0,{{ vscale(-47) }}" time="0" '
+            'condition="!String.IsEmpty(Window.Property(home.resume.visible)) + '
+            'String.IsEmpty(Window.Property(hub.scrolled)) + '
+            'String.IsEmpty(Window.Property(home.hero.short_summary))"',
+            home,
+        )
+        self.assertIn(
+            '<animation effect="zoom" start="100" end="106" time="110" '
+            'center="130,{{ vscale(29) }}"',
+            home,
+        )
+        self.assertIn("<posy>{{ vscale(376) }}</posy>", home)
+        self.assertIn(
+            "!String.IsEmpty(Window.Property(home.resume.visible)) + "
+            "String.IsEmpty(Window.Property(hub.scrolled))",
+            home,
+        )
+
+        resume_translation = french.split(
+            'msgctxt "#32316"',
+            1,
+        )[1].split("msgctxt", 1)[0]
+        self.assertIn('msgid "Resume"', resume_translation)
+        self.assertIn('msgstr "Reprendre"', resume_translation)
+
+    def test_initial_home_hero_is_built_after_episode_spoiler_state(self):
+        window = _read_file(HOME_WINDOW)
+        hub_loop = window.split("for obj in hubitems or hub.items:", 1)[1]
+        hub_loop = hub_loop.split("if util.getSetting('cache_requests'):", 1)[0]
+        show_hub = window.split("def _showHub", 1)[1]
+
+        self.assertLess(
+            hub_loop.index("obj._noSpoilers = no_spoilers = self.hideSpoilers"),
+            hub_loop.index("mli = self.createListItem(obj, wide=wide)"),
+        )
+        self.assertLess(
+            show_hub.index("obj._noSpoilers = no_spoilers = self.hideSpoilers"),
+            show_hub.index("if not use_reselect_pos and not self._initialHomeHeroSet:"),
+        )
+
+    def test_initial_hub_uses_first_selected_item_when_background_is_unavailable(self):
+        media = (_HubMedia("First", "1"), _HubMedia("Second", "2"))
+        control = _HubControl()
+        window = _show_hub_window(control)
+
+        window._showHub(_Hub(media), identifier="home.test", index=0)
+
+        self.assertEqual(control.getSelectedItem().dataSource.title, "First")
+        self.assertEqual(window.backgrounds, ["First"])
+        self.assertEqual(window.heroes, ["First"])
+
+    def test_initial_redraw_waits_for_the_hub_that_retains_focus(self):
+        first_control = _HubControl()
+        focused_control = _HubControl()
+        window = _show_hub_window(
+            [first_control, focused_control],
+            last_focus=401,
+        )
+
+        window._showHub(
+            _Hub([_HubMedia("First hub", "1")]),
+            identifier="home.first",
+            index=0,
+        )
+        self.assertEqual(window.heroes, [])
+
+        window._showHub(
+            _Hub([_HubMedia("Focused hub", "2")]),
+            identifier="home.focused",
+            index=1,
+        )
+
+        self.assertEqual(window.heroes, ["Focused hub"])
+        self.assertEqual(window.backgrounds, ["Focused hub"])
+
+    def test_same_position_refresh_rebuilds_the_focused_hero(self):
+        old = _HubListItem(_HubMedia("Old title", "1"))
+        control = _HubControl([old], selected=0)
+        window = _show_hub_window(control)
+        window._initialHomeHeroSet = True
+
+        window._showHub(
+            _Hub([_HubMedia("Fresh title", "1")]),
+            reselect_pos=("1", 0),
+            identifier="home.test",
+            index=0,
+        )
+
+        self.assertEqual(window.heroes, ["Fresh title"])
+        self.assertEqual(window.backgrounds, ["Fresh title"])
+
+    def test_manual_selection_during_refresh_rebuilds_current_focused_hero(self):
+        old_items = [
+            _HubListItem(_HubMedia("Old first", "1")),
+            _HubListItem(_HubMedia("Old second", "2")),
+        ]
+        control = _HubControl(old_items, selected=1)
+        window = _show_hub_window(control, any_item_action=True)
+        window._initialHomeHeroSet = True
+
+        window._showHub(
+            _Hub([_HubMedia("Fresh first", "1"), _HubMedia("Fresh second", "2")]),
+            reselect_pos=("1", 0),
+            identifier="home.test",
+            index=0,
+        )
+
+        self.assertEqual(control.getSelectedPos(), 1)
+        self.assertEqual(window.heroes, ["Fresh second"])
+
+    def test_missing_refresh_key_falls_back_to_last_item_and_rebuilds_hero(self):
+        old_items = [
+            _HubListItem(_HubMedia("Old first", "1")),
+            _HubListItem(_HubMedia("Old second", "2")),
+        ]
+        control = _HubControl(old_items, selected=1)
+        window = _show_hub_window(control)
+        window._initialHomeHeroSet = True
+
+        window._showHub(
+            _Hub([_HubMedia("Fresh first", "1"), _HubMedia("Fresh last", "2")]),
+            reselect_pos=("missing", 5),
+            identifier="home.test",
+            index=0,
+        )
+
+        self.assertEqual(control.getSelectedPos(), 1)
+        self.assertEqual(window.heroes, ["Fresh last"])
+
+    def test_background_refresh_does_not_overwrite_hero_from_another_hub(self):
+        old = _HubListItem(_HubMedia("Old title", "1"))
+        control = _HubControl([old], selected=0)
+        window = _show_hub_window(control, last_focus=401)
+        window._initialHomeHeroSet = True
+
+        window._showHub(
+            _Hub([_HubMedia("Fresh title", "1")]),
+            reselect_pos=("1", 0),
+            identifier="home.test",
+            index=0,
+        )
+
+        self.assertEqual(window.heroes, [])
+        self.assertEqual(window.backgrounds, [])
+
+    def test_extended_hub_refreshes_hero_for_item_replacing_more_sentinel(self):
+        window = _read_file(HOME_WINDOW)
+        extension = window.split("if hubitems:", 1)[1]
+        extension = extension.split("else:\n            control.replaceItems(items)", 1)[0]
+
+        self.assertIn("control.selectItem(end)", extension)
+        self.assertIn("self._syncHomeHeroSelection(index, control, end)", extension)
+
+    def test_every_classified_home_media_type_has_a_list_item_dispatcher(self):
+        window = _read_file(HOME_WINDOW)
+        tree = ast.parse(window)
+        dispatch_keys = set()
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Assign):
+                continue
+            if not any(
+                isinstance(target, ast.Name) and target.id == "CREATE_LI_MAP"
+                for target in node.targets
+            ):
+                continue
+            dispatch_keys = set(
+                key.value
+                for key in node.value.keys
+                if isinstance(key, ast.Constant) and isinstance(key.value, str)
+            )
+            break
+
+        expected = {
+            "movie",
+            "show",
+            "season",
+            "episode",
+            "clip",
+            "video",
+            "album",
+            "artist",
+            "photo",
+            "photodirectory",
+            "track",
+            "playlist",
+        }
+        self.assertEqual(dispatch_keys, expected)
+
+    def test_home_uses_one_media_display_contract_for_all_fallback_paths(self):
+        window = _read_file(HOME_WINDOW)
+
+        self.assertIn("media_display_type", window)
+        self.assertGreaterEqual(window.count("media_display_type("), 6)
+        self.assertNotIn("TYPE_TO_DISPLAY", window)
 
     def test_scrolled_header_preserves_ambient_art_without_a_separate_black_bar(self):
         home = _read("script-plex-home.xml.tpl")
@@ -462,7 +1304,7 @@ class HomeLayoutContractTests(unittest.TestCase):
     def test_home_header_uses_one_subtle_reversible_focus_lift(self):
         home = _read("script-plex-home.xml.tpl")
 
-        self.assertEqual(home.count('end="106" time="110"'), 9)
+        self.assertEqual(home.count('end="106" time="110"'), 10)
         for control_id in (202, 203):
             self.assertIn(
                 'reversible="true" condition="Control.HasFocus({})">Conditional'.format(
@@ -477,16 +1319,6 @@ class HomeLayoutContractTests(unittest.TestCase):
         for oversized in ('end="108"', 'start="108"', 'end="118"', 'start="118"'):
             self.assertNotIn(oversized, home)
         self.assertNotIn('reversible="false">Focus</animation>', home)
-
-    def test_square_and_wide_secondary_text_have_three_line_height(self):
-        for name in (
-            "hub_itemlayout_square.xml.tpl",
-            "hub_focusedlayout_square.xml.tpl",
-            "hub_itemlayout_ar16x9.xml.tpl",
-            "hub_focusedlayout_ar16x9.xml.tpl",
-        ):
-            layout = _read("includes", name)
-            self.assertIn("<height>{{ vscale(90) }}</height>", layout)
 
     def test_home_textboxes_never_start_vertical_autoscroll(self):
         paths = (

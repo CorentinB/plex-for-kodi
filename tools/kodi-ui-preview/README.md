@@ -16,8 +16,9 @@ Then open the printed local URL.
 ## Scope
 
 - Uses real skin PNG/GIF assets through `/skin-media/...`.
-- Mirrors the native top composition, compact lower-row hero, deterministic
-  row viewport, and poster/square/16:9 focus treatment.
+- Mirrors the native art-only Home hubs, type-aware hero hierarchy, rating
+  rail, compact lower-row hero, deterministic row viewport, and
+  poster/square/16:9 focus treatment.
 - Supports keyboard focus (`Arrow` keys and `Escape`) so row transitions and
   metadata changes can be inspected without Kodi.
 - Includes basic read-only source-template inspection.

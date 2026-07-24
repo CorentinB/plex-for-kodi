@@ -29,19 +29,22 @@ the existing carousel unchanged.
 The hero remains the source of identity, artwork, episode or movie title,
 metadata, ratings, and synopsis. In button-only mode:
 
-- A compact play action labeled with localized string `#32316` appears beneath
-  the hero copy.
+- A compact 260 x 58 play action labeled with localized string `#32316`
+  appears beneath the hero copy.
 - The Continue Watching heading and thumbnail row are hidden.
-- The next Home hub moves upward below the completed hero and action, with
-  enough separation for a two-line synopsis.
+- The next Home hub moves upward below the completed hero and action. Its
+  native design baseline is 425 when the synopsis is empty and 472 when a
+  synopsis is present. The summary-free position gives equal optical spacing
+  above and below the hub heading, while the populated state preserves enough
+  separation for two lines of copy.
 - Poster, square, and 16:9 first-hub geometry each receive the matching
   top-state offset so the next hub lands on one common baseline.
 - Scrolled lower-hub geometry remains unchanged.
 
-The action follows the existing tvOS treatment: restrained transparent
-unfocused state, solid white focused plate, black focused label and icon, and
-one subtle reversible focus lift. The French `#32316` translation becomes
-`Reprendre`.
+The action follows the selected-tab tvOS treatment: a solid white plate with a
+black label and circular play icon in both resting and focused states. Focus
+adds one subtle reversible lift without changing the action's colors. The
+French `#32316` translation becomes `Reprendre`.
 
 ## Focus And Playback
 
@@ -74,7 +77,9 @@ carousel modes, focus transfers to the corresponding visible control. Other
 hubs cannot enable or clear the action.
 
 The browser preview mirrors the singleton action and collapsed top-state
-spacing, but native Kodi remains authoritative.
+spacing, but native Kodi remains authoritative. Because its action uses a
+different coordinate parent, the preview uses a 396 px summary-free hub
+position to reproduce the native 18/18 design-pixel control gaps.
 
 ## Verification
 

@@ -16,8 +16,11 @@ from lib import player
 from lib import util
 from lib.home_hero import (
     NAV_LABEL_WIDTHS,
-    build_hero_properties,
+    build_home_hero_properties,
+    clear_logo_url_from_metadata,
     empty_hero_properties,
+    logo_metadata_key,
+    media_display_type,
     nav_label_width,
     nav_visual_offsets,
 )
@@ -181,6 +184,61 @@ class ExtendHubTask(backgroundthread.Task):
             util.ERROR()
 
 
+class HomeHeroLogoTask(backgroundthread.Task):
+    def setup(self, metadata_key, is_current, callback):
+        self.metadata_key = metadata_key
+        self.is_current = is_current
+        self.callback = callback
+        return self
+
+    def run(self):
+        # Avoid fetching every card crossed during a fast horizontal gesture.
+        if util.MONITOR.waitFor(0.12) or self.isCanceled():
+            return
+        if not self.is_current(self.metadata_key):
+            self.callback(self.metadata_key, None)
+            return
+
+        logo = None
+        try:
+            server = plexapp.SERVERMANAGER.getDiscoverServer()
+            path = '/library/metadata/{}'.format(self.metadata_key)
+            params = {
+                'includeMeta': 1,
+                'includeExternalMetadata': 1,
+            }
+            data = server.query(path, params=params)
+            if data is not None:
+                logo = clear_logo_url_from_metadata(data)
+
+            # Plex can omit language-neutral logos from localized metadata.
+            if (not logo and not self.isCanceled()
+                    and self.is_current(self.metadata_key)):
+                english_params = params.copy()
+                # Keep the URL cache key distinct from the localized request.
+                english_params['X-Plex-Language'] = 'en'
+                server.session.headers.update({
+                    'X-Plex-Language': 'en',
+                    'Accept-Language': 'en-US,en',
+                })
+                data = server.query(path, params=english_params)
+                if data is not None:
+                    logo = clear_logo_url_from_metadata(data)
+
+            if logo and '://' not in logo:
+                logo = server.buildUrl(logo, includeToken=True)
+        except Exception as exc:
+            util.DEBUG_LOG(
+                'Home: provider logo lookup failed for {0}: {1}'.format(
+                    self.metadata_key,
+                    exc,
+                )
+            )
+
+        if not self.isCanceled():
+            self.callback(self.metadata_key, logo)
+
+
 class DiscoverHubsTask(backgroundthread.Task):
     """Background task to discover all available hubs across all library sections."""
 
@@ -224,11 +282,11 @@ class DiscoverHubsTask(backgroundthread.Task):
                     # Determine native display type from hub content
                     native_display = 'poster'  # Default
                     if hub.items:
-                        item_type = hub.items[0].type
-                        native_display = {
-                            'episode': 'ar16x9', 'clip': 'ar16x9', 'video': 'ar16x9',
-                            'album': 'square', 'artist': 'square', 'photo': 'square', 'track': 'square',
-                        }.get(item_type, 'poster')
+                        first_item = hub.items[0]
+                        native_display = media_display_type(
+                            first_item.type,
+                            getattr(first_item, 'playlistType', ''),
+                        )
 
                     # Resolve hub title — playlist hubs have no server-provided title
                     hub_title = hub.title
@@ -407,6 +465,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
     # Hub base ID - hubs are dynamically generated starting from this ID
     HUB_BASE_ID = 400
+    RESUME_BUTTON_ID = 205
+    SINGLE_RESUME_HUBS = frozenset(('continueWatching', 'home.continue'))
 
     def getHubDisplayType(self, hub, identifier):
         """Determine the display type for a hub: 'poster', 'ar16x9', or 'square'.
@@ -436,20 +496,24 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         # Check hub's type attribute (Plex sets this to indicate content type)
         if hub:
             hub_type = getattr(hub, 'type', None)
-            if hub_type in ('episode', 'clip', 'video'):
-                return 'ar16x9'
-            elif hub_type in ('album', 'artist', 'photo', 'track'):
-                return 'square'
+            display_type = media_display_type(
+                hub_type,
+                getattr(hub, 'playlistType', ''),
+                default=None,
+            )
+            if display_type:
+                return display_type
 
         # Detect from hub content as fallback
         if hub and hub.items:
-            item_type = getattr(hub.items[0], 'type', None)
-            # 16x9 content types - episodes, clips, videos
-            if item_type in ('episode', 'clip', 'video'):
-                return 'ar16x9'
-            # Square content types - albums, artists, photos, tracks
-            elif item_type in ('album', 'artist', 'photo', 'track'):
-                return 'square'
+            first_item = hub.items[0]
+            display_type = media_display_type(
+                getattr(first_item, 'type', None),
+                getattr(first_item, 'playlistType', ''),
+                default=None,
+            )
+            if display_type:
+                return display_type
 
         # Default to poster for everything else (movies, shows, mixed content)
         return 'poster'
@@ -523,29 +587,16 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         # Only detect from hub content if identifier doesn't have a known prefix
         # This prevents "tv.recentlyadded" (poster) from being detected as 16x9 due to episode content
         if not identifier_has_known_prefix and not flags['ar16x9'] and hub and hub.items:
-            item_type = getattr(hub.items[0], 'type', None)
-            if item_type in ('episode', 'clip', 'video'):
+            first_item = hub.items[0]
+            if media_display_type(
+                getattr(first_item, 'type', None),
+                getattr(first_item, 'playlistType', ''),
+                default=None,
+            ) == 'ar16x9':
                 flags['ar16x9'] = True
                 flags['with_art'] = True  # 16x9 hubs use art/thumb images
 
         return flags
-
-    # Display type mapping for auto-detection based on item type
-    TYPE_TO_DISPLAY = {
-        # 16x9 wide format
-        'episode': 'ar16x9',
-        'clip': 'ar16x9',
-        'video': 'ar16x9',
-        # Square format
-        'album': 'square',
-        'artist': 'square',
-        'photo': 'square',
-        'track': 'square',
-        # Poster format (default for movies, shows, seasons)
-        'movie': 'poster',
-        'show': 'poster',
-        'season': 'poster',
-    }
 
     THUMB_POSTER_DIM = util.scaleResolution(244, 361)
     THUMB_AR16X9_DIM = util.scaleResolution(532, 299)
@@ -559,7 +610,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         self.tasks = []
         self.closeOption = None
         self.hubControls = None
-        self.backgroundSet = False
+        self._initialHomeHeroSet = False
+        self._homeHeroLogoCache = {}
+        self._homeHeroLogoPending = set()
+        self._homeHeroLogoKey = ''
         self.sectionChangeThread = None
         self.sectionChangeTimeout = 0
         self.lastFocusID = None
@@ -898,8 +952,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         if not hub.items:
             return "poster"  # Default fallback
 
-        item_type = hub.items[0].type
-        return HomeWindow.TYPE_TO_DISPLAY.get(item_type, "poster")
+        first_item = hub.items[0]
+        return media_display_type(
+            first_item.type,
+            getattr(first_item, 'playlistType', ''),
+        )
 
     # Display type defaults for known hub identifiers (by prefix)
     # This ensures correct display regardless of hub content
@@ -1032,8 +1089,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                     # Determine native display type from hub content
                     native_display = 'poster'
                     if hub.items:
-                        item_type = hub.items[0].type
-                        native_display = self.TYPE_TO_DISPLAY.get(item_type, 'poster')
+                        first_item = hub.items[0]
+                        native_display = media_display_type(
+                            first_item.type,
+                            getattr(first_item, 'playlistType', ''),
+                        )
 
                     # Resolve hub title — playlist hubs have no server-provided title
                     hub_title = hub.title
@@ -1645,7 +1705,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                     'source_section_key': section_key,
                     'source_section_title': source_title,
                     'source_section_type': source_type,
-                    'native_display': self.TYPE_TO_DISPLAY.get(hub.items[0].type, 'poster') if hub.items else 'poster',
+                    'native_display': media_display_type(
+                        hub.items[0].type,
+                        getattr(hub.items[0], 'playlistType', ''),
+                    ) if hub.items else 'poster',
                     'item_count': len(hub.items) if hub.items else 0,
                 }
 
@@ -2471,6 +2534,19 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                     self.setFocusId(self.SECTION_LIST_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SECTION_LIST_ID)
+            elif controlID == self.RESUME_BUTTON_ID:
+                if self.isWatchedAction(action):
+                    self.toggleWatched(self.HUB_BASE_ID)
+                    return
+                elif action == xbmcgui.ACTION_PLAYER_PLAY:
+                    self.hubItemClicked(self.HUB_BASE_ID, auto_play=True)
+                    return
+                elif action == xbmcgui.ACTION_CONTEXT_MENU:
+                    show_section = self.hubMenu(self.HUB_BASE_ID)
+                    if not show_section:
+                        return
+                    self.serverRefresh(section=show_section)
+                    return
             elif 399 < controlID < 500:
                 if action.getId() in MOVE_SET or action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                     _continue = self.checkHubItem(controlID, action=action)
@@ -2589,6 +2665,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             self.setFocusId(self.USER_BUTTON_ID)
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
+        elif controlID == self.RESUME_BUTTON_ID:
+            self.hubItemClicked(self.HUB_BASE_ID, auto_play=True)
         elif 399 < controlID < 500:
             self.hubItemClicked(controlID)
         elif controlID == self.SEARCH_BUTTON_ID:
@@ -2609,7 +2687,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             # don't store focus for mini music player
             self.lastFocusID = controlID
 
-        if 399 < controlID < 500:
+        if controlID == self.RESUME_BUTTON_ID:
+            self._focusHomeResumeItem()
+        elif 399 < controlID < 500:
             self._setHubFocus(self.hubFocusIndexes[controlID - 400])
         elif controlID in (self.SECTION_LIST_ID, self.SEARCH_BUTTON_ID,
                            self.SERVER_BUTTON_ID, self.USER_BUTTON_ID,
@@ -2786,7 +2866,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
     def fullyRefreshHome(self, *args, **kwargs):
         section = kwargs.pop("section", None)
         self.showSections(focus_section=section or home_section)
-        self.backgroundSet = False
+        self._initialHomeHeroSet = False
         # Don't call showHubs() here — showSections() just cleared sectionHubs,
         # so there's nothing to draw. Let background tasks call showHubs() via
         # sectionHubsCallback when data actually arrives.
@@ -2847,6 +2927,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         if self.tasks:
             for task in self.tasks:
                 task.cancel()
+        self._homeHeroLogoPending.clear()
 
         with self.lock:
             self._setHubFocus()
@@ -3508,14 +3589,121 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         backgroundthread.BGThreader.addTask(task)
 
     def setHomeHeroFromDataSource(self, data_source):
+        metadata_key = logo_metadata_key(data_source)
+        self._homeHeroLogoKey = metadata_key
         try:
-            props = build_hero_properties(data_source)
+            props = build_home_hero_properties(
+                data_source,
+                rating_sections=util.getSetting('show_ratings') or '',
+                no_titles=self.noTitles,
+                no_summaries=self.noSummaries,
+                no_ratings=self.noRatings,
+                spoiler_text=T(33008, '[Spoilers removed]'),
+            )
         except Exception:
             util.ERROR("Home: failed to build hero properties")
             props = empty_hero_properties()
 
+        if metadata_key:
+            if props['logo']:
+                self._homeHeroLogoCache[metadata_key] = props['logo']
+            elif metadata_key in self._homeHeroLogoCache:
+                props['logo'] = self._homeHeroLogoCache[metadata_key]
+
         for key, value in props.items():
             self.setProperty('home.hero.{}'.format(key), value)
+
+        if (metadata_key and not props['logo']
+                and metadata_key not in self._homeHeroLogoCache
+                and metadata_key not in self._homeHeroLogoPending):
+            self._homeHeroLogoPending.add(metadata_key)
+            task = HomeHeroLogoTask().setup(
+                metadata_key,
+                self._isCurrentHomeHeroLogo,
+                self._homeHeroLogoCallback,
+            )
+            self.tasks.append(task)
+            backgroundthread.BGThreader.addTask(task)
+
+    def _isCurrentHomeHeroLogo(self, metadata_key):
+        return not self._shuttingDown and metadata_key == self._homeHeroLogoKey
+
+    def _homeHeroLogoCallback(self, metadata_key, logo):
+        self._homeHeroLogoPending.discard(metadata_key)
+        if logo is not None:
+            self._homeHeroLogoCache[metadata_key] = logo
+        if logo and self._isCurrentHomeHeroLogo(metadata_key):
+            self.setProperty('home.hero.logo', logo)
+
+    def _syncHomeHeroSelection(self, index, control, pos=None, force=False):
+        if not force and self.lastFocusID != index + 400:
+            return False
+
+        if pos is None:
+            mli = control.getSelectedItem()
+        elif 0 <= pos < control.size():
+            mli = control[pos]
+        else:
+            return False
+
+        if not mli or not mli.dataSource or mli.getProperty('is.end') == '1':
+            return False
+
+        self.updateBackgroundFrom(mli.dataSource)
+        self.setHomeHeroFromDataSource(mli.dataSource)
+        self._initialHomeHeroSet = True
+        return True
+
+    def _singleResumeItem(self, control, identifier, has_more=False):
+        if identifier not in self.SINGLE_RESUME_HUBS or has_more:
+            return None
+
+        media_items = [
+            item for item in control
+            if item and item.dataSource and item.getProperty('is.end') != '1'
+        ]
+        if len(media_items) != 1:
+            return None
+
+        item = media_items[0]
+        media_type = (
+            getattr(item.dataSource, 'TYPE', None)
+            or getattr(item.dataSource, 'type', None)
+        )
+        if media_type not in ('movie', 'episode'):
+            return None
+        if not getattr(item.dataSource, 'in_progress', False):
+            return None
+        return item
+
+    def _syncHomeResumeAction(self, index, identifier, control, has_more=False):
+        if index != 0:
+            return False
+
+        visible = self._singleResumeItem(control, identifier, has_more) is not None
+        was_visible = bool(self.getProperty('home.resume.visible'))
+        self.setProperty('home.resume.visible', visible and '1' or '')
+
+        if visible != was_visible:
+            focus_id = self.getFocusId()
+            if visible and focus_id == self.HUB_BASE_ID:
+                self.setFocusId(self.RESUME_BUTTON_ID)
+            elif not visible and focus_id == self.RESUME_BUTTON_ID:
+                self.setFocusId(self.HUB_BASE_ID)
+        return visible
+
+    def _homeResumeVisible(self):
+        return bool(self.getProperty('home.resume.visible'))
+
+    def _focusHomeResumeItem(self):
+        if not self._homeResumeVisible():
+            return False
+        self._setHubFocus()
+        return self._syncHomeHeroSelection(
+            0,
+            self.hubControls[0],
+            force=True,
+        )
 
     def _setHubFocus(self, index=None):
         """Keep raw hub focus and lower-row viewport state in sync."""
@@ -3597,8 +3785,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 util.MONITOR.waitFor()
 
             self._setHubFocus()
-            if util.addonSettings.dynamicBackgrounds:
-                self.backgroundSet = False
+            self._initialHomeHeroSet = False
 
             util.DEBUG_LOG('Section changed ({0}): {1}', section.key, repr(section.title))
             self.lastSection = section
@@ -4058,6 +4245,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
             hub_index += 1
 
+        if hasContent and not self._initialHomeHeroSet:
+            for fallback_index, fallback_control in enumerate(self.hubControls):
+                if self._syncHomeHeroSelection(
+                        fallback_index, fallback_control, force=True):
+                    break
 
         if not hasContent:
             self.setBoolProperty('no.content', True)
@@ -4248,6 +4440,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         'photo': createPhotoListItem,
         'photodirectory': createPhotoListItem,
         'clip': createClipListItem,
+        'video': createClipListItem,
         'artist': createArtistListItem,
         'playlist': createPlaylistListItem
     }
@@ -4257,6 +4450,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
     def clearHubs(self):
         self.updateHubs = {}
+        self._initialHomeHeroSet = False
+        self._homeHeroLogoKey = ''
+        self.setProperty('home.resume.visible', '')
         for key, value in empty_hero_properties().items():
             self.setProperty('home.hero.{}'.format(key), value)
         for i, control in enumerate(self.hubControls):
@@ -4271,6 +4467,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
         if not hub.items and not hubitems:
             control.reset()
+            self._syncHomeResumeAction(index, identifier, control)
             if self.lastFocusID == index + 400 and not self._anyItemAction:
                 util.DEBUG_LOG("Hub {} was focused but is gone.", identifier)
                 hubControlIndex = self.lastFocusID - 400
@@ -4311,16 +4508,13 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         hub_is_watchlist = hub.is_watchlist
 
         for obj in hubitems or hub.items:
-            if not self.backgroundSet and not use_reselect_pos:
-                if self.updateBackgroundFrom(obj):
-                    self.backgroundSet = True
-                self.setHomeHeroFromDataSource(obj)
-
             wide = with_art
             no_spoilers = False
-            if obj.type == 'episode' and hub.hubIdentifier in ("continueWatching", "home.continue", "home.ondeck", "watchlist.continueWatching") and self.spoilerSetting != "off":
-                check_spoilers = True
-                obj._noSpoilers = no_spoilers = self.hideSpoilers(obj, use_cache=False)
+            if obj.type == 'episode':
+                obj._noSpoilers = False
+                if hub.hubIdentifier in ("continueWatching", "home.continue", "home.ondeck", "watchlist.continueWatching") and self.spoilerSetting != "off":
+                    check_spoilers = True
+                    obj._noSpoilers = no_spoilers = self.hideSpoilers(obj, use_cache=False)
 
             if obj.type == 'episode' and util.addonSettings.continueUseThumb and wide:
                 # with_art sets the wide parameter which includes the episode title
@@ -4382,8 +4576,18 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             control.addItems(items[1:])
             if reselect_pos is None:
                 control.selectItem(end)
+                self._syncHomeHeroSelection(index, control, end)
         else:
             control.replaceItems(items)
+            if not use_reselect_pos and not self._initialHomeHeroSet:
+                has_focused_hub = self.lastFocusID is not None and 399 < self.lastFocusID < 500
+                self._syncHomeHeroSelection(
+                    index,
+                    control,
+                    force=not has_focused_hub,
+                )
+
+        self._syncHomeResumeAction(index, identifier, control, more)
 
         # hub reselect logic after updating a hub
         if use_reselect_pos:
@@ -4397,14 +4601,12 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
                 control.selectItem(last_pos)
                 self._lastSelectedItem = (index + 400, last_pos)
-                if last_pos < control.size() and self.updateBackgroundFrom(control[last_pos].dataSource):
-                    self.backgroundSet = True
-                if last_pos < control.size():
-                    self.setHomeHeroFromDataSource(control[last_pos].dataSource)
+                self._syncHomeHeroSelection(index, control, last_pos)
                 return
 
             # during hub updates, if the user manually selects a different item, do nothing
             if self._anyItemAction:
+                self._syncHomeHeroSelection(index, control)
                 return
 
             cur_pos = control.getSelectedPos()
@@ -4422,16 +4624,15 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                             pos = idx
                             break
                         else:
+                            self._syncHomeHeroSelection(index, control, idx)
                             return
                 if rk_found:
-                    if pos < control.size() and self.updateBackgroundFrom(control[pos].dataSource):
-                        self.backgroundSet = True
-                    if pos < control.size():
-                        self.setHomeHeroFromDataSource(control[pos].dataSource)
+                    self._syncHomeHeroSelection(index, control, pos)
                     return
 
             if cur_pos == pos:
                 util.DEBUG_LOG("Hub {}: Position was already correct ({})", identifier, pos)
+                self._syncHomeHeroSelection(index, control, pos)
                 return
 
             if pos < control.size() - (more and 1 or 0):
@@ -4439,10 +4640,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 util.DEBUG_LOG("Hub {}: Reselect: We didn't find {} in list, or no item given. "
                                "Reselecting position {}", identifier, rk, pos)
                 control.selectItem(pos)
-                if pos < control.size() and self.updateBackgroundFrom(control[pos].dataSource):
-                    self.backgroundSet = True
-                if pos < control.size():
-                    self.setHomeHeroFromDataSource(control[pos].dataSource)
+                self._syncHomeHeroSelection(index, control, pos)
             else:
                 if more:
                     # re-extend the hub to its original size so we can reselect the ratingKey/position
@@ -4458,8 +4656,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                     backgroundthread.BGThreader.addTask(task)
                 else:
                     control.selectItem(control.size() - 1)
-                    if self.updateBackgroundFrom(control[control.size() - 1].dataSource):
-                        self.backgroundSet = True
+                    self._syncHomeHeroSelection(index, control, control.size() - 1)
 
     def updateListItem(self, mli):
         if not mli or not mli.dataSource:  # May have become invalid

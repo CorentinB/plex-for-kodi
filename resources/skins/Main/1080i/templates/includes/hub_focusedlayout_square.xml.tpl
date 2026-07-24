@@ -88,29 +88,6 @@
                         <colordiffuse>FFCC7B19</colordiffuse>
                     </control>
                 </control>
-                <control type="textbox">
-                    <autoscroll>false</autoscroll>
-                    <posx>0</posx>
-                    <posy>{{ vscale(254) }}</posy>
-                    <width>244</width>
-                    <height>{{ vscale(60) }}</height>
-                    <font>font10</font>
-                    <align>center</align>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Label]</label>
-                </control>
-                <control type="textbox">
-                    <autoscroll>false</autoscroll>
-                    <visible>!String.IsEmpty(Window.Property(hub.text2lines.{{ hub_id }}))</visible>
-                    <posx>0</posx>
-                    <posy>{{ vscale(314) }}</posy>
-                    <width>244</width>
-                    <height>{{ vscale(90) }}</height>
-                    <font>font10</font>
-                    <align>center</align>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Label2]</label>
-                </control>
             </control>
         </control>
     </control>

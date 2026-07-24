@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PM4K Kodi UI Preview</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
@@ -36,8 +37,30 @@
             </header>
             <section class="hero-panel" aria-label="Selected media">
               <h1 data-hero-title></h1>
-              <p class="hero-meta" data-hero-meta></p>
+              <p class="hero-subtitle" data-hero-subtitle></p>
+              <div class="hero-facts">
+                <div class="hero-description">
+                  <span class="hero-certification" data-hero-certification></span>
+                  <span class="hero-meta" data-hero-meta></span>
+                </div>
+                <div class="hero-ratings" aria-label="Ratings">
+                  <span class="hero-rating" data-hero-rating>
+                    <img alt="">
+                    <span></span>
+                  </span>
+                  <span class="hero-rating" data-hero-rating2>
+                    <img alt="">
+                    <span></span>
+                  </span>
+                </div>
+              </div>
               <p class="hero-summary" data-hero-summary></p>
+              <button class="resume-action" data-resume-action type="button" hidden>
+                <span class="resume-icon" aria-hidden="true">
+                  <img src="/skin-media/script.plex/buttons/player/modern/play.png" alt="">
+                </span>
+                <span>Reprendre</span>
+              </button>
             </section>
             <section class="hub-stack" aria-label="Home hubs"></section>
             <div class="row-top-scrim" aria-hidden="true"></div>

@@ -45,20 +45,41 @@
          position the focused row deterministically. Rows above the focused hub
          fade away so the fixed hero can retain its artwork without a solid mask. -->
     <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
-        <effect type="slide" end="0,{{ vscale(-650) }}" time="240" tween="quadratic" easing="out"/>
+        <effect type="slide" end="0,{{ vscale(-622) }}" time="240" tween="quadratic" easing="out"/>
+    </animation>
+    <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + !String.IsEmpty(Window.Property(home.resume.visible))" reversible="true">
+        <effect type="slide" end="0,{{ vscale(-622) }}" time="240" tween="quadratic" easing="out"/>
     </animation>
 
     {% for i in range(1, core.hub_count) %}
     <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),{{ i }}) + Control.IsVisible({{ i + 500 }})" reversible="true">
-        <effect type="slide" end="0,{{ vscale(-555) }}" time="240" tween="quadratic" easing="out"/>
+        <effect type="slide" end="0,{{ vscale(-475) }}" time="240" tween="quadratic" easing="out"/>
     </animation>
     {% endfor %}
+
+    <!-- Shorter artwork shapes reduce the physical row step. Counter that
+         compaction while scrolling so every focused lower hub still lands on
+         the same fixed hero baseline. -->
+    {% for i in range(1, core.hub_count) %}
+    <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),{{ i - 1 }}) + Control.IsVisible({{ i + 499 }}) + String.IsEqual(Window.Property(hub.display.{{ i + 399 }}),ar16x9)" reversible="true">
+        <effect type="slide" end="0,{{ vscale(125) }}" time="240" tween="quadratic" easing="out"/>
+    </animation>
+    <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),{{ i - 1 }}) + Control.IsVisible({{ i + 499 }}) + String.IsEqual(Window.Property(hub.display.{{ i + 399 }}),square)" reversible="true">
+        <effect type="slide" end="0,{{ vscale(105) }}" time="240" tween="quadratic" easing="out"/>
+    </animation>
+    {% endfor %}
+    <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + !String.IsEmpty(Window.Property(home.resume.visible)) + String.IsEqual(Window.Property(hub.display.400),ar16x9)" reversible="true">
+        <effect type="slide" end="0,{{ vscale(125) }}" time="240" tween="quadratic" easing="out"/>
+    </animation>
+    <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + !String.IsEmpty(Window.Property(home.resume.visible)) + String.IsEqual(Window.Property(hub.display.400),square)" reversible="true">
+        <effect type="slide" end="0,{{ vscale(105) }}" time="240" tween="quadratic" easing="out"/>
+    </animation>
 
     <defaultcontrol>101</defaultcontrol>
     <posx>0</posx>
     <posy>{{ vscale(28) }}</posy>
     <width>1920</width>
-    {% with n = core.hub_count %}{% with grouplist_height = n * 555 + 355 %}
+    {% with n = core.hub_count %}{% with grouplist_height = n * 475 + 407 %}
     <height>{{ vscale(grouplist_height) }}</height>
     {% endwith %}{% endwith %}
     <control type="group" id="100">
@@ -98,7 +119,8 @@
                 <onup>202</onup>
                 <onright condition="Control.IsVisible(204)">204</onright>
                 <onright condition="!Control.IsVisible(204)">101</onright>
-                <ondown>400</ondown>
+                <ondown condition="!String.IsEmpty(Window.Property(home.resume.visible))">205</ondown>
+                <ondown condition="String.IsEmpty(Window.Property(home.resume.visible))">400</ondown>
                 <font>font12</font>
                 <focusedcolor>FF111111</focusedcolor>
                 <texturefocus colordiffuse="FFFFFFFF">script.plex/buttons/search-focus.png</texturefocus>
@@ -172,7 +194,8 @@
             <width>1500</width>
             <height>{{ vscale(86) }}</height>
             <onup>203</onup>
-            <ondown>400</ondown>
+            <ondown condition="!String.IsEmpty(Window.Property(home.resume.visible))">205</ondown>
+            <ondown condition="String.IsEmpty(Window.Property(home.resume.visible))">400</ondown>
             <scrolltime>200</scrolltime>
             <orientation>horizontal</orientation>
             <focusposition>2</focusposition>
@@ -221,16 +244,16 @@
         <control type="group">
             <visible>!String.IsEmpty(Window.Property(home.hero.visible)) + String.IsEmpty(Window.Property(hub.scrolled))</visible>
             <posx>160</posx>
-            <posy>{{ vscale(118) }}</posy>
+            <posy>{{ vscale(142) }}</posy>
             <width>1120</width>
-            <height>{{ vscale(240) }}</height>
+            <height>{{ vscale(340) }}</height>
             <control type="label">
                 <visible>String.IsEmpty(Window.Property(home.hero.logo))</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1120</width>
-                <height>{{ vscale(88) }}</height>
-                <font>font_title</font>
+                <height>{{ vscale(72) }}</height>
+                <font>font45_title</font>
                 <align>left</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
@@ -239,40 +262,113 @@
             <control type="image">
                 <visible>!String.IsEmpty(Window.Property(home.hero.logo))</visible>
                 <posx>0</posx>
-                <posy>0</posy>
-                <width>560</width>
-                <height>{{ vscale(88) }}</height>
+                <posy>{{ vscale(-30) }}</posy>
+                <width>700</width>
+                <height>{{ vscale(112) }}</height>
                 <texture background="true">$INFO[Window.Property(home.hero.logo)]</texture>
                 <aspectratio align="left" aligny="center">keep</aspectratio>
             </control>
-            {% with hero_meta_y = 96 & hero_meta_height = 30 %}
+            <control type="label">
+                <animation effect="slide" end="0,{{ vscale(28) }}" time="0" condition="!String.IsEmpty(Window.Property(home.hero.logo))" reversible="true">Conditional</animation>
+                <scroll>false</scroll>
+                <visible>!String.IsEmpty(Window.Property(home.hero.subtitle))</visible>
+                <posx>0</posx>
+                <posy>{{ vscale(82) }}</posy>
+                <width>880</width>
+                <height>{{ vscale(34) }}</height>
+                <font>font13</font>
+                <align>left</align>
+                <aligny>center</aligny>
+                <textcolor>F2FFFFFF</textcolor>
+                <label>$INFO[Window.Property(home.hero.subtitle)]</label>
+            </control>
+            {% with hero_meta_y = 126 & hero_meta_height = 32 & hero_meta_empty_shift = -44 & hero_logo_shift = 28 %}
             {% include "includes/home_hero_metadata.xml.tpl" %}
             {% endwith %}
             <control type="textbox">
+                <animation effect="slide" end="0,{{ vscale(-44) }}" time="0" condition="String.IsEmpty(Window.Property(home.hero.subtitle))" reversible="true">Conditional</animation>
+                <animation effect="slide" end="0,{{ vscale(28) }}" time="0" condition="!String.IsEmpty(Window.Property(home.hero.logo))" reversible="true">Conditional</animation>
                 <autoscroll>false</autoscroll>
                 <visible>!String.IsEmpty(Window.Property(home.hero.short_summary))</visible>
                 <posx>0</posx>
-                <posy>{{ vscale(132) }}</posy>
-                <width>720</width>
-                <height>{{ vscale(98) }}</height>
+                <posy>{{ vscale(168) }}</posy>
+                <width>920</width>
+                <height>{{ vscale(60) }}</height>
                 <font>font10</font>
                 <textcolor>F0FFFFFF</textcolor>
                 <label>$INFO[Window.Property(home.hero.short_summary)]</label>
+            </control>
+        </control>
+        <!-- Keep the action focusable while the full hero is hidden during row browsing. -->
+        <control type="group" id="206">
+            <visible>!String.IsEmpty(Window.Property(home.resume.visible))</visible>
+            <animation effect="fade" start="100" end="0" time="0" condition="!String.IsEmpty(Window.Property(hub.scrolled))" reversible="true">Conditional</animation>
+            <animation effect="slide" end="0,{{ vscale(-44) }}" time="0" condition="String.IsEmpty(Window.Property(home.hero.subtitle))" reversible="true">Conditional</animation>
+            <animation effect="slide" end="0,{{ vscale(28) }}" time="0" condition="!String.IsEmpty(Window.Property(home.hero.logo))" reversible="true">Conditional</animation>
+            <animation effect="slide" end="0,{{ vscale(-60) }}" time="0" condition="String.IsEmpty(Window.Property(home.hero.short_summary))" reversible="true">Conditional</animation>
+            <animation effect="zoom" start="100" end="106" time="110" center="130,{{ vscale(29) }}" reversible="true" condition="Control.HasFocus(205)">Conditional</animation>
+            <posx>160</posx>
+            <posy>{{ vscale(376) }}</posy>
+            <width>260</width>
+            <height>{{ vscale(58) }}</height>
+            <control type="button" id="205">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>260</width>
+                <height>{{ vscale(58) }}</height>
+                <onup>101</onup>
+                <ondown>401</ondown>
+                <onleft>noop</onleft>
+                <onright>noop</onright>
+                <font>font12</font>
+                <textcolor>FF111111</textcolor>
+                <focusedcolor>FF111111</focusedcolor>
+                <align>left</align>
+                <aligny>center</aligny>
+                <texturefocus colordiffuse="FFFFFFFF" border="20">script.plex/white-square-rounded.png</texturefocus>
+                <texturenofocus colordiffuse="FFFFFFFF" border="20">script.plex/white-square-rounded.png</texturenofocus>
+                <textoffsetx>60</textoffsetx>
+                <label>$ADDON[script.plexmod 32316]</label>
+            </control>
+            <control type="image">
+                <posx>18</posx>
+                <posy>{{ vscale(15) }}</posy>
+                <width>28</width>
+                <height>{{ vscale(28) }}</height>
+                <texture colordiffuse="FF111111">script.plex/circle-rounded-focus.png</texture>
+            </control>
+            <control type="image">
+                <posx>4</posx>
+                <posy>{{ vscale(6) }}</posy>
+                <width>56</width>
+                <height>{{ vscale(45) }}</height>
+                <texture colordiffuse="FFFFFFFF">script.plex/buttons/player/modern/play.png</texture>
+                <aspectratio>keep</aspectratio>
             </control>
         </control>
     </control>
 
     <!-- DYNAMIC HUB ROWS - Generated from hub_count setting -->
     {% for i in range(core.hub_count) %}
-    {% with group_id = i + 500 & hub_id = i + 400 & row_y = i * 555 + 355 %}
+    {% with group_id = i + 500 & hub_id = i + 400 & row_y = i * 475 + 407 %}
     <control type="group" id="{{ group_id }}">
+        {% for previous_i in range(i) %}
+        <animation effect="slide" end="0,{{ vscale(-125) }}" time="0" condition="String.IsEqual(Window.Property(hub.display.{{ previous_i + 400 }}),ar16x9)" reversible="true">Conditional</animation>
+        <animation effect="slide" end="0,{{ vscale(-105) }}" time="0" condition="String.IsEqual(Window.Property(hub.display.{{ previous_i + 400 }}),square)" reversible="true">Conditional</animation>
+        {% endfor %}
+        {% if i > 0 %}
+        <animation effect="slide" end="0,{{ vscale(-410) }}" time="0" condition="!String.IsEmpty(Window.Property(home.resume.visible)) + String.IsEmpty(Window.Property(hub.scrolled)) + String.IsEqual(Window.Property(hub.display.400),poster)" reversible="true">Conditional</animation>
+        <animation effect="slide" end="0,{{ vscale(-305) }}" time="0" condition="!String.IsEmpty(Window.Property(home.resume.visible)) + String.IsEmpty(Window.Property(hub.scrolled)) + String.IsEqual(Window.Property(hub.display.400),square)" reversible="true">Conditional</animation>
+        <animation effect="slide" end="0,{{ vscale(-285) }}" time="0" condition="!String.IsEmpty(Window.Property(home.resume.visible)) + String.IsEmpty(Window.Property(hub.scrolled)) + String.IsEqual(Window.Property(hub.display.400),ar16x9)" reversible="true">Conditional</animation>
+        <animation effect="slide" end="0,{{ vscale(-47) }}" time="0" condition="!String.IsEmpty(Window.Property(home.resume.visible)) + String.IsEmpty(Window.Property(hub.scrolled)) + String.IsEmpty(Window.Property(home.hero.short_summary))" reversible="true">Conditional</animation>
+        {% endif %}
         <animation effect="fade" start="100" end="0" time="140" condition="Integer.IsGreater(Window.Property(hub.focus),{{ i }})">Conditional</animation>
-        <visible>Integer.IsGreater(Container({{ hub_id }}).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
+        <visible>Integer.IsGreater(Container({{ hub_id }}).NumItems,0) + String.IsEmpty(Window.Property(drawing)){% if loop.is_first %} + String.IsEmpty(Window.Property(home.resume.visible)){% endif %}</visible>
         <defaultcontrol>{{ hub_id }}</defaultcontrol>
         <posx>0</posx>
         <posy>{{ vscale(row_y) }}</posy>
         <width>1920</width>
-        <height>{{ vscale(535) }}</height>
+        <height>{{ vscale(475) }}</height>
         <control type="image">
             <visible>!String.IsEmpty(Window.Property(bifurcation_lines))</visible>
             <posx>160</posx>
@@ -297,8 +393,15 @@
             <posx>100</posx>
             <posy>{{ vscale(42) }}</posy>
             <width>1740</width>
-            <height>{{ vscale(493) }}</height>
-            <onup>{% if loop.is_first %}101{% else %}{{ hub_id - 1 }}{% endif %}</onup>
+            <height>{{ vscale(435) }}</height>
+            {% if loop.is_first %}
+            <onup>101</onup>
+            {% elif i == 1 %}
+            <onup condition="!String.IsEmpty(Window.Property(home.resume.visible))">205</onup>
+            <onup condition="String.IsEmpty(Window.Property(home.resume.visible))">400</onup>
+            {% else %}
+            <onup>{{ hub_id - 1 }}</onup>
+            {% endif %}
             <ondown>{% if loop.is_last %}{{ hub_id }}{% else %}{{ hub_id + 1 }}{% endif %}</ondown>
             <onright>noop</onright>
             <onleft>noop</onleft>
@@ -335,14 +438,14 @@
     <posx>160</posx>
     <posy>{{ vscale(48) }}</posy>
     <width>1120</width>
-    <height>{{ vscale(235) }}</height>
+    <height>{{ vscale(260) }}</height>
     <control type="label">
         <visible>String.IsEmpty(Window.Property(home.hero.logo))</visible>
         <posx>0</posx>
         <posy>0</posy>
         <width>1120</width>
-        <height>{{ vscale(72) }}</height>
-        <font>font_title</font>
+        <height>{{ vscale(58) }}</height>
+        <font>font40_title</font>
         <align>left</align>
         <aligny>center</aligny>
         <textcolor>FFFFFFFF</textcolor>
@@ -352,21 +455,37 @@
         <visible>!String.IsEmpty(Window.Property(home.hero.logo))</visible>
         <posx>0</posx>
         <posy>0</posy>
-        <width>500</width>
-        <height>{{ vscale(72) }}</height>
+        <width>620</width>
+        <height>{{ vscale(84) }}</height>
         <texture background="true">$INFO[Window.Property(home.hero.logo)]</texture>
         <aspectratio align="left" aligny="center">keep</aspectratio>
     </control>
-    {% with hero_meta_y = 78 & hero_meta_height = 30 %}
+    <control type="label">
+        <animation effect="slide" end="0,{{ vscale(26) }}" time="0" condition="!String.IsEmpty(Window.Property(home.hero.logo))" reversible="true">Conditional</animation>
+        <scroll>false</scroll>
+        <visible>!String.IsEmpty(Window.Property(home.hero.subtitle))</visible>
+        <posx>0</posx>
+        <posy>{{ vscale(70) }}</posy>
+        <width>880</width>
+        <height>{{ vscale(30) }}</height>
+        <font>font12</font>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textcolor>F2FFFFFF</textcolor>
+        <label>$INFO[Window.Property(home.hero.subtitle)]</label>
+    </control>
+    {% with hero_meta_y = 112 & hero_meta_height = 30 & hero_meta_empty_shift = -42 & hero_logo_shift = 26 %}
     {% include "includes/home_hero_metadata.xml.tpl" %}
     {% endwith %}
     <control type="textbox">
+        <animation effect="slide" end="0,{{ vscale(-42) }}" time="0" condition="String.IsEmpty(Window.Property(home.hero.subtitle))" reversible="true">Conditional</animation>
+        <animation effect="slide" end="0,{{ vscale(26) }}" time="0" condition="!String.IsEmpty(Window.Property(home.hero.logo))" reversible="true">Conditional</animation>
         <autoscroll>false</autoscroll>
         <visible>!String.IsEmpty(Window.Property(home.hero.short_summary))</visible>
         <posx>0</posx>
-        <posy>{{ vscale(118) }}</posy>
+        <posy>{{ vscale(154) }}</posy>
         <width>1120</width>
-        <height>{{ vscale(90) }}</height>
+        <height>{{ vscale(56) }}</height>
         <font>font10</font>
         <textcolor>D8FFFFFF</textcolor>
         <label>$INFO[Window.Property(home.hero.short_summary)]</label>
