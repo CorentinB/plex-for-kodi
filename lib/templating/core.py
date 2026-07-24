@@ -113,7 +113,7 @@ class TemplateEngine(object):
             return False
 
         leeway = 50
-        expected_len = len(data)
+        expected_len = len(data.encode("utf-8"))
         # write final file
         count = 0
         fn = os.path.join(self.target_dir, "script-plex-{}.xml".format(template))
