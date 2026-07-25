@@ -2609,6 +2609,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SECTION_LIST_ID)
             elif controlID == self.RESUME_BUTTON_ID:
+                if action == xbmcgui.ACTION_MOVE_UP:
+                    self.setFocusId(self.SECTION_LIST_ID)
+                    return
                 if self.isWatchedAction(action):
                     self.toggleWatched(self.HUB_BASE_ID)
                     return
@@ -3613,8 +3616,16 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
     def _commitSectionBeforeHubNavigation(self):
         item = self.sectionList.getSelectedItem()
-        if not item or not item.dataSource or item.dataSource == self.lastSection:
+        if not item or not item.dataSource:
             return False
+
+        if item.dataSource == self.lastSection:
+            if any(self.hubControls[index] for index in self.hubFocusIndexes):
+                return False
+
+            self._pendingSectionHubFocus = item.dataSource
+            self._focusPendingSectionHub(item.dataSource)
+            return True
 
         self._pendingSectionHubFocus = item.dataSource
         self.sectionChangeTimeout = None

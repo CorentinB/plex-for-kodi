@@ -683,6 +683,19 @@ class HomeLayoutContractTests(unittest.TestCase):
             on_action.index("if controlID == self.SERVER_BUTTON_ID:"),
         )
 
+    def test_resume_button_up_returns_to_section_navigation(self):
+        window = _read_file(HOME_WINDOW)
+        resume_actions = window.split(
+            "elif controlID == self.RESUME_BUTTON_ID:", 1
+        )[1].split("elif 399 < controlID < 500:", 1)[0]
+
+        focus_header = (
+            "if action == xbmcgui.ACTION_MOVE_UP:\n"
+            "                    self.setFocusId(self.SECTION_LIST_ID)\n"
+            "                    return"
+        )
+        self.assertIn(focus_header, resume_actions)
+
     def test_section_commit_cancels_debounce_and_focuses_loaded_hub(self):
         class SectionList(object):
             def __init__(self, item):
@@ -701,6 +714,8 @@ class HomeLayoutContractTests(unittest.TestCase):
                     types.SimpleNamespace(dataSource=selected)
                 )
                 self.lastSection = current
+                self.hubControls = ([object()],)
+                self.hubFocusIndexes = (0,)
                 self.sectionChangeTimeout = 42
                 self.committed = []
                 self._pendingSectionHubFocus = None
@@ -728,6 +743,52 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertEqual(unchanged.committed, [])
         self.assertIsNone(unchanged._pendingSectionHubFocus)
         self.assertEqual(unchanged.focusRequests, [])
+
+    def test_down_waits_for_active_section_hubs_that_are_still_loading(self):
+        class SectionList(object):
+            def __init__(self, item):
+                self.item = item
+
+            def getSelectedItem(self):
+                return self.item
+
+        class Window(object):
+            _commitSectionBeforeHubNavigation = _home_method(
+                "_commitSectionBeforeHubNavigation"
+            )
+
+            def __init__(self, section, hubs):
+                self.sectionList = SectionList(
+                    types.SimpleNamespace(dataSource=section)
+                )
+                self.lastSection = section
+                self.hubControls = hubs
+                self.hubFocusIndexes = tuple(range(len(hubs)))
+                self.sectionChangeTimeout = 42
+                self._pendingSectionHubFocus = None
+                self.committed = []
+                self.focusRequests = []
+
+            def _sectionReallyChanged(self, section):
+                self.committed.append(section)
+
+            def _focusPendingSectionHub(self, section):
+                self.focusRequests.append(section)
+
+        section = object()
+        loading = Window(section, ([], []))
+
+        self.assertTrue(loading._commitSectionBeforeHubNavigation())
+        self.assertIs(loading._pendingSectionHubFocus, section)
+        self.assertEqual(loading.committed, [])
+        self.assertEqual(loading.focusRequests, [section])
+
+        ready = Window(section, ([object()], []))
+
+        self.assertFalse(ready._commitSectionBeforeHubNavigation())
+        self.assertIsNone(ready._pendingSectionHubFocus)
+        self.assertEqual(ready.committed, [])
+        self.assertEqual(ready.focusRequests, [])
 
     def test_section_debounce_does_not_wait_for_unrelated_hub_tasks(self):
         started = []
