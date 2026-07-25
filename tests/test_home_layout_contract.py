@@ -1277,7 +1277,7 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertIn(
             "<posy>{{ vscale(168) }}</posy>\n"
             "                <width>920</width>\n"
-            "                <height>{{ vscale(60) }}</height>",
+            "                <height>{{ vscale(90) }}</height>",
             home,
         )
         self.assertIn(

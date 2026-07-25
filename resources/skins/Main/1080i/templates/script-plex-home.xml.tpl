@@ -296,7 +296,7 @@
                 <posx>0</posx>
                 <posy>{{ vscale(168) }}</posy>
                 <width>920</width>
-                <height>{{ vscale(60) }}</height>
+                <height>{{ vscale(90) }}</height>
                 <font>font10</font>
                 <textcolor>F0FFFFFF</textcolor>
                 <label>$INFO[Window.Property(home.hero.short_summary)]</label>
