@@ -784,7 +784,7 @@ class Settings(object):
                              "the TV show's.")
                 ),
                 BoolSetting(
-                    'home_inprogress_resume', T(33713, 'Home: Resume in-progress items'), False
+                    'home_inprogress_resume', T(33713, 'Home: Resume in-progress items'), True
                 ).description(
                     T(33714, 'Resume in-progress items directly instead of visiting the media.')
                 ),

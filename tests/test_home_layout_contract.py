@@ -24,6 +24,7 @@ TEMPLATE_ROOT = os.path.join(
     "templates",
 )
 HOME_WINDOW = os.path.join(ROOT, "lib", "windows", "home.py")
+SETTINGS_WINDOW = os.path.join(ROOT, "lib", "windows", "settings.py")
 FRENCH_CATALOG = os.path.join(
     ROOT,
     "resources",
@@ -314,6 +315,21 @@ def _resume_action_window():
 
 
 class HomeLayoutContractTests(unittest.TestCase):
+    def test_inprogress_home_items_resume_directly_by_default(self):
+        settings = _read_file(SETTINGS_WINDOW)
+        resume_setting = settings.split(
+            "'home_inprogress_resume'",
+            1,
+        )[1].split(
+            ").description(",
+            1,
+        )[0]
+
+        self.assertIn(
+            "T(33713, 'Home: Resume in-progress items'), True",
+            resume_setting,
+        )
+
     def test_single_resume_requires_one_unpaginated_in_progress_video(self):
         item = _HubListItem(
             _HubMedia(
