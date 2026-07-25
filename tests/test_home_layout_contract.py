@@ -941,6 +941,31 @@ class HomeLayoutContractTests(unittest.TestCase):
             catalog,
         )
 
+    def test_french_catalog_localizes_hub_management_workflow(self):
+        catalog = _read_file(FRENCH_CATALOG)
+        translations = (
+            (34080, "Manage Hubs", "Gérer les hubs"),
+            (34081, "Reset to Default", "Réinitialiser"),
+            (34082, "Manage Hubs: {}", "Gérer les hubs : {}"),
+            (34083, "Move Up", "Monter"),
+            (34084, "Move Down", "Descendre"),
+            (34085, "Disable", "Désactiver"),
+            (34086, "Choose action", "Choisir une action"),
+            (34089, "Move", "Déplacer"),
+            (34093, "Refresh Hub List", "Actualiser la liste des hubs"),
+            (34096, "Refresh Hubs", "Actualiser les hubs"),
+        )
+
+        for string_id, source, translated in translations:
+            self.assertIn(
+                'msgctxt "#{}"\nmsgid "{}"\nmsgstr "{}"'.format(
+                    string_id,
+                    source,
+                    translated,
+                ),
+                catalog,
+            )
+
     def test_native_home_uses_one_safe_left_edge(self):
         home = _read("script-plex-home.xml.tpl")
         content = home.split("{% endblock content %}", 1)[0]
