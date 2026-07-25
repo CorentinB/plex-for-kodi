@@ -22,6 +22,7 @@ from lib import backgroundthread
 from lib import player
 from lib import util
 from lib import shuffle
+from lib.home_hero import _short_text
 from lib.util import T
 from . import busy
 from . import dropdown
@@ -59,6 +60,12 @@ THUMB_POSTER_DIM = util.scaleResolution(268, 402)
 THUMB_AR16X9_DIM = util.scaleResolution(619, 348)
 THUMB_SQUARE_DIM = util.scaleResolution(355, 355)
 ART_AR16X9_DIM = util.scaleResolution(630, 355)
+
+
+def _set_summary(mli, summary):
+    mli.setProperty('summary', summary)
+    mli.setProperty('summary.short', _short_text(summary, limit=400))
+
 
 TYPE_KEYS = {
     'episode': {
@@ -1872,7 +1879,7 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
 
                         mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
 
-                        mli.setProperty('summary', obj.summary)
+                        _set_summary(mli, obj.summary)
 
                         #mli.setLabel2(util.durationToText(obj.fixedDuration()))
                         mli.setLabel2(subtitle)
@@ -1900,7 +1907,7 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
 
                         mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
 
-                        mli.setProperty('summary', obj.summary)
+                        _set_summary(mli, obj.summary)
 
                         mli.setLabel2(obj.year)
                     else:
@@ -1941,7 +1948,7 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
                             else:
                                 mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
                         mli.dataSource = obj
-                        mli.setProperty('summary', obj.get('summary'))
+                        _set_summary(mli, obj.get('summary'))
 
                         # get secondary sort based info
                         sk_data = SORT_KEYS[self.section.TYPE].get(self.sort, {'subDisplay': None})

@@ -163,7 +163,7 @@
         <font>font10</font>
         <align>left</align>
         <textcolor>FFDDDDDD</textcolor>
-        <label>$INFO[Container(101).ListItem.Property(summary)]</label>
+        <label>$INFO[Container(101).ListItem.Property(summary.short)]</label>
         <autoscroll>false</autoscroll>
     </control>
 </control>

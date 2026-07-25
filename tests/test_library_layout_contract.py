@@ -441,6 +441,30 @@ class LibraryLayoutContractTests(unittest.TestCase):
         self.assertLessEqual(400 + 30, 430)
         self.assertIn('<onleft>101</onleft>', template)
 
+    def test_list_view_hero_summaries_are_bounded_without_scrolling(self):
+        source = _read(LIBRARY_PYTHON)
+
+        self.assertIn("from lib.home_hero import _short_text", source)
+        self.assertIn("def _set_summary(mli, summary):", source)
+        self.assertIn(
+            "mli.setProperty('summary.short', _short_text(summary, limit=400))",
+            source,
+        )
+        self.assertEqual(
+            source.count("\n                        _set_summary(mli,"),
+            3,
+        )
+
+        for path in (LISTVIEW_TEMPLATE, SQUARE_LISTVIEW_TEMPLATE):
+            template = _read(path)
+            hero = template.split('{% block content %}', 1)[1].split(
+                '<control type="group" id="50">',
+                1,
+            )[0]
+            self.assertIn("ListItem.Property(summary.short)", hero)
+            self.assertNotIn("ListItem.Property(summary)]", hero)
+            self.assertIn("<autoscroll>false</autoscroll>", hero)
+
     def test_shared_library_header_and_filters_never_fall_back_to_orange_focus(self):
         template = _read(LIBRARY_TEMPLATE)
 
