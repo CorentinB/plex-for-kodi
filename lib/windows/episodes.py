@@ -1588,6 +1588,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMix
     def setProgress(self, mli, view_offset=None):
         video = mli.dataSource
         view_offset = view_offset if view_offset is not None else video.viewOffset.asInt()
+        self.setProperty(
+            'play.action.label',
+            T(32316, 'Resume') if view_offset else xbmc.getLocalizedString(208),
+        )
         if view_offset:
             width = view_offset and (1 + int((view_offset / video.duration.asFloat()) * self.width)) or 1
             self.progressImageControl.setWidth(width)

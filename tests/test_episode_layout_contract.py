@@ -116,7 +116,7 @@ class EpisodeLayoutContractTests(unittest.TestCase):
             )
             end = template.index("{% endwith %}", start)
             self.assertIn("<width>1600</width>", template[start:end])
-        self.assertEqual(template.count('action_label="$LOCALIZE[208]"'), 4)
+        self.assertNotIn('action_label="$LOCALIZE[208]"', template)
         self.assertEqual(template.count('action_label="$LOCALIZE[29915]"'), 2)
         self.assertEqual(
             template.count('action_label="$ADDON[script.plexmod 35064]"'),
@@ -133,6 +133,27 @@ class EpisodeLayoutContractTests(unittest.TestCase):
         self.assertEqual(
             template.count("action_width=300 & action_label_width=228"),
             2,
+        )
+
+    def test_episode_primary_action_tracks_resume_state(self):
+        template = _read(EPISODES_TEMPLATE)
+        source = _read(EPISODES_PYTHON)
+        set_progress = source.split("    def setProgress(self, mli, view_offset=None):", 1)[1]
+        set_progress = set_progress.split("    def createListItem(self, episode):", 1)[0]
+
+        self.assertEqual(
+            template.count(
+                'action_label="$INFO[Window.Property(play.action.label)]"'
+            ),
+            4,
+        )
+        self.assertEqual(
+            template.count("action_width=220 & action_label_width=148"),
+            4,
+        )
+        self.assertIn(
+            "T(32316, 'Resume') if view_offset else xbmc.getLocalizedString(208)",
+            set_progress,
         )
 
     def test_episode_actions_have_an_explicit_dpad_graph(self):

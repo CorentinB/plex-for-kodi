@@ -83,11 +83,11 @@
             {% with attr = theme.episodes.buttons & template = "includes/themed_button.xml.tpl" & episode_style = True %}
                 {% include template with name="play" & id=301 &
                     enable="!String.IsEmpty(Window.Property(current_item.loaded))" & visible="!String.IsEmpty(Window.Property(current_item.loaded))" &
-                    allowhiddenfocus=True & action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106
+                    allowhiddenfocus=True & action_label="$INFO[Window.Property(play.action.label)]" & action_width=220 & action_label_width=148
                 %}
                 {% include template with name="play" & id=306 &
                                     visible="String.IsEmpty(Window.Property(current_item.loaded))" &
-                                    action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106
+                                    action_label="$INFO[Window.Property(play.action.label)]" & action_width=220 & action_label_width=148
                 %}
                 {% include template with name="info" & id=304 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
                 {% include template with name="settings" & id=305 & action_label="$ADDON[script.plexmod 35064]" & action_width=175 & action_label_width=103 %}
@@ -114,11 +114,11 @@
             {% with attr = theme.episodes.buttons_1300 & template = "includes/themed_button.xml.tpl" & episode_style = True %}
                 {% include template with name="play" & id=1301 &
                     enable="!String.IsEmpty(Window.Property(current_item.loaded))" & visible="!String.IsEmpty(Window.Property(current_item.loaded))" &
-                    allowhiddenfocus=True & action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106
+                    allowhiddenfocus=True & action_label="$INFO[Window.Property(play.action.label)]" & action_width=220 & action_label_width=148
                 %}
                 {% include template with name="play" & id=1306 &
                                     visible="String.IsEmpty(Window.Property(current_item.loaded))" &
-                                    action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106
+                                    action_label="$INFO[Window.Property(play.action.label)]" & action_width=220 & action_label_width=148
                 %}
                 {% include template with name="info" & id=1304 & action_label="$LOCALIZE[29915]" & action_width=154 & action_label_width=82 %}
                 {% include template with name="media" & id=1307 & action_label="$ADDON[script.plexmod 35063]" & action_width=180 & action_label_width=108 %}
