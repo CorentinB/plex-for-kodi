@@ -43,6 +43,20 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
         self.assertIn('$LOCALIZE[36044]', labels)
         self.assertIn('$LOCALIZE[36045]', labels)
 
+    def test_custom_player_dialog_is_the_only_visible_osd_layer(self):
+        seek = SEEK.read_text()
+        python = SEEK_PYTHON.read_text()
+        dialog_guard = 'String.IsEmpty(Window.Property(dialog.visible))'
+
+        self.assertGreaterEqual(seek.count(dialog_guard), 2)
+
+        handle_dialog = python[
+            python.index("    def handleDialog(self, func):"):
+            python.index("    def videoSettingsHaveChanged(self):")
+        ]
+        self.assertIn("self.setBoolProperty('dialog.visible', True)", handle_dialog)
+        self.assertIn("self.setBoolProperty('dialog.visible', False)", handle_dialog)
+
     def test_osd_keeps_time_progress_action_and_transport_in_separate_bands(self):
         seek = SEEK.read_text()
         action_labels = seek[

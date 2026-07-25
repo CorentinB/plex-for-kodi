@@ -1381,11 +1381,13 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
 
     def handleDialog(self, func):
         self.hasDialog = True
+        self.setBoolProperty('dialog.visible', True)
         hideFast = False
         try:
             hideFast = func()
         finally:
             self.resetTimeout(fast=hideFast)
+            self.setBoolProperty('dialog.visible', False)
             self.hasDialog = False
 
     def videoSettingsHaveChanged(self):
