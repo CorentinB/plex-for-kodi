@@ -1307,6 +1307,23 @@ class HomeLayoutContractTests(unittest.TestCase):
             home,
         )
         self.assertIn(
+            '<animation effect="slide" end="0,{{ vscale(-60) }}" time="0" '
+            'condition="String.IsEmpty(Window.Property(hub.scrolled)) + '
+            'String.IsEmpty(Window.Property(home.resume.visible)) + '
+            'String.IsEmpty(Window.Property(home.hero.short_summary))" '
+            'reversible="true">Conditional</animation>',
+            home,
+        )
+        self.assertIn(
+            '<animation effect="slide" end="0,{{ vscale(-36) }}" time="0" '
+            'condition="String.IsEmpty(Window.Property(hub.scrolled)) + '
+            'String.IsEmpty(Window.Property(home.resume.visible)) + '
+            'String.IsEmpty(Window.Property(home.hero.short_summary)) + '
+            'String.IsEmpty(Window.Property(home.hero.subtitle))" '
+            'reversible="true">Conditional</animation>',
+            home,
+        )
+        self.assertIn(
             "<posy>{{ vscale(70) }}</posy>\n"
             "        <width>880</width>\n"
             "        <height>{{ vscale(30) }}</height>",

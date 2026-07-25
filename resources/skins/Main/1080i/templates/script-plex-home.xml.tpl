@@ -356,6 +356,8 @@
     {% with group_id = i + 500 & hub_id = i + 400 & row_y = i * 475 + 407 %}
     <control type="group" id="{{ group_id }}">
         <animation effect="slide" end="0,{{ vscale(36) }}" time="0" condition="String.IsEmpty(Window.Property(hub.scrolled)) + !String.IsEmpty(Window.Property(home.hero.logo)) + !String.IsEmpty(Window.Property(home.hero.subtitle)) + !String.IsEmpty(Window.Property(home.hero.short_summary))" reversible="true">Conditional</animation>
+        <animation effect="slide" end="0,{{ vscale(-60) }}" time="0" condition="String.IsEmpty(Window.Property(hub.scrolled)) + String.IsEmpty(Window.Property(home.resume.visible)) + String.IsEmpty(Window.Property(home.hero.short_summary))" reversible="true">Conditional</animation>
+        <animation effect="slide" end="0,{{ vscale(-36) }}" time="0" condition="String.IsEmpty(Window.Property(hub.scrolled)) + String.IsEmpty(Window.Property(home.resume.visible)) + String.IsEmpty(Window.Property(home.hero.short_summary)) + String.IsEmpty(Window.Property(home.hero.subtitle))" reversible="true">Conditional</animation>
         <animation effect="slide" end="0,{{ vscale(-60) }}" time="0" condition="!String.IsEmpty(Window.Property(hub.scrolled)) + String.IsEmpty(Window.Property(home.hero.short_summary))" reversible="true">Conditional</animation>
         <animation effect="slide" end="0,{{ vscale(-30) }}" time="0" condition="!String.IsEmpty(Window.Property(hub.scrolled)) + String.IsEmpty(Window.Property(home.hero.short_summary)) + String.IsEmpty(Window.Property(home.hero.subtitle))" reversible="true">Conditional</animation>
         {% for previous_i in range(i) %}
