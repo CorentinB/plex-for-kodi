@@ -764,7 +764,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
             self.setProperty('thumb', self.video.defaultThumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM))
             self.setProperty('preview', self.video.thumb.asTranscodedImageURL(*self.PREVIEW_DIM))
             self.setProperty('info', u'{0} {1}'.format(T(32303, 'Season').format(self.video.parentIndex), T(32304, 'Episode').format(self.video.index)))
-            self.setProperty('date', util.cleanLeadingZeros(self.video.originallyAvailableAt.asDatetime('%B %d, %Y')))
+            self.setProperty('date', util.cleanLeadingZeros(self.video.originallyAvailableAt.asDatetime(util.getLongDateFormat())))
             self.setProperty('related.header', T(32306, 'Related Shows'))
         elif self.video.type == 'movie':
             self.setProperty('title', self.video.defaultTitle)
@@ -774,7 +774,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
             self.setProperty('info', genres)
             self.setProperty('date', self.video.year)
             if self.fromWatchlist and not self.wl_availability:
-                self.setProperty('wl_server_availability_verbose', util.cleanLeadingZeros(self.video.originallyAvailableAt.asDatetime('%B %d, %Y')))
+                self.setProperty('wl_server_availability_verbose', util.cleanLeadingZeros(self.video.originallyAvailableAt.asDatetime(util.getLongDateFormat())))
             self.setProperty('content.rating', normalize_content_rating(self.video.contentRating))
 
             cast = u' / '.join([r.tag for r in self.video.roles()][:5])

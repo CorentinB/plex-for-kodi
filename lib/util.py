@@ -235,6 +235,12 @@ def cleanLeadingZeros(text):
     return re.sub(r'(?<= )0(\d)', r'\1', text)
 
 
+def getLongDateFormat():
+    date_format = xbmc.getRegion('datelong') or '%B %d, %Y'
+    date_format = re.sub(r'%[-_0^#]*[aA],?\s*', '', date_format).strip(' ,')
+    return re.sub(r'%[-_0^#]*d', '%d', date_format) or '%B %d, %Y'
+
+
 def removeDups(dlist):
     return [ii for n, ii in enumerate(dlist) if ii not in dlist[:n]]
 
