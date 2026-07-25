@@ -1100,7 +1100,7 @@ class HomeLayoutContractTests(unittest.TestCase):
         )
         self.assertEqual(
             home.count("String.IsEmpty(Window.Property(home.hero.logo))"),
-            11,
+            12,
         )
         self.assertEqual(
             home.count("$INFO[Window.Property(home.hero.subtitle)]"),
@@ -1108,7 +1108,7 @@ class HomeLayoutContractTests(unittest.TestCase):
         )
         self.assertEqual(
             home.count("!String.IsEmpty(Window.Property(home.hero.subtitle))"),
-            2,
+            3,
         )
         self.assertIn("<width>700</width>", home)
         self.assertIn("<height>{{ vscale(112) }}</height>", home)
@@ -1279,6 +1279,15 @@ class HomeLayoutContractTests(unittest.TestCase):
             "<posy>{{ vscale(168) }}</posy>\n"
             "                <width>920</width>\n"
             "                <height>{{ vscale(90) }}</height>",
+            home,
+        )
+        self.assertIn(
+            '<animation effect="slide" end="0,{{ vscale(36) }}" time="0" '
+            'condition="String.IsEmpty(Window.Property(hub.scrolled)) + '
+            '!String.IsEmpty(Window.Property(home.hero.logo)) + '
+            '!String.IsEmpty(Window.Property(home.hero.subtitle)) + '
+            '!String.IsEmpty(Window.Property(home.hero.short_summary))" '
+            'reversible="true">Conditional</animation>',
             home,
         )
         self.assertIn(
