@@ -677,6 +677,50 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertEqual(window.focused, [])
         self.assertEqual(window.checked, [400])
 
+    def test_hub_focus_resynchronizes_artwork_after_header_entry(self):
+        class Window(object):
+            HUB_BASE_ID = 400
+            RESUME_BUTTON_ID = 205
+            SECTION_LIST_ID = 101
+            SEARCH_BUTTON_ID = 203
+            SERVER_BUTTON_ID = 202
+            USER_BUTTON_ID = 201
+            PLAYER_STATUS_BUTTON_ID = 204
+            onFocus = _home_method(
+                "onFocus",
+                {
+                    "time": types.SimpleNamespace(time=lambda: 100),
+                    "xbmc": types.SimpleNamespace(
+                        getCondVisibility=lambda condition: False,
+                    ),
+                    "util": types.SimpleNamespace(
+                        setGlobalBoolProperty=lambda *args: None,
+                    ),
+                },
+            )
+
+            def __init__(self):
+                self._goRootHoldUntil = 0
+                self.lastFocusID = self.SECTION_LIST_ID
+                self.hubFocusIndexes = (0,)
+                self.hubControls = (["selected"],)
+                self.movingSection = False
+                self.focused_hubs = []
+                self.synced = []
+
+            def _setHubFocus(self, index=None):
+                self.focused_hubs.append(index)
+
+            def _syncHomeHeroSelection(self, index, control, force=False):
+                self.synced.append((index, control, force))
+
+        window = Window()
+        window.onFocus(400)
+
+        self.assertEqual(window.lastFocusID, 400)
+        self.assertEqual(window.focused_hubs, [0])
+        self.assertEqual(window.synced, [(0, window.hubControls[0], True)])
+
     def test_pending_section_focus_reasserts_native_focus_after_detail_return(self):
         class Window(object):
             SECTION_LIST_ID = 101

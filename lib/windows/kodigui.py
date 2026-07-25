@@ -335,7 +335,7 @@ class BaseWindow(XMLBase, xbmcgui.WindowXML, BaseFunctions):
             self.setFocusId(focus)
 
     def updateBackgroundFrom(self, ds):
-        if not util.addonSettings.dynamicBackgrounds or not ds:
+        if not util.addonSettings.dynamicBackgrounds or ds is None:
             return
 
         # Music and audiobook artists frequently have a portrait but no fanart.

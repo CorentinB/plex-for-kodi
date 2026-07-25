@@ -2705,7 +2705,13 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         if controlID == self.RESUME_BUTTON_ID:
             self._focusHomeResumeItem()
         elif 399 < controlID < 500:
-            self._setHubFocus(self.hubFocusIndexes[controlID - 400])
+            hub_index = controlID - self.HUB_BASE_ID
+            self._setHubFocus(self.hubFocusIndexes[hub_index])
+            self._syncHomeHeroSelection(
+                hub_index,
+                self.hubControls[hub_index],
+                force=True,
+            )
         elif controlID in (self.SECTION_LIST_ID, self.SEARCH_BUTTON_ID,
                            self.SERVER_BUTTON_ID, self.USER_BUTTON_ID,
                            self.PLAYER_STATUS_BUTTON_ID):

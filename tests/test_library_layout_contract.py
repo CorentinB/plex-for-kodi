@@ -519,6 +519,17 @@ class LibraryLayoutContractTests(unittest.TestCase):
 
         self.assertIn("return self.windowSetBackground(BG_NA)", update)
 
+    def test_dynamic_backgrounds_accept_zero_length_media_objects(self):
+        window = _read(KODIGUI_WINDOW)
+        update = window.split("    def updateBackgroundFrom(self, ds):", 1)[1]
+        update = update.split("    def windowSetBackground(self, value):", 1)[0]
+
+        self.assertIn(
+            "if not util.addonSettings.dynamicBackgrounds or ds is None:",
+            update,
+        )
+        self.assertNotIn("or not ds:", update)
+
 
 if __name__ == "__main__":
     unittest.main()
