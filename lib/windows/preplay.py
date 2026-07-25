@@ -915,6 +915,13 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RatingsMixi
         collections = self.video.collections() if self.video.type == 'movie' and self.video.collections else []
         section_id = self.video.getLibrarySectionId()
 
+        if not collections or not section_id or section_id == plexlibrary.WatchlistSection.ID:
+            for i, list_control in enumerate(self.collectionListControls):
+                list_control.reset()
+                self.setProperty('collection.header.{0}'.format(i), '')
+                self.collectionPaginators[i] = None
+            return False
+
         # Fetch the section's collection metadata items to get their proper keys,
         # which respect the sort order set in Plex (Custom / Alphabetical / Release Date).
         # The id on a movie's <Collection> tag is a tag ID, not a metadata ratingKey,
