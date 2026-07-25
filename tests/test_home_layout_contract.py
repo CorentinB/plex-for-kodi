@@ -632,7 +632,7 @@ class HomeLayoutContractTests(unittest.TestCase):
                 self.hubControls = ([], [])
                 self.focused = 0
 
-            def focusFirstValidHub(self):
+            def focusFirstValidHub(self, force=False):
                 self.focused += 1
 
         section = object()
@@ -675,6 +675,37 @@ class HomeLayoutContractTests(unittest.TestCase):
         window.focusFirstValidHub()
 
         self.assertEqual(window.focused, [])
+        self.assertEqual(window.checked, [400])
+
+    def test_pending_section_focus_reasserts_native_focus_after_detail_return(self):
+        class Window(object):
+            SECTION_LIST_ID = 101
+            focusFirstValidHub = _home_method(
+                "focusFirstValidHub",
+                {"util": types.SimpleNamespace(DEBUG_LOG=lambda *args: None)},
+            )
+            _focusPendingSectionHub = _home_method("_focusPendingSectionHub")
+
+            def __init__(self, section):
+                self._pendingSectionHubFocus = section
+                self.lastSection = section
+                self.hubFocusIndexes = (0,)
+                self.hubControls = ([object()],)
+                self.lastFocusID = 400
+                self.focused = []
+                self.checked = []
+
+            def setFocusId(self, control_id):
+                self.focused.append(control_id)
+
+            def checkHubItem(self, control_id):
+                self.checked.append(control_id)
+
+        section = object()
+        window = Window(section)
+
+        self.assertTrue(window._focusPendingSectionHub(section))
+        self.assertEqual(window.focused, [400])
         self.assertEqual(window.checked, [400])
 
     def test_completed_hub_draw_fulfills_pending_section_down_focus_after_reveal(self):

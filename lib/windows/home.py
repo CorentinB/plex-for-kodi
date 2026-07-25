@@ -2216,7 +2216,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
     def updateProperties(self, *args, **kwargs):
         self.setBoolProperty('bifurcation_lines', util.getSetting('hubs_bifurcation_lines'))
 
-    def focusFirstValidHub(self, startIndex=None):
+    def focusFirstValidHub(self, startIndex=None, force=False):
         indices = self.hubFocusIndexes
         if startIndex is not None:
             try:
@@ -2227,7 +2227,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
         for index in indices:
             if self.hubControls[index]:
-                if self.lastFocusID != 400+index:
+                if force or self.lastFocusID != 400+index:
                     util.DEBUG_LOG("Focusing hub: %i" % (400 + index))
                     self.setFocusId(400+index)
                 self.checkHubItem(400+index)
@@ -3559,7 +3559,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             return False
 
         self._pendingSectionHubFocus = None
-        self.focusFirstValidHub()
+        self.focusFirstValidHub(force=True)
         return True
 
     def checkSectionItem(self, force=False, action=None):
