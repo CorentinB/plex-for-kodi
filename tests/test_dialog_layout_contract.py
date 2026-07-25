@@ -88,6 +88,35 @@ class DialogLayoutContractTests(unittest.TestCase):
         self.assertIn('border="24">script.plex/white-square-rounded.png', select)
         self.assertIn('border="24">script.plex/white-square-rounded.png', video)
 
+    def test_select_dialog_shell_fits_short_option_lists(self):
+        select = _read(NAMES[2])
+
+        self.assertIn("{% for rows in range(1, 8) %}", select)
+        self.assertIn(
+            "{% with shadow_height = rows * 100 + 170 & "
+            "body_height = rows * 100 + 10 %}",
+            select,
+        )
+        self.assertIn(
+            "{% with slide_y = 350 - rows * 50 %}",
+            select,
+        )
+        self.assertIn(
+            'condition="Integer.IsEqual(Container(100).NumItems,{{ rows }})"',
+            select,
+        )
+        self.assertIn(
+            "Integer.IsGreaterOrEqual(Container(100).NumItems,7)",
+            select,
+        )
+        self.assertIn(
+            'end="0,{{ vscale(slide_y) }}"',
+            select,
+        )
+        self.assertNotIn("vscale((", select)
+        self.assertNotIn("<height>{{ vscale(870) }}</height>", select)
+        self.assertNotIn("<height>{{ vscale(710) }}</height>", select)
+
     def test_video_settings_scrollbar_uses_real_transparency(self):
         video = _read(NAMES[3])
 
