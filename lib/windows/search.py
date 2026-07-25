@@ -82,6 +82,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         self.updateResultsTimeout = 0
         self.isActive = True
         self.useKodiKbd = util.getSetting('search_use_kodi_kbd')
+        self._returnFocusState = None
 
     def onFirstInit(self):
         self.hubControls = [
@@ -106,6 +107,8 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         # Re-displayed (e.g. returning from an opened result): re-evaluate the view.
         # onFirstInit only runs on the first init, so without this the history view
         # never re-renders after the dialog is shown again.
+        if self._returnFocusState:
+            self.edit.setText(self._returnFocusState[2])
         if self.edit.getText():
             self.updateResults()
         else:
@@ -308,7 +311,9 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
             util.DEBUG_LOG('Search: Playlist does not exist - probably wrong user')
             return
 
-        self.addToHistory(self.edit.getText())
+        query = self.edit.getText()
+        self._returnFocusState = (hubControlID, control.getSelectedPos(), query)
+        self.addToHistory(query)
         self.doClose()
         try:
             command = opener.open(hubItem)
@@ -386,6 +391,18 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
             self.setProperty('no.results', '')
         else:
             self.setProperty('no.results', '1')
+
+        if self._returnFocusState:
+            focus_id, position, _ = self._returnFocusState
+            self._returnFocusState = None
+            index = focus_id - 2100
+            if 0 <= index < len(self.hubControls):
+                control = self.hubControls[index]
+                if control and control.size() > 0:
+                    position = min(max(position or 0, 0), control.size() - 1)
+                    control.selectItem(position)
+                    self.setProperty('hub.focus', str(index))
+                    self.setFocusId(focus_id)
 
     def showHub(self, hub, idx):
         util.DEBUG_LOG('Showing search hub: {0} at {1}', hub.type, idx)
