@@ -1810,7 +1810,6 @@
             <width>1356</width>
             <height>{{ vscale(440) }}</height>
             <onleft>899</onleft>
-            <ondown>{{ hub_id + 1 }}</ondown>
             <scrolltime>200</scrolltime>
             <orientation>horizontal</orientation>
             <preloaditems>4</preloaditems>

@@ -109,6 +109,16 @@ class SearchLayoutContractTests(unittest.TestCase):
         self.assertNotIn('start="112"', header)
         self.assertNotIn('reversible="false">Focus</animation>', header)
 
+    def test_search_result_lists_leave_vertical_navigation_to_dialog(self):
+        template = _read("script-plex-search.xml.tpl")
+        result_hubs = template[
+            template.index("{% for i in range(core.search_hub_count) %}") :
+            template.index("<!-- SEARCH HISTORY LIST -->")
+        ]
+
+        self.assertNotIn("<ondown>", result_hubs)
+        self.assertNotIn("<onup>", result_hubs)
+
     def test_search_results_use_aspect_matched_art_and_focus_frames(self):
         assets = {
             "search_hub_poster.xml.tpl": (
