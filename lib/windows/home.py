@@ -1,11 +1,14 @@
 from __future__ import absolute_import
 
+import hashlib
 import json
+import os
 import threading
 import time
 import math
 
 import plexnet
+import requests
 from kodi_six import xbmc
 from kodi_six import xbmcgui
 from plexnet import plexapp, plexresource
@@ -66,6 +69,51 @@ PLAYLIST_HUB_TITLES = {
     'playlists.audio': T(34094, 'Audio Playlists'),
     'playlists.video': T(34095, 'Video Playlists'),
 }
+
+HOME_HERO_LOGO_CACHE = os.path.join(util.PROFILE, 'home_hero_logos')
+
+
+def cache_home_hero_logo(url, metadata_key):
+    if not url:
+        return ''
+
+    digest = hashlib.sha256(url.encode('utf-8')).hexdigest()
+    target = os.path.join(HOME_HERO_LOGO_CACHE, '{}.png'.format(digest))
+    if os.path.isfile(target) and os.path.getsize(target):
+        return target
+
+    temporary = '{}.{}.tmp'.format(target, threading.current_thread().ident)
+    try:
+        if not os.path.isdir(HOME_HERO_LOGO_CACHE):
+            os.makedirs(HOME_HERO_LOGO_CACHE)
+        response = requests.get(
+            url,
+            timeout=(
+                util.addonSettings.requestsTimeoutConnect,
+                util.addonSettings.requestsTimeoutRead,
+            ),
+        )
+        response.raise_for_status()
+        if not response.content:
+            return ''
+        with open(temporary, 'wb') as handle:
+            handle.write(response.content)
+        if os.path.exists(target):
+            os.remove(temporary)
+        else:
+            os.rename(temporary, target)
+        return target
+    except Exception as exc:
+        if os.path.exists(temporary):
+            os.remove(temporary)
+        util.DEBUG_LOG(
+            'Home: provider logo cache failed for {0}: {1}'.format(
+                metadata_key,
+                type(exc).__name__,
+            )
+        )
+        return ''
+
 
 class HubsList(list):
     identifier = NO_HUB
@@ -227,6 +275,8 @@ class HomeHeroLogoTask(backgroundthread.Task):
 
             if logo and '://' not in logo:
                 logo = server.buildUrl(logo, includeToken=True)
+            if logo:
+                logo = cache_home_hero_logo(logo, self.metadata_key)
         except Exception as exc:
             util.DEBUG_LOG(
                 'Home: provider logo lookup failed for {0}: {1}'.format(

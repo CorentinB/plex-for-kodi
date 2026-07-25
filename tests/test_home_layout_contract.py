@@ -1171,6 +1171,7 @@ class HomeLayoutContractTests(unittest.TestCase):
             DEBUG_LOG=lambda *args, **kwargs: None,
         )
         namespace = {
+            "cache_home_hero_logo": lambda url, key: "/cache/{}.png".format(key),
             "clear_logo_url_from_metadata": clear_logo_url_from_metadata,
             "plexapp": types.SimpleNamespace(
                 SERVERMANAGER=types.SimpleNamespace(getDiscoverServer=lambda: server)
@@ -1197,7 +1198,7 @@ class HomeLayoutContractTests(unittest.TestCase):
             {"X-Plex-Language": "en", "Accept-Language": "en-US,en"},
         )
         self.assertEqual(calls[1][1]["params"]["X-Plex-Language"], "en")
-        self.assertEqual(callbacks, [("show-id", "https://plex.invalid/logo")])
+        self.assertEqual(callbacks, [("show-id", "/cache/show-id.png")])
 
     def test_home_hero_uses_a_compact_certification_badge_with_metadata_fallback(self):
         home = _read("script-plex-home.xml.tpl")
