@@ -154,6 +154,18 @@ class HomePreviewContractTests(unittest.TestCase):
             "  top: 472px;",
             styles,
         )
+        self.assertIn(
+            ".kodi-stage.is-single-resume "
+            ".hero-panel:not(.has-subtitle) + .hub-stack {\n"
+            "  top: 372px;",
+            styles,
+        )
+        self.assertIn(
+            ".kodi-stage.is-single-resume "
+            ".hero-panel.has-summary:not(.has-subtitle) + .hub-stack {\n"
+            "  top: 435px;",
+            styles,
+        )
 
 
 if __name__ == "__main__":

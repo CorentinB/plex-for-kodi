@@ -866,7 +866,7 @@ class HomeLayoutContractTests(unittest.TestCase):
         )
         self.assertEqual(
             home.count("String.IsEmpty(Window.Property(home.hero.logo))"),
-            9,
+            11,
         )
         self.assertEqual(
             home.count("$INFO[Window.Property(home.hero.subtitle)]"),
@@ -1363,6 +1363,24 @@ class HomeLayoutContractTests(unittest.TestCase):
             'condition="!String.IsEmpty(Window.Property(home.resume.visible)) + '
             'String.IsEmpty(Window.Property(hub.scrolled)) + '
             'String.IsEmpty(Window.Property(home.hero.short_summary))"',
+            home,
+        )
+        self.assertIn(
+            '<animation effect="slide" end="0,{{ vscale(-52) }}" time="0" '
+            'condition="!String.IsEmpty(Window.Property(home.resume.visible)) + '
+            'String.IsEmpty(Window.Property(hub.scrolled)) + '
+            'String.IsEmpty(Window.Property(home.hero.logo)) + '
+            'String.IsEmpty(Window.Property(home.hero.subtitle)) + '
+            'String.IsEmpty(Window.Property(home.hero.short_summary))"',
+            home,
+        )
+        self.assertIn(
+            '<animation effect="slide" end="0,{{ vscale(-36) }}" time="0" '
+            'condition="!String.IsEmpty(Window.Property(home.resume.visible)) + '
+            'String.IsEmpty(Window.Property(hub.scrolled)) + '
+            'String.IsEmpty(Window.Property(home.hero.logo)) + '
+            'String.IsEmpty(Window.Property(home.hero.subtitle)) + '
+            '!String.IsEmpty(Window.Property(home.hero.short_summary))"',
             home,
         )
         self.assertIn(

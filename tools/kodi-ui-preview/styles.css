@@ -569,6 +569,14 @@ code {
   top: 472px;
 }
 
+.kodi-stage.is-single-resume .hero-panel:not(.has-subtitle) + .hub-stack {
+  top: 372px;
+}
+
+.kodi-stage.is-single-resume .hero-panel.has-summary:not(.has-subtitle) + .hub-stack {
+  top: 435px;
+}
+
 .hub-row {
   position: relative;
   width: 1920px;
