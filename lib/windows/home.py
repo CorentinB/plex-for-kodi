@@ -3565,6 +3565,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             return False
 
         self._pendingSectionHubFocus = None
+        if self._homeResumeVisible():
+            self.setFocusId(self.RESUME_BUTTON_ID)
+            self._focusHomeResumeItem()
+            return True
         self.focusFirstValidHub(force=True)
         return True
 

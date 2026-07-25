@@ -691,6 +691,9 @@ class HomeLayoutContractTests(unittest.TestCase):
             def focusFirstValidHub(self, force=False):
                 self.focused += 1
 
+            def _homeResumeVisible(self):
+                return False
+
         section = object()
         window = Window(section)
 
@@ -801,12 +804,50 @@ class HomeLayoutContractTests(unittest.TestCase):
             def checkHubItem(self, control_id):
                 self.checked.append(control_id)
 
+            def _homeResumeVisible(self):
+                return False
+
         section = object()
         window = Window(section)
 
         self.assertTrue(window._focusPendingSectionHub(section))
         self.assertEqual(window.focused, [400])
         self.assertEqual(window.checked, [400])
+
+    def test_pending_section_focus_prefers_visible_resume_action(self):
+        class Window(object):
+            RESUME_BUTTON_ID = 205
+            _focusPendingSectionHub = _home_method("_focusPendingSectionHub")
+
+            def __init__(self, section):
+                self._pendingSectionHubFocus = section
+                self.lastSection = section
+                self.hubFocusIndexes = (0,)
+                self.hubControls = ([object()],)
+                self.focused = []
+                self.resume_syncs = 0
+                self.hub_focus_requests = 0
+
+            def _homeResumeVisible(self):
+                return True
+
+            def setFocusId(self, control_id):
+                self.focused.append(control_id)
+
+            def _focusHomeResumeItem(self):
+                self.resume_syncs += 1
+
+            def focusFirstValidHub(self, force=False):
+                self.hub_focus_requests += 1
+
+        section = object()
+        window = Window(section)
+
+        self.assertTrue(window._focusPendingSectionHub(section))
+        self.assertIsNone(window._pendingSectionHubFocus)
+        self.assertEqual(window.focused, [window.RESUME_BUTTON_ID])
+        self.assertEqual(window.resume_syncs, 1)
+        self.assertEqual(window.hub_focus_requests, 0)
 
     def test_completed_hub_draw_fulfills_pending_section_down_focus_after_reveal(self):
         window = _read_file(HOME_WINDOW)
