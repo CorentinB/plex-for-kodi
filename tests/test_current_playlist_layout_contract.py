@@ -67,6 +67,30 @@ class CurrentPlaylistLayoutContractTests(unittest.TestCase):
         self.assertIn("self.BAR_X + w", source)
         self.assertIn("BAR_X = 0", player_source)
 
+    def test_music_queue_seek_states_have_a_visible_progress_rail(self):
+        template = MUSIC_QUEUE.read_text()
+        seek_start = template.index("<!-- SEEK -->")
+        seek_end = template.index("<!-- PLAYER CONTROLS -->", seek_start)
+        seek = template[seek_start:seek_end]
+
+        self.assertEqual(
+            seek.count(
+                '<texturebg colordiffuse="38FFFFFF">'
+                "script.plex/white-square-6px.png</texturebg>"
+            ),
+            2,
+        )
+        self.assertEqual(
+            seek.count(
+                '<midtexture colordiffuse="FFFFFFFF">'
+                "script.plex/white-square-6px.png</midtexture>"
+            ),
+            2,
+        )
+        self.assertNotIn("<lefttexture>", seek)
+        self.assertNotIn("<righttexture>", seek)
+        self.assertNotIn("<overlaytexture>", seek)
+
     def test_music_queue_tolerates_local_items_without_plex_tags(self):
         source = CURRENT_PLAYLIST.read_text()
 

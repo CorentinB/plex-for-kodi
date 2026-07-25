@@ -205,11 +205,8 @@
         <posy>{{ vscale(3) }}</posy>
         <width>630</width>
         <height>{{ vscale(6) }}</height>
-        <texturebg>script.plex/transparent-6px.png</texturebg>
-        <lefttexture>script.plex/transparent-6px.png</lefttexture>
+        <texturebg colordiffuse="38FFFFFF">script.plex/white-square-6px.png</texturebg>
         <midtexture colordiffuse="FFFFFFFF">script.plex/white-square-6px.png</midtexture>
-        <righttexture>script.plex/transparent-6px.png</righttexture>
-        <overlaytexture>script.plex/transparent-6px.png</overlaytexture>
         <info>Player.Progress</info>
     </control>
     <control type="progress">
@@ -217,11 +214,8 @@
         <posy>{{ vscale(3) }}</posy>
         <width>630</width>
         <height>{{ vscale(6) }}</height>
-        <texturebg>script.plex/transparent-6px.png</texturebg>
-        <lefttexture>script.plex/transparent-6px.png</lefttexture>
+        <texturebg colordiffuse="38FFFFFF">script.plex/white-square-6px.png</texturebg>
         <midtexture colordiffuse="FFFFFFFF">script.plex/white-square-6px.png</midtexture>
-        <righttexture>script.plex/transparent-6px.png</righttexture>
-        <overlaytexture>script.plex/transparent-6px.png</overlaytexture>
         <info>Player.Progress</info>
     </control>
 </control>
