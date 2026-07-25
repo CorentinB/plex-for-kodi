@@ -113,6 +113,7 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
     SELECTION_INDICATOR_TEXT = 205
     CACHE_IMAGE_ID = 206
     BIF_IMAGE_ID = 300
+    BIF_IMAGE_Y = 592
     SEEK_IMAGE_WIDTH = 1800
 
     REPEAT_BUTTON_ID = 401
@@ -2147,7 +2148,7 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
                                                                            *PlaylistDialog.LI_AR16X9_THUMB_DIM,
                                                                            **{"blur": util.addonSettings.episodeNoSpoilerBlur})
                 self.setProperty('bif.image', bifUrl)
-                self.bifImageControl.setPosition(bifx, 752)
+                self.bifImageControl.setPosition(bifx, self.BIF_IMAGE_Y)
 
         self.seekbarControl.setPosition(0, self.seekbarControl.getPosition()[1])
         if set_to_current:

@@ -74,6 +74,19 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
         self.assertIn('BAR_Y = 856', SEEK_PYTHON.read_text())
         self.assertIn('BAR_BOTTOM = 919', SEEK_PYTHON.read_text())
 
+    def test_seek_preview_stays_above_the_subtitle_safe_area(self):
+        seek = SEEK.read_text()
+        python = SEEK_PYTHON.read_text()
+
+        self.assertIn('<control type="group" id="300">', seek)
+        self.assertIn('<posy>592</posy>', seek)
+        self.assertIn('BIF_IMAGE_Y = 592', python)
+        self.assertIn(
+            'self.bifImageControl.setPosition(bifx, self.BIF_IMAGE_Y)',
+            python,
+        )
+        self.assertNotIn('self.bifImageControl.setPosition(bifx, 752)', python)
+
     def test_osd_timeline_is_inset_visible_and_uses_one_coordinate_system(self):
         seek = SEEK.read_text()
         python = SEEK_PYTHON.read_text()
