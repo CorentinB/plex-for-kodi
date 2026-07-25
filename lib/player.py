@@ -1891,7 +1891,7 @@ class AudioPlayerHandler(BasePlayerHandler):
         for x in range(10):  # Wait a sec (if necessary) for this to become available
             try:
                 item = kodijsonrpc.rpc.Player.GetItem(playerid=0, properties=['comment'])['item']
-                plexID = item['comment']
+                plexID = item.get('comment')
             except:
                 util.ERROR()
 
