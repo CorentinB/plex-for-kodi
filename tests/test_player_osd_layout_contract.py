@@ -9,6 +9,7 @@ PHOTO = TEMPLATES / "script-plex-photo.xml.tpl"
 MUSIC_BUTTONS = TEMPLATES / "includes" / "music_player_buttons.xml.tpl"
 THEMED_BUTTON = TEMPLATES / "includes" / "themed_button.xml.tpl"
 CONTEXT = ROOT / "lib" / "templating" / "context.py"
+PLAYER_PYTHON = ROOT / "lib" / "player.py"
 SEEK_PYTHON = ROOT / "lib" / "windows" / "seekdialog.py"
 MARKER_HARNESS = ROOT / "tools" / "kodi_seek_marker_harness.py"
 
@@ -161,6 +162,20 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
         self.assertIn(route, on_action)
         branch = on_action[on_action.index(route):]
         self.assertLess(branch.index("self.onClick(controlID)"), branch.index("return"))
+
+    def test_native_seekbar_event_opens_the_full_custom_osd(self):
+        python = PLAYER_PYTHON.read_text()
+        handler = python[
+            python.index("class SeekPlayerHandler"):
+            python.index("class AudioPlayerHandler")
+        ]
+        on_seek_osd = handler[
+            handler.index("    def onSeekOSD(self):"):
+            handler.index("    def onVideoWindowOpened", handler.index("    def onSeekOSD(self):"))
+        ]
+
+        self.assertIn("self.showOSD()", on_seek_osd)
+        self.assertIn("if self.queuingSpecific or self.queuingNext:", on_seek_osd)
 
     def test_skip_marker_is_a_bounded_tvos_pill(self):
         seek = SEEK.read_text()

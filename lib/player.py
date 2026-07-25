@@ -1783,8 +1783,11 @@ class SeekPlayerHandler(BasePlayerHandler):
 
         return True
 
-    # def onSeekOSD(self):
-    #     self.dialog.activate()
+    def onSeekOSD(self):
+        util.DEBUG_LOG('SeekHandler: onSeekOSD - Seeking={0}', self.seeking)
+        if self.queuingSpecific or self.queuingNext:
+            return
+        self.showOSD()
 
     def onVideoWindowOpened(self):
         util.DEBUG_LOG('SeekHandler: onVideoWindowOpened - Seeking={0}', self.seeking)
