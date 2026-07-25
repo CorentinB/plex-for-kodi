@@ -120,6 +120,21 @@ class PlayerOsdLayoutContractTests(unittest.TestCase):
         self.assertNotIn('<texturefocus>-</texturefocus>', seek)
         self.assertNotIn('<texturenofocus>-</texturenofocus>', seek)
 
+    def test_select_on_hidden_player_surface_opens_osd_in_python(self):
+        python = SEEK_PYTHON.read_text()
+        on_action = python[
+            python.index("    def onAction(self, action):"):
+            python.index("    def doKodiSelectDialogHack", python.index("    def onAction(self, action):"))
+        ]
+
+        route = (
+            "if controlID == self.NO_OSD_BUTTON_ID and "
+            "action == xbmcgui.ACTION_SELECT_ITEM:"
+        )
+        self.assertIn(route, on_action)
+        branch = on_action[on_action.index(route):]
+        self.assertLess(branch.index("self.onClick(controlID)"), branch.index("return"))
+
     def test_skip_marker_is_a_bounded_tvos_pill(self):
         seek = SEEK.read_text()
         marker = seek[seek.index('<!-- SKIP MARKER BUTTON -->'):]

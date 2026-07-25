@@ -981,6 +981,12 @@ class SeekDialog(kodigui.BaseDialog, windowutils.GoHomeMixin, PlexSubtitleDownlo
                                 self.sendTimeline(state=self.player.STATE_STOPPED, t=t, ensureFinalTimelineEvent=True)
                                 self.stop()
                             return
+
+                # The hidden full-screen button has a conditional XML onclick,
+                # so keyboard Select does not reliably emit the Python callback.
+                if controlID == self.NO_OSD_BUTTON_ID and action == xbmcgui.ACTION_SELECT_ITEM:
+                    self.onClick(controlID)
+                    return
         except:
             util.ERROR()
 
