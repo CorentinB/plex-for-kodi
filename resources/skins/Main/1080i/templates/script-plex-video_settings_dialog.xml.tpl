@@ -19,20 +19,48 @@
     <visible>String.IsEmpty(Window.Property(child.dialog.visible)) + !Window.IsVisible(sliderdialog) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(osdsubtitlesettings) + !Window.IsVisible(subtitlesearch) + !Window.IsActive(selectdialog) + !Window.IsVisible(osdcmssettings)</visible>
     <posx>460</posx>
     <posy>{{ vperc(vscale(600)) }}</posy>
+    {% for rows in range(1, 7) %}
+    {% with slide_y = 300 - rows * 50 %}
+    <animation effect="slide" end="0,{{ vscale(slide_y) }}" time="0" condition="Integer.IsEqual(Container(100).NumItems,{{ rows }})" reversible="true">Conditional</animation>
+    {% endwith %}
+    {% endfor %}
+    {% for rows in range(1, 7) %}
+    {% with shadow_height = rows * 100 + 170 & body_height = rows * 100 + 10 %}
+    <control type="image">
+        <posx>-40</posx>
+        <posy>{{ vscale(-40) }}</posy>
+        <width>1080</width>
+        <height>{{ vscale(shadow_height) }}</height>
+        <texture border="42">script.plex/drop-shadow.png</texture>
+        <visible>Integer.IsEqual(Container(100).NumItems,{{ rows }})</visible>
+    </control>
+    <control type="image">
+        <posx>0</posx>
+        <posy>{{ vscale(80) }}</posy>
+        <width>1000</width>
+        <height>{{ vscale(body_height) }}</height>
+        <texture flipy="true" border="10">script.plex/white-square-top-rounded.png</texture>
+        <colordiffuse>D3111111</colordiffuse>
+        <visible>Integer.IsEqual(Container(100).NumItems,{{ rows }})</visible>
+    </control>
+    <control type="image">
+        <posx>0</posx>
+        <posy>{{ vscale(80) }}</posy>
+        <width>400</width>
+        <height>{{ vscale(body_height) }}</height>
+        <texture flipy="true" border="10">script.plex/white-square-tl-rounded.png</texture>
+        <colordiffuse>30000000</colordiffuse>
+        <visible>Integer.IsEqual(Container(100).NumItems,{{ rows }})</visible>
+    </control>
+    {% endwith %}
+    {% endfor %}
     <control type="image">
         <posx>-40</posx>
         <posy>{{ vscale(-40) }}</posy>
         <width>1080</width>
         <height>{{ vscale(770) }}</height>
         <texture border="42">script.plex/drop-shadow.png</texture>
-    </control>
-    <control type="image">
-        <posx>0</posx>
-        <posy>0</posy>
-        <width>1000</width>
-        <height>{{ vscale(80) }}</height>
-        <texture border="10">script.plex/white-square-top-rounded.png</texture>
-        <colordiffuse>F21F1F1F</colordiffuse>
+        <visible>Integer.IsGreaterOrEqual(Container(100).NumItems,7)</visible>
     </control>
     <control type="image">
         <posx>0</posx>
@@ -41,6 +69,7 @@
         <height>{{ vscale(610) }}</height>
         <texture flipy="true" border="10">script.plex/white-square-top-rounded.png</texture>
         <colordiffuse>D3111111</colordiffuse>
+        <visible>Integer.IsGreaterOrEqual(Container(100).NumItems,7)</visible>
     </control>
     <control type="image">
         <posx>0</posx>
@@ -49,6 +78,15 @@
         <height>{{ vscale(610) }}</height>
         <texture flipy="true" border="10">script.plex/white-square-tl-rounded.png</texture>
         <colordiffuse>30000000</colordiffuse>
+        <visible>Integer.IsGreaterOrEqual(Container(100).NumItems,7)</visible>
+    </control>
+    <control type="image">
+        <posx>0</posx>
+        <posy>0</posy>
+        <width>1000</width>
+        <height>{{ vscale(80) }}</height>
+        <texture border="10">script.plex/white-square-top-rounded.png</texture>
+        <colordiffuse>F21F1F1F</colordiffuse>
     </control>
     <control type="label">
         <posx>0</posx>
@@ -145,7 +183,7 @@
     <width>10</width>
     <height>{{ vscale(600) }}</height>
     <onleft>100</onleft>
-    <visible>String.IsEmpty(Window.Property(child.dialog.visible)) + !Window.IsVisible(sliderdialog) + Control.IsVisible(100) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(osdsubtitlesettings) + !Window.IsVisible(subtitlesearch) + !Window.IsVisible(osdcmssettings)</visible>
+    <visible>String.IsEmpty(Window.Property(child.dialog.visible)) + !Window.IsVisible(sliderdialog) + Control.IsVisible(100) + Integer.IsGreater(Container(100).NumItems,6) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(osdsubtitlesettings) + !Window.IsVisible(subtitlesearch) + !Window.IsVisible(osdcmssettings)</visible>
     <texturesliderbackground colordiffuse="30000000" border="5">script.plex/white-square.png</texturesliderbackground>
     <texturesliderbar colordiffuse="33FFFFFF" border="5">script.plex/white-square.png</texturesliderbar>
     <texturesliderbarfocus colordiffuse="FFFFFFFF" border="5">script.plex/white-square.png</texturesliderbarfocus>

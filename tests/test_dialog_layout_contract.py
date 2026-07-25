@@ -117,6 +117,37 @@ class DialogLayoutContractTests(unittest.TestCase):
         self.assertNotIn("<height>{{ vscale(870) }}</height>", select)
         self.assertNotIn("<height>{{ vscale(710) }}</height>", select)
 
+    def test_video_settings_shell_fits_short_option_lists(self):
+        video = _read(NAMES[3])
+
+        self.assertIn("{% for rows in range(1, 7) %}", video)
+        self.assertIn(
+            "{% with shadow_height = rows * 100 + 170 & "
+            "body_height = rows * 100 + 10 %}",
+            video,
+        )
+        self.assertIn(
+            "{% with slide_y = 300 - rows * 50 %}",
+            video,
+        )
+        self.assertIn(
+            'condition="Integer.IsEqual(Container(100).NumItems,{{ rows }})"',
+            video,
+        )
+        self.assertIn(
+            "Integer.IsGreaterOrEqual(Container(100).NumItems,7)",
+            video,
+        )
+        self.assertIn(
+            "Integer.IsGreater(Container(100).NumItems,6)",
+            video,
+        )
+        self.assertIn(
+            'end="0,{{ vscale(slide_y) }}"',
+            video,
+        )
+        self.assertNotIn("vscale((", video)
+
     def test_video_settings_scrollbar_uses_real_transparency(self):
         video = _read(NAMES[3])
 
