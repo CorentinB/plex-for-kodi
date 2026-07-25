@@ -4123,6 +4123,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                 self._showHubs(section=section, update=update, force=force, reselect_pos_dict=reselect_pos_dict)
             finally:
                 self.setProperty('drawing', '')
+                self._focusPendingSectionHub(section)
 
     def getCurrentHubsPositions(self, section):
         is_home = not section or section.key is None
@@ -4350,7 +4351,6 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
                     self.focusFirstValidHub(focus)
                 except Exception:
                     util.ERROR("Home: failed to restore focus after hub cleanup")
-        self._focusPendingSectionHub(section)
         self.storeLastBG()
 
     def showHub(self, hub, items=None, is_home=False, reselect_pos=None, hub_index=None):

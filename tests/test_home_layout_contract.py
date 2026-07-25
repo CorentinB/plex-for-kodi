@@ -677,18 +677,55 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertEqual(window.focused, [])
         self.assertEqual(window.checked, [400])
 
-    def test_completed_hub_draw_fulfills_pending_section_down_focus(self):
+    def test_completed_hub_draw_fulfills_pending_section_down_focus_after_reveal(self):
         window = _read_file(HOME_WINDOW)
         show_hubs = window.split(
-            "    def _showHubs(self, section=None, update=False, force=False, reselect_pos_dict=None):",
+            "    def showHubs(self, section=None, update=False, force=False, reselect_pos_dict=None):",
             1,
-        )[1].split("    def showHub(", 1)[0]
+        )[1].split("    def getCurrentHubsPositions(", 1)[0]
 
         self.assertIn("self._focusPendingSectionHub(section)", show_hubs)
         self.assertLess(
-            show_hubs.index("self.lastHubs = hubs.identifier"),
+            show_hubs.index("self.setProperty('drawing', '')"),
             show_hubs.index("self._focusPendingSectionHub(section)"),
         )
+
+    def test_pending_section_focus_runs_when_hubs_are_focusable(self):
+        class Lock(object):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc_value, traceback):
+                return False
+
+        class Window(object):
+            showHubs = _home_method("showHubs")
+
+            def __init__(self):
+                self.lock = Lock()
+                self.properties = {}
+                self.focus_states = []
+
+            def setBoolProperty(self, key, value):
+                self.properties[key] = value
+
+            def setProperty(self, key, value):
+                self.properties[key] = value
+
+            def _showHubs(self, **kwargs):
+                self.assert_drawing = self.properties.get("drawing")
+
+            def _focusPendingSectionHub(self, section):
+                self.focus_states.append(
+                    (section, self.properties.get("drawing"))
+                )
+
+        section = object()
+        window = Window()
+        window.showHubs(section)
+
+        self.assertEqual(window.assert_drawing, "1")
+        self.assertEqual(window.focus_states, [(section, "")])
 
     def test_playlist_hub_uses_localized_title_when_server_title_is_empty(self):
         class Hub(object):
