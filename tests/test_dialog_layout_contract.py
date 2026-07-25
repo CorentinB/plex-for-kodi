@@ -95,6 +95,27 @@ class DialogLayoutContractTests(unittest.TestCase):
         self.assertNotIn("<textureslidernibfocus>-</textureslidernibfocus>", video)
         self.assertEqual(video.count("script.plex/transparent-6px.png"), 2)
 
+    def test_video_settings_hide_behind_plex_child_dialogs(self):
+        video = _read(NAMES[3])
+        with open(PLAYER_SETTINGS, "r") as handle:
+            source = handle.read()
+
+        self.assertEqual(
+            video.count("String.IsEmpty(Window.Property(child.dialog.visible))"),
+            2,
+        )
+        self.assertIn("def showChildDialog(self, callback, *args, **kwargs):", source)
+        self.assertIn("self.setProperty('child.dialog.visible', '1')", source)
+        self.assertIn("finally:\n            self.clearProperty('child.dialog.visible')", source)
+        self.assertEqual(source.count("self.showChildDialog("), 4)
+        for callback in (
+            "showAudioDialog,",
+            "showSubtitlesDialog,",
+            "showQualityDialog,",
+            "self.downloadPlexSubtitles,",
+        ):
+            self.assertIn(callback, source)
+
     def test_quality_picker_uses_the_localized_heading(self):
         with open(PLAYER_SETTINGS, "r") as handle:
             source = handle.read()

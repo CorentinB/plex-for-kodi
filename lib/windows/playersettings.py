@@ -186,6 +186,13 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver, PlexSubtitleDow
 
         return audio, subtitle
 
+    def showChildDialog(self, callback, *args, **kwargs):
+        self.setProperty('child.dialog.visible', '1')
+        try:
+            return callback(*args, **kwargs)
+        finally:
+            self.clearProperty('child.dialog.visible')
+
     def editSetting(self):
         mli = self.settingsList.getSelectedItem()
         if not mli:
@@ -194,11 +201,25 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver, PlexSubtitleDow
         result = mli.dataSource
 
         if result == 'audio':
-            showAudioDialog(self.video, non_playback=self.nonPlayback, session_id=self.sessionID)
+            self.showChildDialog(
+                showAudioDialog,
+                self.video,
+                non_playback=self.nonPlayback,
+                session_id=self.sessionID,
+            )
         elif result == 'subs':
-            showSubtitlesDialog(self.video, non_playback=self.nonPlayback, session_id=self.sessionID)
+            self.showChildDialog(
+                showSubtitlesDialog,
+                self.video,
+                non_playback=self.nonPlayback,
+                session_id=self.sessionID,
+            )
         elif result == 'download_subs':
-            downloaded = self.downloadPlexSubtitles(self.video, non_playback=self.nonPlayback)
+            downloaded = self.showChildDialog(
+                self.downloadPlexSubtitles,
+                self.video,
+                non_playback=self.nonPlayback,
+            )
             if downloaded:
                 self.video.selectStream(downloaded, from_session=not self.nonPlayback, sync_to_server=False)
                 self.video.manually_selected_sub_stream = downloaded.id
@@ -207,7 +228,12 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver, PlexSubtitleDow
             override = self.qualityOverride
             if override is not None and override < 16:
                 idx = 16 - override
-            showQualityDialog(self.video, non_playback=self.nonPlayback, selected_idx=idx)
+            self.showChildDialog(
+                showQualityDialog,
+                self.video,
+                non_playback=self.nonPlayback,
+                selected_idx=idx,
+            )
         elif result == 'kodi_video':
             xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
         elif result == 'kodi_audio':
