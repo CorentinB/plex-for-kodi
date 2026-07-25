@@ -1119,8 +1119,9 @@ class HomeLayoutContractTests(unittest.TestCase):
             home.count('<aspectratio align="left" aligny="center">keep</aspectratio>'),
             2,
         )
+        self.assertEqual(home.count("<font>font52_title</font>"), 1)
         self.assertEqual(home.count("<font>font45_title</font>"), 1)
-        self.assertEqual(home.count("<font>font40_title</font>"), 1)
+        self.assertNotIn("<font>font40_title</font>", home)
 
     def test_home_hero_resolves_missing_provider_logos_in_a_cached_background_task(self):
         window = _read_file(HOME_WINDOW)
@@ -1287,6 +1288,21 @@ class HomeLayoutContractTests(unittest.TestCase):
             '!String.IsEmpty(Window.Property(home.hero.logo)) + '
             '!String.IsEmpty(Window.Property(home.hero.subtitle)) + '
             '!String.IsEmpty(Window.Property(home.hero.short_summary))" '
+            'reversible="true">Conditional</animation>',
+            home,
+        )
+        self.assertIn(
+            '<animation effect="slide" end="0,{{ vscale(-60) }}" time="0" '
+            'condition="!String.IsEmpty(Window.Property(hub.scrolled)) + '
+            'String.IsEmpty(Window.Property(home.hero.short_summary))" '
+            'reversible="true">Conditional</animation>',
+            home,
+        )
+        self.assertIn(
+            '<animation effect="slide" end="0,{{ vscale(-30) }}" time="0" '
+            'condition="!String.IsEmpty(Window.Property(hub.scrolled)) + '
+            'String.IsEmpty(Window.Property(home.hero.short_summary)) + '
+            'String.IsEmpty(Window.Property(home.hero.subtitle))" '
             'reversible="true">Conditional</animation>',
             home,
         )
