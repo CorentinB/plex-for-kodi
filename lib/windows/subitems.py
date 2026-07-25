@@ -204,7 +204,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMixin, 
 
         if self.fromWatchlist and not self.wl_availability:
             self.setProperty('wl_server_availability_verbose',
-                             util.cleanLeadingZeros(self.mediaItem.originallyAvailableAt.asDatetime('%B %d, %Y')))
+                             util.cleanLeadingZeros(
+                                 self.mediaItem.originallyAvailableAt.asDatetime(util.getLongDateFormat())
+                             ))
 
         self.populateRatings(self.mediaItem, self)
 

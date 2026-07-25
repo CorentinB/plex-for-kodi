@@ -232,7 +232,7 @@ def durationToShortText(ms, shortHourMins=False, shortSeconds=False, noSpaces=Fa
 def cleanLeadingZeros(text):
     if not text:
         return ''
-    return re.sub(r'(?<= )0(\d)', r'\1', text)
+    return re.sub(r'(^|\s)0(\d)', r'\1\2', text)
 
 
 def getLongDateFormat():

@@ -609,7 +609,9 @@ class PersonWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             parts = dateStr.split('-')
             if len(parts) == 3:
                 year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
-                return datetime.date(year, month, day).strftime('%B %d, %Y')
+                return util.cleanLeadingZeros(
+                    datetime.date(year, month, day).strftime(util.getLongDateFormat())
+                )
         except (ValueError, IndexError):
             pass
         return dateStr

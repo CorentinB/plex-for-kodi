@@ -4463,7 +4463,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
     def createPhotoListItem(self, obj, wide=False):
         mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
         if obj.type == 'photo':
-            mli.setLabel2(obj.originallyAvailableAt.asDatetime('%d %B %Y'))
+            mli.setLabel2(
+                util.cleanLeadingZeros(obj.originallyAvailableAt.asDatetime(util.getLongDateFormat()))
+            )
         mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
         return mli
 

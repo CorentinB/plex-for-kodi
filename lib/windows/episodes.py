@@ -1087,7 +1087,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMix
             subtitle = u'{0} {1}'.format(T(32303, 'Season').format(episode.parentIndex),
                                          T(32304, 'Episode').format(episode.index))
         else:
-            subtitle = episode.originallyAvailableAt.asDatetime('%B %d, %Y')
+            subtitle = episode.originallyAvailableAt.asDatetime(util.getLongDateFormat())
 
         hide_spoilers = self.hideSpoilers(episode)
 
@@ -1518,7 +1518,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin, SeasonsMix
             mli.setProperty('season', '')
             mli.setProperty('episode', '')
 
-        mli.setProperty('date', util.cleanLeadingZeros(video.originallyAvailableAt.asDatetime('%B %d, %Y')))
+        mli.setProperty(
+            'date',
+            util.cleanLeadingZeros(video.originallyAvailableAt.asDatetime(util.getLongDateFormat()))
+        )
 
         # mli.setProperty('related.header', 'Related Shows')
         mli.setProperty('year', video.year)

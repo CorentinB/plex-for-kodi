@@ -627,7 +627,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RolesMi
                     thumb_opts = self.getThumbnailOpts(self.next, hide_spoilers=hide_spoilers)
                 self.setProperty('next.thumb', self.next.thumb.asTranscodedImageURL(*self.NEXT_DIM, **thumb_opts))
                 self.setProperty('info.date',
-                                 util.cleanLeadingZeros(self.next.originallyAvailableAt.asDatetime('%B %d, %Y')))
+                                 util.cleanLeadingZeros(
+                                     self.next.originallyAvailableAt.asDatetime(util.getLongDateFormat())
+                                 ))
 
                 self.setProperty('next.title', self.next.grandparentTitle)
                 self.setProperty(
@@ -642,7 +644,10 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin, RolesMi
                     'prev.subtitle', u'{0} \u2022 {1}'.format(T(32303, 'Season').format(self.prev.parentIndex),
                                                               T(32304, 'Episode').format(self.prev.index))
                 )
-                self.setProperty('prev.info.date', util.cleanLeadingZeros(self.prev.originallyAvailableAt.asDatetime('%B %d, %Y')))
+                self.setProperty(
+                    'prev.info.date',
+                    util.cleanLeadingZeros(self.prev.originallyAvailableAt.asDatetime(util.getLongDateFormat()))
+                )
         elif self.prev.type == 'movie':
             self.setProperty('related.header', T(32404, 'Related Movies'))
             if self.next:

@@ -1792,7 +1792,9 @@ class LibraryWindow(PlaybackBtnMixin, kodigui.MultiWindow, windowutils.UtilMixin
                 mli.setProperty('is.folder', '1')
             else:
                 thumb = photo.defaultThumb.asTranscodedImageURL(*thumbDim)
-                label2 = util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime('%d %B %Y'))
+                label2 = util.cleanLeadingZeros(
+                    photo.originallyAvailableAt.asDatetime(util.getLongDateFormat())
+                )
                 mli = kodigui.ManagedListItem(title, label2, thumbnailImage=thumb, data_source=photo)
 
             mli.setProperty('thumb.fallback', fallback)

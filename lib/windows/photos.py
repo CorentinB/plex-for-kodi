@@ -402,7 +402,10 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setProperty('background', background)
 
         self.setProperty('photo.title', photo.title)
-        self.setProperty('photo.date', util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime('%d %B %Y')))
+        self.setProperty(
+            'photo.date',
+            util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime(util.getLongDateFormat()))
+        )
         self.setProperty('camera.model', photo.media[0].model)
         self.setProperty('camera.lens', photo.media[0].lens)
 
