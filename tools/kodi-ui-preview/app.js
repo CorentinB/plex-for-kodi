@@ -174,8 +174,10 @@ function episodeIndex(value = '') {
 function singleResumeItem() {
   const hub = hubs[0];
   if (!hub || hub.more || hub.items.length !== 1) return null;
-  const eligibleHub = hub.identifier === 'home.continue'
-    || hub.identifier === 'continueWatching';
+  const identifier = hub.identifier || '';
+  const eligibleHub = identifier === 'home.continue'
+    || identifier === 'continueWatching'
+    || identifier === 'video.inprogress';
   const item = hub.items[0];
   if (!eligibleHub || !['movie', 'episode'].includes(item.type) || !item.inProgress) {
     return null;

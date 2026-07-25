@@ -189,6 +189,7 @@ def _show_hub_window(control, last_focus=400, any_item_action=False):
             "home.continue",
             "movie.inprogress",
             "tv.inprogress",
+            "video.inprogress",
         ))
         _showHub = _home_method("_showHub", namespace)
         _syncHomeHeroSelection = _home_method("_syncHomeHeroSelection")
@@ -240,6 +241,7 @@ def _resume_window(items=None, focused=101):
             "home.continue",
             "movie.inprogress",
             "tv.inprogress",
+            "video.inprogress",
         ))
 
         def __init__(self):
@@ -369,6 +371,31 @@ class HomeLayoutContractTests(unittest.TestCase):
             window._singleResumeItem(
                 window.hubControls[0],
                 "movie.inprogress",
+                False,
+            ),
+            item,
+        )
+
+    def test_single_resume_supports_section_scoped_video_inprogress_hub(self):
+        resume_hubs = _read_file(HOME_WINDOW).split(
+            "SINGLE_RESUME_HUBS = frozenset((",
+            1,
+        )[1].split("))", 1)[0]
+        item = _HubListItem(
+            _HubMedia(
+                "Resume generic video",
+                "1",
+                media_type="movie",
+                in_progress=True,
+            )
+        )
+        window = _resume_window([item])
+
+        self.assertIn("'video.inprogress'", resume_hubs)
+        self.assertIs(
+            window._singleResumeItem(
+                window.hubControls[0],
+                "video.inprogress",
                 False,
             ),
             item,

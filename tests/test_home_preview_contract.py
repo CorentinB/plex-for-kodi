@@ -131,7 +131,11 @@ class HomePreviewContractTests(unittest.TestCase):
         )
         self.assertIn('class="resume-icon"', markup)
         self.assertIn("function singleResumeItem()", script)
-        self.assertIn("hub.identifier === 'home.continue'", script)
+        self.assertIn("identifier === 'home.continue'", script)
+        self.assertIn(
+            "identifier === 'video.inprogress'",
+            script,
+        )
         self.assertIn("stage.classList.toggle('is-single-resume'", script)
         self.assertIn("if (resumeItem && hubIndex === 0) return;", script)
         self.assertIn("resumeAction.addEventListener('keydown'", script)

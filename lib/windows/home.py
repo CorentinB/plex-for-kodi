@@ -471,6 +471,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         'home.continue',
         'movie.inprogress',
         'tv.inprogress',
+        'video.inprogress',
     ))
 
     def getHubDisplayType(self, hub, identifier):
