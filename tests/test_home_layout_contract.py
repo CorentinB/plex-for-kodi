@@ -314,6 +314,52 @@ def _resume_action_window():
     return Window()
 
 
+def _watchlist_click_window(media, hub_identifier="watchlist.test"):
+    show = object()
+    show_calls = []
+    opened = []
+    media.is_watchlist = True
+    media.exists = lambda force_full_check=False: True
+
+    def get_show():
+        show_calls.append(True)
+        return show
+
+    media.show = get_show
+    control = _HubControl([_HubListItem(media)])
+    control.dataSource = types.SimpleNamespace(hubIdentifier=hub_identifier)
+
+    class Window(object):
+        CONTINUE_HUBS = frozenset(("watchlist.continueWatching",))
+        hubItemClicked = _home_method(
+            "hubItemClicked",
+            {
+                "opener": types.SimpleNamespace(
+                    open=lambda obj, **kwargs: opened.append((obj, kwargs)) or "",
+                ),
+                "util": types.SimpleNamespace(
+                    ERROR=lambda *args, **kwargs: None,
+                    NoDataException=RuntimeError,
+                    getSetting=lambda key: key == "home_inprogress_resume",
+                ),
+            },
+        )
+
+        def __init__(self):
+            self.hubControls = (control,)
+            self.carriedProps = {"source": "watchlist"}
+            self._restarting = False
+            self.commands = []
+
+        def updateListItem(self, item):
+            return None
+
+        def processCommand(self, command):
+            self.commands.append(command)
+
+    return Window(), opened, show_calls, show
+
+
 class HomeLayoutContractTests(unittest.TestCase):
     def test_inprogress_home_items_resume_directly_by_default(self):
         settings = _read_file(SETTINGS_WINDOW)
@@ -329,6 +375,52 @@ class HomeLayoutContractTests(unittest.TestCase):
             "T(33713, 'Home: Resume in-progress items'), True",
             resume_setting,
         )
+
+    def test_inprogress_watchlist_episode_keeps_its_direct_play_target(self):
+        episode = _HubMedia(
+            "Resume episode",
+            "episode-1",
+            media_type="episode",
+            in_progress=True,
+        )
+        window, opened, show_calls, _ = _watchlist_click_window(episode)
+        window.hubItemClicked(400)
+
+        self.assertEqual(show_calls, [])
+        self.assertIs(opened[0][0], episode)
+        self.assertTrue(opened[0][1]["auto_play"])
+        self.assertTrue(opened[0][1]["watchlist_entry"])
+        self.assertEqual(opened[0][1]["dialog_props"], window.carriedProps)
+
+    def test_unstarted_watchlist_episode_still_opens_its_show(self):
+        episode = _HubMedia(
+            "Fresh episode",
+            "episode-2",
+            media_type="episode",
+            in_progress=False,
+        )
+        window, opened, _, show = _watchlist_click_window(episode)
+        window.hubItemClicked(400)
+
+        self.assertIs(opened[0][0], show)
+        self.assertFalse(opened[0][1]["auto_play"])
+
+    def test_watchlist_continue_hub_plays_the_next_episode_directly(self):
+        episode = _HubMedia(
+            "Next episode",
+            "episode-3",
+            media_type="episode",
+            in_progress=False,
+        )
+        window, opened, show_calls, _ = _watchlist_click_window(
+            episode,
+            "watchlist.continueWatching",
+        )
+        window.hubItemClicked(400)
+
+        self.assertEqual(show_calls, [])
+        self.assertIs(opened[0][0], episode)
+        self.assertTrue(opened[0][1]["auto_play"])
 
     def test_single_resume_requires_one_unpaginated_in_progress_video(self):
         item = _HubListItem(

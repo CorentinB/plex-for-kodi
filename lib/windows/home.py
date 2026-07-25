@@ -523,6 +523,15 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         'tv.inprogress',
         'video.inprogress',
     ))
+    CONTINUE_HUBS = frozenset((
+        'continueWatching',
+        'home.continue',
+        'home.ondeck',
+        'watchlist.continueWatching',
+        'movie.inprogress',
+        'tv.inprogress',
+        'video.inprogress',
+    ))
 
     def getHubDisplayType(self, hub, identifier):
         """Determine the display type for a hub: 'poster', 'ar16x9', or 'square'.
@@ -3029,9 +3038,20 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
         if mli.dataSource is None:
             return
 
-        # auto resume for in-progress items
+        # Continue Watching can contain both partially watched media and the
+        # next unwatched episode. Both should play directly from the hub.
         if util.getSetting('home_inprogress_resume'):
-            if mli.dataSource.TYPE in ('episode', 'movie') and mli.dataSource.in_progress:
+            hub = getattr(control, 'dataSource', None)
+            clean_hub_identifier = ''
+            get_clean_identifier = getattr(hub, 'getCleanHubIdentifier', None)
+            if get_clean_identifier:
+                clean_hub_identifier = get_clean_identifier()
+            else:
+                clean_hub_identifier = getattr(hub, 'hubIdentifier', '')
+
+            if (mli.dataSource.TYPE in ('episode', 'movie')
+                    and (mli.dataSource.in_progress
+                         or clean_hub_identifier in self.CONTINUE_HUBS)):
                 auto_play = True
 
         carryProps = None
@@ -3047,9 +3067,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
             extra_kwargs['external_item'] = True
             extra_kwargs['watchlist_entry'] = True
 
-            if mli.dataSource.TYPE in ("season", "episode"):
-                # we need to change the datasource if someone clicks an episode in a discover hub (watchlist), to go
-                # to the corresponding show
+            if mli.dataSource.TYPE in ("season", "episode") and not auto_play:
+                # Browsing a Watchlist season or episode opens its show. Continue
+                # Watching items keep the exact episode so autoplay can resume it.
                 use_ds = mli.dataSource.show()
                 ds_changed = True
 
