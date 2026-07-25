@@ -747,7 +747,7 @@ class Settings(object):
                 ),
                 MultiOptionsSetting(
                     'no_episode_spoilers4', T(33006, ''),
-                    ['unwatched', 'blur_images', 'hide_summary'],
+                    [],
                     (
                         ('unwatched', T(33010, '')),
                         ('in_progress', T(33011, '')),

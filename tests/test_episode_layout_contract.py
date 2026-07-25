@@ -15,6 +15,7 @@ EPISODES_TEMPLATE = os.path.join(
     "script-plex-episodes.xml.tpl",
 )
 EPISODES_PYTHON = os.path.join(ROOT, "lib", "windows", "episodes.py")
+SETTINGS_PYTHON = os.path.join(ROOT, "lib", "windows", "settings.py")
 EPISODE_CARD = os.path.join(
     ROOT,
     "resources",
@@ -84,6 +85,18 @@ def _read(path):
 
 
 class EpisodeLayoutContractTests(unittest.TestCase):
+    def test_episode_spoiler_hiding_is_disabled_by_default(self):
+        settings = _read(SETTINGS_PYTHON)
+        spoiler_setting = settings.split(
+            "'no_episode_spoilers4'",
+            1,
+        )[1].split(
+            ").description(",
+            1,
+        )[0]
+
+        self.assertIn("T(33006, ''),\n                    [],", spoiler_setting)
+
     def test_episode_view_has_a_dedicated_blurred_background_with_fallback(self):
         template = _read(EPISODES_TEMPLATE)
         source = _read(EPISODES_PYTHON)
