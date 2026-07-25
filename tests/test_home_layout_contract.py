@@ -637,6 +637,46 @@ class HomeLayoutContractTests(unittest.TestCase):
         self.assertIsNone(unchanged._pendingSectionHubFocus)
         self.assertEqual(unchanged.focusRequests, [])
 
+    def test_section_debounce_does_not_wait_for_unrelated_hub_tasks(self):
+        started = []
+
+        class Thread(object):
+            def __init__(self, target, name):
+                self.target = target
+                self.name = name
+
+            def start(self):
+                started.append((self.target, self.name))
+
+        class Monitor(object):
+            def waitAmount(self, *args, **kwargs):
+                raise AssertionError("section focus must not block on hub tasks")
+
+        class Window(object):
+            sectionChanged = _home_method(
+                "sectionChanged",
+                {
+                    "threading": types.SimpleNamespace(Thread=Thread),
+                    "time": types.SimpleNamespace(time=lambda: 100),
+                    "util": types.SimpleNamespace(MONITOR=Monitor()),
+                },
+            )
+
+            def __init__(self):
+                self._shuttingDown = False
+                self.tasks = [object()]
+                self.sectionChangeThread = None
+                self.sectionChangeTimeout = 0
+
+            def _sectionChanged(self, immediate=False):
+                return None
+
+        window = Window()
+        window.sectionChanged()
+
+        self.assertEqual(window.sectionChangeTimeout, 100.5)
+        self.assertEqual(started, [(window._sectionChanged, "sectionchanged")])
+
     def test_pending_section_down_focus_waits_for_real_hub_controls(self):
         class Window(object):
             _focusPendingSectionHub = _home_method("_focusPendingSectionHub")

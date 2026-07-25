@@ -3810,16 +3810,6 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver, CommonMixin, SpoilersMix
 
         self.sectionChangeTimeout = time.time() + 0.5
 
-        # wait 2s at max if we're currently awaiting any hubs to reload
-        # fixme: this can be done in a better way, probably
-        waited = 0
-        while any(self.tasks) and waited < util.MONITOR.waitAmount(2):
-            if waited > 5:
-                self.showBusy(True)
-            util.MONITOR.waitFor()
-            waited += 1
-        self.showBusy(False)
-
         if force:
             self.sectionChangeTimeout = None
             self._sectionChanged(immediate=True)
