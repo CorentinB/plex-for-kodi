@@ -6,5 +6,5 @@
     {# available single #}
     {% include template with name="play" & id=2304 & visible="!String.IsEmpty(Window.Property(disable_playback)) + String.IsEmpty(Window.Property(wl_availability_checking)) + String.IsEmpty(Window.Property(wl_availability_multiple)) + !String.IsEmpty(Window.Property(wl_availability))" & action_label="$LOCALIZE[208]" & action_width=178 & action_label_width=106 %}
     {# not available #}
-    {% include template with name="upcoming" & id=2305 & visible="!String.IsEmpty(Window.Property(disable_playback)) + String.IsEmpty(Window.Property(wl_availability_checking)) + String.IsEmpty(Window.Property(wl_availability_multiple)) + String.IsEmpty(Window.Property(wl_availability))" & action_label="$ADDON[script.plexmod 32312]" & action_width=220 & action_label_width=148 %}
+    {% include template with name="upcoming" & id=2305 & visible="!String.IsEmpty(Window.Property(disable_playback)) + String.IsEmpty(Window.Property(wl_availability_checking)) + String.IsEmpty(Window.Property(wl_availability_multiple)) + String.IsEmpty(Window.Property(wl_availability))" & action_label="$ADDON[script.plexmod 32312]" & action_width=250 & action_label_width=178 %}
 {# /watchlist dynamic play button #}

@@ -45,6 +45,16 @@ WATCHLIST_AVAILABILITY = os.path.join(
     "includes",
     "wl_availability.xml.tpl",
 )
+WATCHLIST_DYNAMIC_BUTTONS = os.path.join(
+    ROOT,
+    "resources",
+    "skins",
+    "Main",
+    "1080i",
+    "templates",
+    "includes",
+    "wl_dynamic_buttons.xml.tpl",
+)
 FRENCH_STRINGS = os.path.join(
     ROOT,
     "resources",
@@ -215,6 +225,19 @@ class PrePlayLayoutContractTests(unittest.TestCase):
         self.assertIn("$ADDON[script.plexmod 32308]", availability)
         self.assertIn('msgid "Available"', entry)
         self.assertIn('msgstr "Disponible"', entry)
+
+    def test_watchlist_unavailable_action_fits_the_french_label(self):
+        buttons = _read(WATCHLIST_DYNAMIC_BUTTONS)
+        unavailable = buttons[
+            buttons.index('name="upcoming"'):buttons.index(
+                "%}",
+                buttons.index('name="upcoming"'),
+            )
+        ]
+
+        self.assertIn('action_label="$ADDON[script.plexmod 32312]"', unavailable)
+        self.assertIn("action_width=250", unavailable)
+        self.assertIn("action_label_width=178", unavailable)
 
     def test_detail_actions_use_the_tvos_style(self):
         template = _read(PREPLAY_TEMPLATE)
